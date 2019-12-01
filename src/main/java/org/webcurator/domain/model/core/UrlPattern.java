@@ -65,7 +65,7 @@ public class UrlPattern extends AbstractIdentityObject {
 //            joinColumns = {@JoinColumn(name = "PU_URLPATTERN_ID")},
 //            inverseJoinColumns = {@JoinColumn(name = "PU_PERMISSION_ID")},
 //            foreignKey = @ForeignKey(name = "PU_FK_2"))
-    @ManyToMany(mappedBy = "urls", targetEntity = Permission.class)
+    @ManyToMany(mappedBy = "urls", targetEntity = Permission.class, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Permission> permissions = new HashSet<Permission>();
 
     /**
