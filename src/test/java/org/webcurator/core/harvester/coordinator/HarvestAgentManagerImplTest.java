@@ -4,9 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -19,6 +17,7 @@ import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.context.WebApplicationContext;
 import org.webcurator.core.common.Environment;
@@ -96,7 +95,7 @@ public class HarvestAgentManagerImplTest {
 
 		HarvestAgentFactory mockHarvestAgentFactory = mock(HarvestAgentFactory.class);
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.setHarvestAgentFactory(mockHarvestAgentFactory);
 		return mockHarvestAgent;
 	}
@@ -380,7 +379,7 @@ public class HarvestAgentManagerImplTest {
 		Long tOid = 123L;
 		TargetInstance mockTargetInstance = mock(TargetInstance.class);
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		String profileString = "test profile";
 		HarvestAgentStatusDTO agentStatusDTO = setupHarvestAgentWithHarvestState(tOid,
 				"Could not launch job - Fatal InitializationException", mockTargetInstance);
@@ -409,7 +408,7 @@ public class HarvestAgentManagerImplTest {
 	@Test
 	public void testPauseAllOneHarvestAgent() {
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.harvestAgents.put("test", createHarvestAgentStatusDtoWithStatusDto("123", "test"));
 		underTest.pauseAll();
 		verify(mockHarvestAgent).pauseAll();
@@ -418,7 +417,7 @@ public class HarvestAgentManagerImplTest {
 	@Test
 	public void testPauseAllOneHarvestAgentNoHarvests() {
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.harvestAgents.put("test", createHarvestAgentStatusDto("test"));
 		underTest.pauseAll();
 		verify(mockHarvestAgent, times(0)).pauseAll();
@@ -427,7 +426,7 @@ public class HarvestAgentManagerImplTest {
 	@Test
 	public void testPauseAllOneHarvestAgentNullHarvests() {
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		HarvestAgentStatusDTO harvestAgentStatusDto = createHarvestAgentStatusDto("test");
 		harvestAgentStatusDto.setHarvesterStatus(null);
 		underTest.harvestAgents.put("test", harvestAgentStatusDto);
@@ -441,7 +440,7 @@ public class HarvestAgentManagerImplTest {
 		HarvestAgent mockHarvestAgent2 = mock(HarvestAgent.class);
 		HarvestAgent mockHarvestAgent3 = mock(HarvestAgent.class);
 		// Returns the harvest agents in order for each call
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent1)
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent1)
 				.thenReturn(mockHarvestAgent2).thenReturn(mockHarvestAgent3);
 		underTest.harvestAgents.put("test1", createHarvestAgentStatusDtoWithStatusDto("123", "test1"));
 		underTest.harvestAgents.put("test2", createHarvestAgentStatusDtoWithStatusDto("124", "test2"));
@@ -461,7 +460,7 @@ public class HarvestAgentManagerImplTest {
 	@Test
 	public void testResumeAllOneHarvestAgent() {
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.harvestAgents.put("test", createHarvestAgentStatusDtoWithStatusDto("123", "test"));
 		underTest.resumeAll();
 		verify(mockHarvestAgent).resumeAll();
@@ -470,7 +469,7 @@ public class HarvestAgentManagerImplTest {
 	@Test
 	public void testResumeAllOneHarvestAgentNoHarvests() {
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.harvestAgents.put("test", createHarvestAgentStatusDto("test"));
 		underTest.resumeAll();
 		verify(mockHarvestAgent, times(0)).resumeAll();
@@ -479,7 +478,7 @@ public class HarvestAgentManagerImplTest {
 	@Test
 	public void testResumeAllOneHarvestAgentNullHarvests() {
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		HarvestAgentStatusDTO harvestAgentStatusDto = createHarvestAgentStatusDto("test");
 		harvestAgentStatusDto.setHarvesterStatus(null);
 		underTest.harvestAgents.put("test", harvestAgentStatusDto);
@@ -493,7 +492,7 @@ public class HarvestAgentManagerImplTest {
 		HarvestAgent mockHarvestAgent2 = mock(HarvestAgent.class);
 		HarvestAgent mockHarvestAgent3 = mock(HarvestAgent.class);
 		// Returns the harvest agents in order for each call
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent1)
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent1)
 				.thenReturn(mockHarvestAgent2).thenReturn(mockHarvestAgent3);
 		underTest.harvestAgents.put("test1", createHarvestAgentStatusDtoWithStatusDto("123", "test1"));
 		underTest.harvestAgents.put("test2", createHarvestAgentStatusDtoWithStatusDto("124", "test2"));
@@ -543,7 +542,7 @@ public class HarvestAgentManagerImplTest {
 		HarvestAgentStatusDTO agentStatusDTO2 = setupHarvestAgentWithHarvestState(tOid, "irrelevant", mockTargetInstance);
 		underTest.harvestAgents.put("test1", agentStatusDTO2);
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.pause(mockTargetInstance);
 		verify(mockTargetInstance).setState(TargetInstance.STATE_PAUSED);
 		verify(mockTargetInstanceDAO).save(mockTargetInstance);
@@ -554,7 +553,7 @@ public class HarvestAgentManagerImplTest {
 	public void testPauseTargetInstanceNoStatus() {
 		TargetInstance mockTargetInstance = mock(TargetInstance.class);
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.pause(mockTargetInstance);
 		verifyNoMoreInteractions(mockTargetInstanceDAO, mockHarvestAgent);
 	}
@@ -566,7 +565,7 @@ public class HarvestAgentManagerImplTest {
 		HarvestAgentStatusDTO agentStatusDTO2 = setupHarvestAgentWithHarvestState(tOid, "irrelevant", mockTargetInstance);
 		underTest.harvestAgents.put("test1", agentStatusDTO2);
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.resume(mockTargetInstance);
 		verify(mockTargetInstance).setState(TargetInstance.STATE_RUNNING);
 		verify(mockTargetInstanceManager).save(mockTargetInstance);
@@ -577,7 +576,7 @@ public class HarvestAgentManagerImplTest {
 	public void testResumeTargetInstanceNoStatus() {
 		TargetInstance mockTargetInstance = mock(TargetInstance.class);
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.resume(mockTargetInstance);
 		verifyNoMoreInteractions(mockTargetInstanceDAO, mockHarvestAgent);
 	}
@@ -589,7 +588,7 @@ public class HarvestAgentManagerImplTest {
 		HarvestAgentStatusDTO agentStatusDTO2 = setupHarvestAgentWithHarvestState(tOid, "irrelevant", mockTargetInstance);
 		underTest.harvestAgents.put("test1", agentStatusDTO2);
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.abort(mockTargetInstance);
 		verify(mockTargetInstance).setState(TargetInstance.STATE_ABORTED);
 		verify(mockTargetInstanceDAO).save(mockTargetInstance);
@@ -603,8 +602,8 @@ public class HarvestAgentManagerImplTest {
 		HarvestAgentStatusDTO agentStatusDTO2 = setupHarvestAgentWithHarvestState(tOid, "irrelevant", mockTargetInstance);
 		underTest.harvestAgents.put("test1", agentStatusDTO2);
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
-		doThrow(new RuntimeException()).when(mockHarvestAgent).abort(anyString());
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
+		doThrow(new RuntimeException()).when(mockHarvestAgent).abort(any());
 		underTest.abort(mockTargetInstance);
 		verify(mockTargetInstance).setState(TargetInstance.STATE_ABORTED);
 		verify(mockTargetInstanceDAO).save(mockTargetInstance);
@@ -614,7 +613,7 @@ public class HarvestAgentManagerImplTest {
 	public void testAbortTargetInstanceNoStatus() {
 		TargetInstance mockTargetInstance = mock(TargetInstance.class);
 		HarvestAgent mockHarvestAgent = mock(HarvestAgent.class);
-		when(mockHarvestAgentFactory.getHarvestAgent(anyString(), anyInt())).thenReturn(mockHarvestAgent);
+		when(mockHarvestAgentFactory.getHarvestAgent(any(), anyInt())).thenReturn(mockHarvestAgent);
 		underTest.abort(mockTargetInstance);
 		verify(mockTargetInstance).setState(TargetInstance.STATE_ABORTED);
 		verify(mockTargetInstanceDAO).save(mockTargetInstance);

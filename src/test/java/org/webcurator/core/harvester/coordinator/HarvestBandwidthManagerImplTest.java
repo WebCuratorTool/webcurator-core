@@ -119,9 +119,9 @@ public class HarvestBandwidthManagerImplTest {
 
 	@Test
 	public void testIsMiniumBandwidthAvailableGlobalBandwidthTooLow() throws Exception {
-		BandwidthRestriction mockBandwidthRestriction = mock(BandwidthRestriction.class);
-		long maxBandwidth = 23L;
-		when(mockBandwidthRestriction.getBandwidth()).thenReturn(maxBandwidth);
+		//BandwidthRestriction mockBandwidthRestriction = mock(BandwidthRestriction.class); -- never called
+		//long maxBandwidth = 23L;
+		//when(mockBandwidthRestriction.getBandwidth()).thenReturn(maxBandwidth); -- never called
 		underTest.setMinimumBandwidth(24);
 		
 		QueuedTargetInstanceDTO mockQueuedTargetInstanceDTO = mock(QueuedTargetInstanceDTO.class);
@@ -131,9 +131,9 @@ public class HarvestBandwidthManagerImplTest {
 
 	@Test
 	public void testIsMiniumBandwidthAvailableGlobalBandwidthTooLowTargetInstance() throws Exception {
-		BandwidthRestriction mockBandwidthRestriction = mock(BandwidthRestriction.class);
-		long maxBandwidth = 23L;
-		when(mockBandwidthRestriction.getBandwidth()).thenReturn(maxBandwidth);
+		//BandwidthRestriction mockBandwidthRestriction = mock(BandwidthRestriction.class); -- never called
+		//long maxBandwidth = 23L;
+		//when(mockBandwidthRestriction.getBandwidth()).thenReturn(maxBandwidth); -- never called
 		underTest.setMinimumBandwidth(24);
 		
 		TargetInstance mockTargetInstance = mock(TargetInstance.class);
@@ -234,7 +234,7 @@ public class HarvestBandwidthManagerImplTest {
 		when(mockTargetInstanceDao.findTargetInstances(any(TargetInstanceCriteria.class))).thenReturn(Lists.newArrayList(mockRunningTi));
 		
 		TargetInstance mockTargetInstance = mock(TargetInstance.class);
-		when(mockTargetInstance.getAllocatedBandwidth()).thenReturn(null);
+		//when(mockTargetInstance.getAllocatedBandwidth()).thenReturn(null); -- never called
 		when(mockTargetInstance.getBandwidthPercent()).thenReturn(10);
 		when(mockTargetInstance.getState()).thenReturn(TargetInstance.STATE_QUEUED);
 		long tiOid = 123L;
@@ -266,7 +266,7 @@ public class HarvestBandwidthManagerImplTest {
 		when(mockBandwidthCalculator.calculateBandwidthAllocation(runningList, maxBandwidth, maxBandwidthPercent)).thenReturn(runningMap);
 		
 		TargetInstance mockTargetInstance = mock(TargetInstance.class);
-		when(mockTargetInstance.getAllocatedBandwidth()).thenReturn(null);
+		//when(mockTargetInstance.getAllocatedBandwidth()).thenReturn(null); -- never called
 		when(mockTargetInstance.getBandwidthPercent()).thenReturn(10);
 		when(mockTargetInstance.getState()).thenReturn(TargetInstance.STATE_QUEUED);
 		long tiOid = 123L;
