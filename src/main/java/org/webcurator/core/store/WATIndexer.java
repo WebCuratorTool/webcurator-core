@@ -19,23 +19,11 @@ import java.util.zip.GZIPInputStream;
 
 public class WATIndexer {
     private static final Logger log = LoggerFactory.getLogger(WATIndexer.class);
-    protected static final URLResolverFunc urlResolverFunc = new URLResolverFunc();
+    private static final String SEED_URL = "Seed";
     protected static final String TEMP_METADATA_WAT_FILE_NAME = "temp_metadata.wat.gz";
     protected static final String TEMP_METADATA_JSON_FILE_NAME = "temp_metadata.json";
     protected static final String LGA_METADATA_CSV_FILE_NAME = "lga.csv";
     protected static final String JSON_METADATA_PREFIX = "{\"Container\":";
-
-    public static void main(String[] args) {
-        WATIndexer watIndexer = new WATIndexer();
-        File directory = new File("/home/leefr/wct/archive-visualization/src/test/resources");
-        File[] fileList = directory.listFiles(new IndexerBase.ARCFilter());
-
-        try {
-            watIndexer.extract(directory, fileList);
-        } catch (IOException | ResourceParseException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     /**
@@ -55,11 +43,11 @@ public class WATIndexer {
 
         //Extracting archived file and caching in disk to avoid consuming huge memory
         File jsonFile = new File(String.format("%s%s%s", directory.getAbsolutePath(), File.separator, TEMP_METADATA_JSON_FILE_NAME));
-//        BufferedWriter jsonWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(jsonFile)));
-//        for (File f : fileList) {
-//            extract(directory, f, jsonWriter);
-//        }
-//        jsonWriter.close();
+        BufferedWriter jsonWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(jsonFile)));
+        for (File f : fileList) {
+            extract(directory, f, jsonWriter);
+        }
+        jsonWriter.close();
 
         //Parsing wat file and writing to "csv" file
         parseWatFromJsonFile(directory, jsonFile);
@@ -122,24 +110,24 @@ public class WATIndexer {
         BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(new FileInputStream(jsonFile))));
 
         //Find the first line of WAT file, and set the first line as starting flag of a section.
-        Map<String, MetadataNode> mapWarc = new HashMap<>();
-        Map<String, MetadataNode> mapArc = new HashMap<>();
+        Map<String, WarcMetadataNode> mapWarc = new HashMap<>();
+        Map<String, ArcMetadataNode> mapArc = new HashMap<>();
 
         String line;
         while ((line = reader.readLine()) != null) {
             try {
-                String sessionId = MetadataNode.getSessionId(line);
-                MetadataNode node = mapWarc.get(sessionId);
-                if (node == null) {
-                    if (sessionId.startsWith(WarcMetadataNode.TYPE)) {
-                        node = new WarcMetadataNode();
-                        mapWarc.put(sessionId, node);
-                    } else {
-                        node = new ArcMetadataNode();
-                        mapArc.put(sessionId, node);
+                SessionId sessionId = MetadataNode.getSessionId(line);
+                if (sessionId.type.equals(WarcMetadataNode.TYPE)) {
+                    WarcMetadataNode node = mapWarc.containsKey(sessionId.key) ? mapWarc.get(sessionId.key) : new WarcMetadataNode();
+                    if (node.parse(line)) {
+                        mapWarc.put(sessionId.key, node);
+                    }
+                } else {
+                    ArcMetadataNode node = mapArc.containsKey(sessionId.key) ? mapArc.get(sessionId.key) : new ArcMetadataNode();
+                    if (node.parse(line)) {
+                        mapArc.put(sessionId.key, node);
                     }
                 }
-                node.parse(line);
             } catch (IOException e) {
                 log.info("Invalid json metadata: {}", line);
             }
@@ -151,6 +139,14 @@ public class WATIndexer {
         Files.deleteIfExists(csvPath);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csvPath.toFile())));
 
+        ArcMetadataNode seedNode = new ArcMetadataNode();
+        seedNode.url = SEED_URL;
+        seedNode.isSeed = true;
+        seedNode.contentLength = "0";
+        seedNode.contentType = "Seed";
+        seedNode.statusCode = "0";
+
+        //Processing Warc
         mapWarc.forEach((key, node) -> {
             try {
                 writer.write(node.toString());
@@ -161,6 +157,34 @@ public class WATIndexer {
             node.clear();
         });
         mapWarc.clear();
+
+        //Processing Arc: patching parent url
+        mapArc.forEach((parentUrl, parentNode) -> {
+            if (parentUrl.equalsIgnoreCase("http://media.live.harnesslink.com/?M=A")) {
+                log.debug(parentUrl);
+            }
+            parentNode.children.forEach(childUrl -> {
+                if (mapArc.containsKey(childUrl)) {
+                    mapArc.get(childUrl).parent = parentUrl;
+                }
+            });
+            parentNode.clear();
+        });
+
+        //Processing Arc: saving to file
+        mapArc.forEach((parentUrl, node) -> {
+            if (node.parent == null || node.parent.length() == 0) {
+                node.parent = seedNode.url;
+            }
+            try {
+                writer.write(node.toString());
+                writer.newLine();
+            } catch (IOException e) {
+                log.error("Write to csv file failed");
+            }
+        });
+
+        mapArc.clear();
 
         writer.close();
     }
@@ -176,6 +200,7 @@ abstract class MetadataNode {
     private static final String PATH_HOST_BASE = "Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata.Head/Base";
     private static final String PATH_LINKS = "Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Links";
 
+    public String type = "";
     public boolean isSeed = false;
     public String url = "";
     public String referer = "";
@@ -183,17 +208,17 @@ abstract class MetadataNode {
     public String contentType = "";
     public String contentLength = "";
     public String statusCode = "";
+    public String parent;
 
     protected JsonNode jsonRoot;
 
-    public static String getSessionId(String jsonContainer) throws IOException {
+    public static SessionId getSessionId(String jsonContainer) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonObj = mapper.readTree(jsonContainer);
 
         String archive_type = getValue(jsonObj, PATH_FORMAT);
-        String sessionId = null;
+        SessionId sessionId = null;
         if (archive_type.equalsIgnoreCase(WarcMetadataNode.TYPE)) {
-            sessionId = WarcMetadataNode.TYPE;
             String targetId = getValue(jsonObj, WarcMetadataNode.PATH_WARC_RECORD_ID);
             targetId = targetId.substring(1, targetId.length() - 1);
             String concurrentId = getValue(jsonObj, WarcMetadataNode.PATH_WARC_CONCURRENT_TO);
@@ -203,10 +228,9 @@ abstract class MetadataNode {
                 int lenDelta = concurrentId.length() - targetId.length() - 2;
                 concurrentId = concurrentId.substring(1, concurrentId.length() - 1 - lenDelta);
             }
-            sessionId += concurrentId;
+            sessionId = new SessionId(WarcMetadataNode.TYPE, concurrentId);
         } else if (archive_type.equalsIgnoreCase(ArcMetadataNode.TYPE)) {
-            sessionId = ArcMetadataNode.TYPE;
-            sessionId += getValue(jsonObj, ArcMetadataNode.PATH_TARGET_URI);
+            sessionId = new SessionId(ArcMetadataNode.TYPE, getValue(jsonObj, ArcMetadataNode.PATH_TARGET_URI));
         } else {
             throw new IOException("Invalid json container.");
         }
@@ -236,6 +260,11 @@ abstract class MetadataNode {
         return jsonNode;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s,%s,%s,%s,%s,%s,%b", type, url, contentType, contentLength, statusCode, parent, isSeed);
+    }
+
     abstract public boolean parse(String jsonContainer) throws IOException;
 
     abstract public void clear();
@@ -244,34 +273,63 @@ abstract class MetadataNode {
 class ArcMetadataNode extends MetadataNode {
     public static final String TYPE = "ARC";
     public static final String PATH_TARGET_URI = "Envelope/ARC-Header-Metadata/Target-URI";
-    public static final String PATH_CONTENT_TYPE = "Envelope/ARC-Header-Metadata/Content-Type";
-    public static final String PATH_CONTENT_LENGTH = "Envelope/ARC-Header-Metadata/Content-Length";
+    public static final String PATH_CONTENT_TYPE = "Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Content-Type";
+    public static final String PATH_CONTENT_LENGTH = "Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Content-Length";
     public static final String PATH_STATUS_CODE = "Envelope/Payload-Metadata/HTTP-Response-Metadata/Response-Message/Status";
     public static final String PATH_HOST_BASE = "Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Head/Base";
     public static final String PATH_HEAD_SCRIPT = "Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Head/Scripts";
     public static final String PATH_HEAD_LINK = "Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Head/Link";
     public static final String PATH_LINKS = "Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Links";
+    public List<String> children = new ArrayList<>();
 
-    private List<String> children = new ArrayList<>();
+    public ArcMetadataNode() {
+        this.type = TYPE;
+    }
 
     @Override
     public boolean parse(String jsonContainer) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         this.jsonRoot = mapper.readTree(jsonContainer);
+        this.url = this.getValue(PATH_TARGET_URI);
+        if (!URLResolverFunc.isAbsolute(this.url)) {
+            return false;
+        }
+
+        this.contentType = this.getValue(PATH_CONTENT_TYPE);
+        this.contentLength = this.getValue(PATH_CONTENT_LENGTH);
+        this.statusCode = this.getValue(PATH_STATUS_CODE);
+
+        this.parseUrls(this.findJsonNodes(PATH_HEAD_SCRIPT));
+        this.parseUrls(this.findJsonNodes(PATH_HEAD_LINK));
+        this.parseUrls(this.findJsonNodes(PATH_LINKS));
+
         return true;
+    }
+
+    private void parseUrls(JsonNode linksJsonNode) {
+        if (linksJsonNode == null) {
+            return;
+        }
+        Iterator<JsonNode> links = linksJsonNode.elements();
+        while (links.hasNext()) {
+            JsonNode element = links.next();
+            JsonNode url = element.get("url");
+            if (url == null) {
+                continue;
+            }
+            String link = url.asText();
+
+
+            link = URLResolverFunc.doResolve(this.url, this.host, link);
+            if (link != null) {
+                this.children.add(link);
+            }
+        }
     }
 
     @Override
     public void clear() {
         this.children.clear();
-    }
-
-    public List<String> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<String> children) {
-        this.children = children;
     }
 }
 
@@ -291,11 +349,9 @@ class WarcMetadataNode extends MetadataNode {
     public static final String PATH_RESPONSE_STATUS_CODE = "Envelope/Payload-Metadata/HTTP-Response-Metadata/Response-Message/Status";
     public static final String PATH_METADATA_RECORDS = "Envelope/Payload-Metadata/WARC-Metadata-Metadata/Metadata-Records";
 
-//    private static final String PATH_HOST_BASE = "Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Head/Base";
-//    private static final String PATH_LINKS = "Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Links";
-
-    public String parent;
-
+    public WarcMetadataNode() {
+        this.type = TYPE;
+    }
 
     @Override
     public boolean parse(String jsonContainer) throws IOException {
@@ -303,6 +359,9 @@ class WarcMetadataNode extends MetadataNode {
         this.jsonRoot = mapper.readTree(jsonContainer);
 
         this.url = this.getValue(PATH_TARGET_URI);
+        if (!URLResolverFunc.isAbsolute(this.url)) {
+            return false;
+        }
 
         String warcType = this.getValue(PATH_WARC_TYPE);
         if (warcType.equalsIgnoreCase(WARC_TYPE_REQUEST)) {
@@ -336,12 +395,17 @@ class WarcMetadataNode extends MetadataNode {
     }
 
     @Override
-    public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%b", url, contentType, contentLength, statusCode, parent, isSeed);
-    }
-
-    @Override
     public void clear() {
 
+    }
+}
+
+class SessionId {
+    public String type;
+    public String key;
+
+    public SessionId(String type, String key) {
+        this.type = type;
+        this.key = key;
     }
 }

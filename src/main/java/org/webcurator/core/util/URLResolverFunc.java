@@ -8,13 +8,6 @@ import java.net.URL;
 
 public class URLResolverFunc {
     private static final Logger log = LoggerFactory.getLogger(URLResolverFunc.class);
-    private URL baseURL;
-    private String lastBase;
-
-    public URLResolverFunc() {
-        baseURL = null;
-        lastBase = null;
-    }
 
     public static boolean isAbsolute(String url) {
         if (url == null) {
@@ -31,70 +24,63 @@ public class URLResolverFunc {
         }
     }
 
-    private String resolve(String base, String rel) {
-        URL absURL = null;
-        if (lastBase != null) {
-            if (lastBase.equals(base)) {
-                try {
-                    absURL = new URL(baseURL, rel);
-                } catch (MalformedURLException e) {
-                    log.warn("Malformed rel url: {}", rel);
-                    return null;
-                }
-            }
-        }
-        if (absURL == null) {
+    public static String doResolve(String page, String base, String rel) {
+        if (isAbsolute(rel)) {
+            URL relUrl = null;
             try {
-                baseURL = new URL(base);
-                lastBase = base;
+                relUrl = new URL(rel);
+            } catch (MalformedURLException e) {
+                return null;
+            }
+            return relUrl.toString();
+        }
+
+        URL absParent = null;
+        if (isAbsolute(base)) {
+            try {
+                absParent = new URL(base);
             } catch (MalformedURLException e) {
                 log.warn("Malformed base url: {}", base);
                 return null;
             }
+        } else if (isAbsolute(page)) {
             try {
-                absURL = new URL(baseURL, rel);
+                absParent = new URL(page);
             } catch (MalformedURLException e) {
-                log.warn("Malformed rel url: {}", rel);
+                log.warn("Malformed page url: {}", page);
                 return null;
             }
         }
+
+        URL absURL = null;
+        try {
+            absURL = new URL(absParent, rel);
+        } catch (MalformedURLException e) {
+            log.warn("Malformed rel url: {}", rel);
+            return null;
+        }
+
         return absURL.toString();
     }
 
-    public String doResolve(String page, String base, String url) {
-        //Filter valid urls
-        if (!isAbsolute(page) && !isAbsolute(base) && !isAbsolute(url)) {
-            return url;
+    public static String url2domain(String rel) {
+        URL url = null;
+        try {
+            url = new URL(rel);
+        } catch (MalformedURLException e) {
+            log.warn("Malformed rel url: {}", rel);
+            return null;
         }
-        if ((url == null) || (url.length() == 0)) {
-            return url;
-        }
-        if (isAbsolute(url)) {
-            return url;
-        }
-        if ((base != null) && (base.length() > 0)) {
-            String tmp = resolve(base, url);
-            if (tmp != null) {
-                return tmp;
-            }
-        }
-        if ((page != null) && (page.length() > 0)) {
-            String tmp = resolve(page, url);
-            if (tmp != null) {
-                return tmp;
-            }
-        }
-        return url;
-    }
+        return url.getHost();
 
-    public static String url2domain(String url) {
-        int idx = url.indexOf("://");
-        int idxEnd = idx > 0 ? url.indexOf('/', idx + 3) : url.indexOf('/');
-        idx = idx < 0 ? 0 : idx + 3;
-        idxEnd = idxEnd > 0 ? idxEnd : url.indexOf('?');
-        if (idxEnd > 0) {
-            return url.substring(idx, idxEnd);
-        }
-        return url;
+
+//        int idx = url.indexOf("://");
+//        int idxEnd = idx > 0 ? url.indexOf('/', idx + 3) : url.indexOf('/');
+//        idx = idx < 0 ? 0 : idx + 3;
+//        idxEnd = idxEnd > 0 ? idxEnd : url.indexOf('?');
+//        if (idxEnd > 0) {
+//            return url.substring(idx, idxEnd);
+//        }
+//        return url;
     }
 }

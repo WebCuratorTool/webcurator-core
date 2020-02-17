@@ -121,16 +121,11 @@ public class WCTIndexer extends IndexerBase {
                 //Release memory used by Collections///////////////
                 dtos.clear();
                 resources.clear();
-                if (ahf.getHarvestResult() != null) {
-                    ahf.getHarvestResult().getArcFiles().clear();
-                    ahf.getHarvestResult().getResources().clear();
-                }
+                ahf.clear();
                 //////////////////////////////////////////////////////
 
                 log.info("Completed indexing of " + ahf.getName());
-            } catch (IOException ex) {
-                log.error("Could not index file " + ahf.getName() + ". Ignoring and continuing with other files. " + ex.getClass().getCanonicalName() + ": " + ex.getMessage());
-            } catch (ParseException ex) {
+            } catch (IOException | ParseException ex) {
                 log.error("Could not index file " + ahf.getName() + ". Ignoring and continuing with other files. " + ex.getClass().getCanonicalName() + ": " + ex.getMessage());
             }
         }

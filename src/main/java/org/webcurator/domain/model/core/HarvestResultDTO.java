@@ -174,4 +174,13 @@ public class HarvestResultDTO {
             this.getResources().putAll(ahf.index());
         }
     }
+
+    public void clear(){
+        if(this.arcFiles!=null){
+            this.arcFiles.clear();
+        }
+        if(this.resources!=null){
+            this.resources.clear();
+        }
+    }
 }
