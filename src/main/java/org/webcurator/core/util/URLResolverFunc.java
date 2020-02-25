@@ -72,15 +72,18 @@ public class URLResolverFunc {
             return null;
         }
         return url.getHost();
+    }
 
+    public static String trimContentType(String contentType) {
+        if (contentType == null) {
+            return "Unknown";
+        }
 
-//        int idx = url.indexOf("://");
-//        int idxEnd = idx > 0 ? url.indexOf('/', idx + 3) : url.indexOf('/');
-//        idx = idx < 0 ? 0 : idx + 3;
-//        idxEnd = idxEnd > 0 ? idxEnd : url.indexOf('?');
-//        if (idxEnd > 0) {
-//            return url.substring(idx, idxEnd);
-//        }
-//        return url;
+        int idx = contentType.indexOf(';');
+        if (idx < 1) {
+            return contentType.trim();
+        } else {
+            return contentType.substring(0, idx - 1).trim();
+        }
     }
 }

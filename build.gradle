@@ -29,7 +29,7 @@ dependencies {
     compile 'com.ibm:ibmjsse:1.0'
     compile 'com.google.guava:guava:14.0.1'
     compile 'net.sf:jargs:1.0'
-    compile 'com.sleepycat:je:3.3.74'
+    compile 'com.sleepycat:je:4.1.6'
     compile 'javax.mail:mail:1.4.7'
     compile 'mysql:mysql-connector-java:5.1.6'
     compile 'oro:oro:2.0.8'

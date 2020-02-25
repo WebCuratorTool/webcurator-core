@@ -2,16 +2,16 @@ package org.webcurator.core.store;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +20,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.webcurator.core.extractor.WCTResourceIndexer;
 import org.webcurator.core.harvester.coordinator.HarvestCoordinatorPaths;
 import org.webcurator.domain.model.core.ArcHarvestFileDTO;
 import org.webcurator.domain.model.core.ArcHarvestResourceDTO;
@@ -28,7 +29,7 @@ import org.webcurator.domain.model.core.HarvestResourceDTO;
 
 // TODO Note that the spring boot application needs @EnableRetry for the @Retryable to work.
 public class WCTIndexer extends IndexerBase {
-    private static Log log = LogFactory.getLog(WCTIndexer.class);
+    private static Logger log = LoggerFactory.getLogger(WCTIndexer.class);
 
     private HarvestResultDTO result;
     private File directory;
@@ -69,8 +70,7 @@ public class WCTIndexer extends IndexerBase {
             harvestResultOid = restTemplate.postForObject(uriComponentsBuilder.buildAndExpand().toUri(), request, Long.class);
             log.info("Initialised index for job " + getResult().getTargetInstanceOid());
         } catch (JsonProcessingException e) {
-            log.error("Parsing json failed.");
-            log.error(e);
+            log.error("Parsing json failed: {}", e.getMessage());
         }
         return harvestResultOid;
     }
@@ -93,42 +93,25 @@ public class WCTIndexer extends IndexerBase {
     public void indexFiles(Long harvestResultOid) {
         // Step 2. Save the Index for each file.
         log.info("Generating indexes for " + getResult().getTargetInstanceOid());
-        File[] fileList = directory.listFiles(new ARCFilter());
-        if (fileList == null) {
-            log.error("Could not find any archive files in directory: " + directory.getAbsolutePath());
+        WCTResourceIndexer indexer = null;
+        try {
+            indexer = new WCTResourceIndexer(directory);
+        } catch (IOException e) {
+            log.error("Failed to create directory: {}", directory);
+            return;
+        }
+        List<ArcHarvestFileDTO> arcHarvestFileDTOList = null;
+        try {
+            arcHarvestFileDTOList = indexer.indexFiles();
+        } catch (IOException e) {
+            log.error("Failed to index files: {}", directory);
             return;
         }
 
-        //Extracting wat file, and store metadata
-
-        for (File f : fileList) {
-            ArcHarvestFileDTO ahf = new ArcHarvestFileDTO();
-            ahf.setName(f.getName());
-            ahf.setBaseDir(directory.getAbsolutePath());
-
-            try {
-                ahf.setCompressed(ahf.checkIsCompressed());
-
-                log.info("Indexing " + ahf.getName());
-                Map<String, HarvestResourceDTO> resources = ahf.index();
-                Collection<HarvestResourceDTO> dtos = resources.values();
-
-                addToHarvestResult(harvestResultOid, ahf);
-
-                log.info("Sending Resources for " + ahf.getName());
-                addHarvestResources(harvestResultOid, dtos);
-
-                //Release memory used by Collections///////////////
-                dtos.clear();
-                resources.clear();
-                ahf.clear();
-                //////////////////////////////////////////////////////
-
-                log.info("Completed indexing of " + ahf.getName());
-            } catch (IOException | ParseException ex) {
-                log.error("Could not index file " + ahf.getName() + ". Ignoring and continuing with other files. " + ex.getClass().getCanonicalName() + ": " + ex.getMessage());
-            }
-        }
+        arcHarvestFileDTOList.forEach(arcHarvestFileDTO -> {
+            addToHarvestResult(harvestResultOid, arcHarvestFileDTO);
+        });
+        arcHarvestFileDTOList.clear();
 
         log.info("Completed indexing for job " + getResult().getTargetInstanceOid());
     }
@@ -147,7 +130,6 @@ public class WCTIndexer extends IndexerBase {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<String> request = new HttpEntity<String>(jsonStr.toString(), headers);
-
             RestTemplate restTemplate = restTemplateBuilder.build();
 
             UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(getUrl(HarvestCoordinatorPaths.ADD_HARVEST_RESULT));
@@ -155,8 +137,7 @@ public class WCTIndexer extends IndexerBase {
             Map<String, Long> pathVariables = ImmutableMap.of("harvest-result-oid", harvestResultOid);
             restTemplate.postForObject(uriComponentsBuilder.buildAndExpand(pathVariables).toUri(), request, Void.class);
         } catch (JsonProcessingException e) {
-            log.error("Parsing json failed.");
-            log.error(e);
+            log.error("Parsing json failed: {}", e.getMessage());
         }
     }
 
@@ -184,8 +165,7 @@ public class WCTIndexer extends IndexerBase {
             Map<String, Long> pathVariables = ImmutableMap.of("harvest-result-oid", harvestResultOid);
             restTemplate.postForObject(uriComponentsBuilder.buildAndExpand(pathVariables).toUri(), request, Void.class);
         } catch (JsonProcessingException e) {
-            log.error("Parsing json failed.");
-            log.error(e);
+            log.error("Parsing json failed: {}", e.getMessage());
         }
     }
 

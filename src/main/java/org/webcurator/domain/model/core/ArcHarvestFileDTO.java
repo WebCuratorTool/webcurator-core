@@ -133,13 +133,14 @@ public class ArcHarvestFileDTO {
      */
     public void setName(String name) {
         this.name = name;
-        if (this.name.toLowerCase().endsWith(WARCConstants.DOT_WARC_FILE_EXTENSION) ||
-                this.name.toLowerCase().endsWith(WARCConstants.DOT_COMPRESSED_WARC_FILE_EXTENSION)) {
+        if (name.toLowerCase().endsWith(WARCConstants.DOT_WARC_FILE_EXTENSION) ||
+                name.toLowerCase().endsWith(WARCConstants.DOT_COMPRESSED_WARC_FILE_EXTENSION)) {
             this.type = "warc";
         } else {
             this.type = "arc";
         }
     }
+
 
     /**
      * @return the harvest result data.
@@ -205,7 +206,6 @@ public class ArcHarvestFileDTO {
                 } else {
                     indexARCRecord(rec, results);
                 }
-
             }
         }
         reader.close();
