@@ -1,17 +1,29 @@
 package org.webcurator.core.extractor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.archive.io.ArchiveReader;
 import org.archive.io.ArchiveRecord;
-import org.webcurator.core.extractor.metadata.ResourceNode;
+import org.webcurator.core.extractor.bdb.BDBNetworkMap;
+import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
+import org.webcurator.core.extractor.metadata.NetworkNodeUrl;
+import org.webcurator.core.util.URLResolverFunc;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 abstract public class ResourceExtractor {
     protected static final int MAX_URL_LENGTH = 1020;
-    protected Map<String, ResourceNode> results = new HashMap<>();
+    protected Map<String, NetworkNodeDomain> domains;
+    protected Map<String, NetworkNodeUrl> results;
+    protected BDBNetworkMap db;
+
+    protected ResourceExtractor(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db) {
+        this.domains = domains;
+        this.results = results;
+        this.db = db;
+    }
 
     public void extract(ArchiveReader reader) throws IOException {
         preProcess();
@@ -28,16 +40,7 @@ abstract public class ResourceExtractor {
 
     abstract protected void extractRecord(ArchiveRecord rec) throws IOException;
 
-    public Map<String, ResourceNode> getResults() {
-        return results;
-    }
-
-    public void setResults(Map<String, ResourceNode> results) {
-        this.results = results;
-    }
-
     public void clear() {
-        this.results.clear();
     }
 
     /**
@@ -56,5 +59,47 @@ abstract public class ResourceExtractor {
             }
         }
         return count;
+    }
+
+    public String getJson(Object obj) {
+        String json = "{}";
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            json = objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+
+    public void addUrl2Domain(NetworkNodeUrl resourceNode) {
+        String currentDomainName = URLResolverFunc.url2domain(resourceNode.getUrl());
+        if (currentDomainName == null) {
+            return;
+        }
+
+        NetworkNodeDomain currentDomain = this.domains.get(currentDomainName);
+        if (currentDomain == null) {
+            currentDomain = new NetworkNodeDomain();
+            currentDomain.setUrl(currentDomainName);
+            this.domains.put(currentDomainName, currentDomain);
+        }
+
+        currentDomain.increase(resourceNode.getStatusCode(), resourceNode.getContentLength(), resourceNode.getContentType());
+
+        String parentDomainName = URLResolverFunc.url2domain(resourceNode.getViaUrl());
+        if (parentDomainName == null) {
+            return;
+        }
+
+        NetworkNodeDomain parentDomain = this.domains.get(parentDomainName);
+        if (parentDomain == null) {
+            parentDomain = new NetworkNodeDomain();
+            parentDomain.setUrl(parentDomainName);
+            this.domains.put(parentDomainName, parentDomain);
+        }
+
+        parentDomain.addOutlink(currentDomain.getId());
     }
 }

@@ -6,15 +6,23 @@ import org.archive.io.arc.ARCRecord;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.webcurator.core.extractor.bdb.BDBNetworkMap;
+import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
+import org.webcurator.core.extractor.metadata.NetworkNodeUrl;
 import org.webcurator.core.extractor.metadata.ResourceNode;
 import org.webcurator.core.util.URLResolverFunc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 
 public class ResourceExtractorArc extends ResourceExtractor {
+    public ResourceExtractorArc(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db) {
+        super(domains, results, db);
+    }
+
     @Override
     protected void preProcess() {
 
@@ -22,17 +30,17 @@ public class ResourceExtractorArc extends ResourceExtractor {
 
     @Override
     protected void postProcess() {
-        results.forEach((fromUrl, fromNode) -> {
-            ResourceNode node = fromNode;
-            node.getOutlinks().forEach(toUrl -> {
-                String formatToUrl = URLResolverFunc.doResolve(fromUrl, null, toUrl);
-                if (results.containsKey(formatToUrl)) {
-                    ResourceNode toNode = results.get(formatToUrl);
-                    toNode.setViaUrl(fromUrl);
-                }
-            });
-            node.clear();
-        });
+//        results.forEach((fromUrl, fromNode) -> {
+//            NetworkNodeUrl node = fromNode;
+//            node.getOutlinks().forEach(toUrl -> {
+//                String formatToUrl = URLResolverFunc.doResolve(fromUrl, null, toUrl);
+//                if (results.containsKey(formatToUrl)) {
+//                    NetworkNodeUrl toNode = results.get(formatToUrl);
+//                    toNode.setViaUrl(fromUrl);
+//                }
+//            });
+//            node.clear();
+//        });
     }
 
     @Override
@@ -47,9 +55,9 @@ public class ResourceExtractorArc extends ResourceExtractor {
             return;
         }
 
-        ResourceNode res = new ResourceNode();
+        NetworkNodeUrl res = new NetworkNodeUrl();
         res.setUrl(header.getUrl());
-        res.setResourceOffset(header.getOffset());
+        res.setOffset(header.getOffset());
         res.setStatusCode(record.getStatusCode());
 
         // Calculate the length.
@@ -70,7 +78,7 @@ public class ResourceExtractorArc extends ResourceExtractor {
             record.skipHttpHeader();
             record.dump(out);
             String html = out.toString();
-            extractLinks(html, res.getOutlinks());
+//            extractLinks(html, res.getOutlinks());
             out.close();
         }
     }

@@ -1,17 +1,26 @@
 package org.webcurator.core.extractor.bdb;
 
 import com.sleepycat.je.*;
+import org.springframework.stereotype.Component;
+import org.webcurator.core.extractor.metadata.NetworkNode;
+import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 /**
  * Borrow(copy) from openwayback
  */
+@Component("BDBNetworkMap")
 public class BDBNetworkMap {
-    public final static Charset UTF8 = Charset.forName("utf-8");
+    public final static String PATH_ROOT_URLS="rootUrls";
+    public final static String PATH_MALFORMED_URLS="malformedUrls";
+    public final static String PATH_ROOT_DOMAINS="rootDomains";
+
+    public final static Charset UTF8 = StandardCharsets.UTF_8;
 
     /**
      * Maximum BDBJE file size
@@ -106,9 +115,9 @@ public class BDBNetworkMap {
      * @return iterator for BDBRecords
      * @throws DatabaseException
      */
-    public BDBRecordIterator recordIterator(final String startKey)
+    public RecordIterator domainIterator(final String startKey)
             throws DatabaseException {
-        return recordIterator(startKey, true);
+        return domainIterator(startKey, true);
     }
 
     /**
@@ -117,24 +126,48 @@ public class BDBNetworkMap {
      * @return iterator for BDBRecords
      * @throws DatabaseException
      */
-    public BDBRecordIterator recordIterator(final String startKey,
-                                            final boolean forward) throws DatabaseException {
+    public RecordIterator domainIterator(final String startKey,
+                                         final boolean forward) throws DatabaseException {
         Cursor cursor = db.openCursor(null, null);
-        return new BDBRecordIterator(cursor, startKey, !forward);
+        return new RecordIterator(cursor, startKey, !forward, NetworkNode.TYPE_DOMAIN);
+    }
+
+    /**
+     * @param startKey
+     * @return iterator for BDBRecords
+     * @throws DatabaseException
+     */
+    public RecordIterator urlIterator(final String startKey)
+            throws DatabaseException {
+        return urlIterator(startKey, true);
+    }
+
+    /**
+     * @param startKey
+     * @param forward
+     * @return iterator for BDBRecords
+     * @throws DatabaseException
+     */
+    public RecordIterator urlIterator(final String startKey,
+                                      final boolean forward) throws DatabaseException {
+        Cursor cursor = db.openCursor(null, null);
+        return new RecordIterator(cursor, startKey, !forward, NetworkNode.TYPE_URL);
     }
 
     /**
      * @param itr
      */
-    public void insertRecords(final Iterator<BDBRecord> itr) {
+    public void insertRecords(final Iterator<NetworkNode> itr) {
         OperationStatus status = null;
         try {
             Transaction txn = env.beginTransaction(null, null);
             try {
                 Cursor cursor = db.openCursor(txn, null);
                 while (itr.hasNext()) {
-                    BDBRecord record = (BDBRecord) itr.next();
-                    status = cursor.put(record.getKey(), record.getValue());
+                    NetworkNode node = itr.next();
+                    DatabaseEntry key = new DatabaseEntry(Long.toString(node.getId()).getBytes());
+                    DatabaseEntry value = new DatabaseEntry(node.toString().getBytes());
+                    status = cursor.put(key, value);
                     if (status != OperationStatus.SUCCESS) {
                         throw new RuntimeException("put() non-success status");
                     }
@@ -184,6 +217,11 @@ public class BDBNetworkMap {
         }
         return result;
     }
+
+    public static String getKeyPath(long id) {
+        return String.format("id_%d", id);
+    }
+
 
     /**
      * @param keyStr

@@ -5,50 +5,51 @@ import org.webcurator.core.util.URLResolverFunc;
 import java.util.*;
 
 public class NetworkNodeDomain extends NetworkNode {
-    private List<Long> nodes = new ArrayList<>(); //all children
+    private String contentType;
+    private long statusCode;
     private Map<String, NetworkNodeDomain> children = new HashMap<>();
 
     public NetworkNodeDomain() {
         super(NetworkNode.TYPE_DOMAIN);
     }
 
-    public void addNode(long nodeId) {
-        this.nodes.add(nodeId);
-    }
-
-    public List<Long> getNodes() {
-        return nodes;
-    }
-
-    public void setNodes(List<Long> nodes) {
-        this.nodes = nodes;
-    }
-
     public Collection<NetworkNodeDomain> getChildren() {
         return children.values();
     }
 
-    public void setChildren(Map<String, NetworkNodeDomain> children) {
-        this.children = children;
+    public void setChildren(Collection<NetworkNodeDomain> children) {
+        children.forEach(child -> {
+            this.children.put(child.getUrl(), child);
+        });
     }
 
     public void clear() {
         super.clear();
-        this.nodes.clear();
         this.children.values().forEach(NetworkNodeDomain::clear);
         this.children.clear();
+    }
+
+    public void putChild(String key, NetworkNodeDomain value) {
+        this.children.put(key, value);
+    }
+
+    public void clearChildren() {
+        this.children.clear(); //Not clear the grand children
     }
 
     public void increase(int statusCode, long contentLength, String contentType) {
         super.increase(statusCode, contentLength, contentType);
 
         contentType = URLResolverFunc.trimContentType(contentType);
-        NetworkNodeDomain childDomainNode = this.children.get(contentType);
+        String key = String.format("%s@%d", contentLength, statusCode);
+
+        NetworkNodeDomain childDomainNode = this.children.get(key);
         if (childDomainNode == null) {
             childDomainNode = new NetworkNodeDomain();
-            this.children.put(contentType, childDomainNode);
+            childDomainNode.setContentType(contentType);
+            childDomainNode.setStatusCode(statusCode);
+            this.children.put(key, childDomainNode);
         }
-        childDomainNode.setTitle(contentType);
 
         childDomainNode.increaseTotSize(contentLength);
         if (statusCode == 200) {
@@ -57,5 +58,26 @@ public class NetworkNodeDomain extends NetworkNode {
             childDomainNode.increaseTotFailed(1);
         }
         childDomainNode.increaseTotUrls(1);
+    }
+
+    @Override
+    public void initialize(String value) {
+
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public long getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(long statusCode) {
+        this.statusCode = statusCode;
     }
 }

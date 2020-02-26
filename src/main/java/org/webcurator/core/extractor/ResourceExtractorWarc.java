@@ -10,12 +10,20 @@ import org.archive.io.ArchiveRecordHeader;
 import org.archive.io.RecoverableIOException;
 import org.archive.io.warc.WARCConstants;
 import org.archive.io.warc.WARCRecord;
-import org.webcurator.core.extractor.metadata.ResourceNode;
+import org.webcurator.core.extractor.bdb.BDBNetworkMap;
+import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
+import org.webcurator.core.extractor.metadata.NetworkNodeUrl;
+import org.webcurator.core.util.URLResolverFunc;
 
 import java.io.IOException;
+import java.util.Map;
 
 @SuppressWarnings("all")
 public class ResourceExtractorWarc extends ResourceExtractor {
+    public ResourceExtractorWarc(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db) {
+        super(domains, results, db);
+    }
+
     @Override
     protected void preProcess() {
         //Do nothing
@@ -42,37 +50,40 @@ public class ResourceExtractorWarc extends ResourceExtractor {
             return;
         }
 
-        String key = null;
-        String warcRecordId = header.getHeaderValue(WARCConstants.HEADER_KEY_ID).toString();
-        if (warcRecordId == null) {
-            return;
-        }
-        warcRecordId = warcRecordId.substring(1, warcRecordId.length() - 1);
-        if (header.getHeaderValue(WARCConstants.HEADER_KEY_CONCURRENT_TO) != null) {
-            String warcConcurrentTo = header.getHeaderValue(WARCConstants.HEADER_KEY_CONCURRENT_TO).toString();
-            int lenDelta = warcConcurrentTo.length() - warcRecordId.length() - 2;
-            warcConcurrentTo = warcConcurrentTo.substring(1, warcConcurrentTo.length() - 1 - lenDelta);
-            key = warcConcurrentTo;
-        } else {
-            key = warcRecordId;
-        }
+//        String key = null;
+//        String warcRecordId = header.getHeaderValue(WARCConstants.HEADER_KEY_ID).toString();
+//        if (warcRecordId == null) {
+//            return;
+//        }
+//        warcRecordId = warcRecordId.substring(1, warcRecordId.length() - 1);
+//        if (header.getHeaderValue(WARCConstants.HEADER_KEY_CONCURRENT_TO) != null) {
+//            String warcConcurrentTo = header.getHeaderValue(WARCConstants.HEADER_KEY_CONCURRENT_TO).toString();
+//            int lenDelta = warcConcurrentTo.length() - warcRecordId.length() - 2;
+//            warcConcurrentTo = warcConcurrentTo.substring(1, warcConcurrentTo.length() - 1 - lenDelta);
+//            key = warcConcurrentTo;
+//        } else {
+//            key = warcRecordId;
+//        }
 
-        ResourceNode res = null;
+        String key = header.getUrl();
+
+        NetworkNodeUrl res = null;
         if (results.containsKey(key)) {
             res = results.get(key);
         } else {
-            res = new ResourceNode();
+            res = new NetworkNodeUrl();
             results.put(key, res);
         }
 
         String type = rec.getHeader().getHeaderValue(WARCConstants.HEADER_KEY_TYPE).toString();
-        if (type.equals(WARCConstants.RESPONSE)) {
+        if (type.equals(WARCConstants.REQUEST)) {
+            res.setRequestParseFlag(true);
+        } else if (type.equals(WARCConstants.RESPONSE)) {
+            res.setResponseParseFlag(true);
             res.setUrl(header.getUrl());
-            res.setResourceOffset(header.getOffset());
+            res.setOffset(header.getOffset());
 
             // need to parse the documents HTTP message and headers here: WARCReader
-            // does not implement this...
-
             byte[] statusBytes = HttpParser.readRawLine(record);
             int eolCharCount = getEolCharsCount(statusBytes);
             if (eolCharCount <= 0) {
@@ -98,8 +109,39 @@ public class ResourceExtractorWarc extends ResourceExtractor {
             }
             httpHeaders.clear();
         } else if (type.equals(WARCConstants.METADATA)) {
+            res.setMetadataParseFlag(true);
             HttpHeaders httpHeaders = new HttpHeaderParser().parseHeaders(record);
-            res.setViaUrl(httpHeaders.getValue("via"));
+            String sFetchTimeMs = httpHeaders.getValue("fetchTimeMs");
+            if (sFetchTimeMs != null) {
+                res.setFetchTimeMs(Long.parseLong(sFetchTimeMs));
+            }
+            res.setSeed(httpHeaders.get("seed") != null);
+            res.setHasOutlinks(httpHeaders.get("outlink") != null);
+
+            String parentUrl = httpHeaders.getValue("via");
+            if (parentUrl != null) {
+                res.setViaUrl(parentUrl);
+                NetworkNodeUrl parentNode = this.results.get(parentUrl);
+                if (parentNode == null) {
+                    //TODO: log
+                    parentNode = new NetworkNodeUrl();
+                    parentNode.setUrl(parentUrl);
+                }
+                res.setParentId(parentNode.getId());
+                parentNode.addOutlink(res.getId());
+            }
+        }
+
+        //Not the parent and finished urls which can be saved immediately
+        if (!res.isHasOutlinks() && res.isFinished()) {
+            addUrl2Domain(res);
+            this.results.remove(res.getUrl());
+
+            String dbKey = BDBNetworkMap.getKeyPath(res.getId());
+            String dbValue = this.getJson(res);
+
+            db.put(dbKey, dbValue);
         }
     }
+
 }

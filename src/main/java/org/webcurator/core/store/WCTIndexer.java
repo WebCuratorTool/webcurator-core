@@ -95,7 +95,7 @@ public class WCTIndexer extends IndexerBase {
         log.info("Generating indexes for " + getResult().getTargetInstanceOid());
         WCTResourceIndexer indexer = null;
         try {
-            indexer = new WCTResourceIndexer(directory);
+            indexer = new WCTResourceIndexer(directory, getResult().getTargetInstanceOid());
         } catch (IOException e) {
             log.error("Failed to create directory: {}", directory);
             return;

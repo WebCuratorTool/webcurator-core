@@ -4,30 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class NetworkNode implements BasicNode {
-    protected static final int TYPE_URL = 1;
-    protected static final int TYPE_DOMAIN = 2;
+abstract public class NetworkNode implements BasicNode {
+    public static final int TYPE_URL = 1;
+    public static final int TYPE_DOMAIN = 2;
     protected static AtomicLong IdGenerator = new AtomicLong();
 
-    private long key;
-    private String title;
+    private long id;
+    private String url;
     private boolean isSeed = false; //true: if url equals seed or domain contains seed url.
     private int type; //1: url, 2: domain
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // 1. Domain: the total items of all urls contained in this domain.
     // 2. URL: the total items of all urls directly link to this url and the url itself
-    private int totUrls;
-    private int totSuccess;
-    private int totFailed;
-    private long totSize;
+    private int totUrls = 0;
+    private int totSuccess = 0;
+    private int totFailed = 0;
+    private long totSize = 0;
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     private long domainId = -1; //default: no domain
     private List<Long> outlinks = new ArrayList<>();
 
     public NetworkNode() {
-        this.key = IdGenerator.incrementAndGet();
+        this.id = IdGenerator.incrementAndGet();
     }
 
     public NetworkNode(int type) {
@@ -39,9 +39,9 @@ public class NetworkNode implements BasicNode {
         IdGenerator = new AtomicLong();
     }
 
-    public void addOutlink(long key) {
-        if (this.key != key && !this.outlinks.contains(key)) {
-            this.outlinks.add(key);
+    public void addOutlink(long id) {
+        if (this.id != id && !this.outlinks.contains(id)) {
+            this.outlinks.add(id);
         }
     }
 
@@ -50,14 +50,13 @@ public class NetworkNode implements BasicNode {
         this.outlinks.clear();
     }
 
-    public long getKey() {
-        return key;
+    public long getId() {
+        return id;
     }
 
-    public void setKey(long key) {
-        this.key = key;
+    public void setId(long id) {
+        this.id = id;
     }
-
 
     public boolean isSeed() {
         return isSeed;
@@ -127,12 +126,28 @@ public class NetworkNode implements BasicNode {
         return String.format("URLs: %d\n\tSuccess: %d\n\tFailed: %d\nSize: %d", this.totUrls, this.totSuccess, this.totFailed, this.totSize);
     }
 
-    public String getTitle() {
-        return this.title;
+    public String getUrl() {
+        return url;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setTotUrls(int totUrls) {
+        this.totUrls = totUrls;
+    }
+
+    public void setTotSuccess(int totSuccess) {
+        this.totSuccess = totSuccess;
+    }
+
+    public void setTotFailed(int totFailed) {
+        this.totFailed = totFailed;
+    }
+
+    public void setTotSize(long totSize) {
+        this.totSize = totSize;
     }
 
     public void increase(int statusCode, long contentLength, String contentType) {
@@ -144,4 +159,10 @@ public class NetworkNode implements BasicNode {
         }
         this.increaseTotUrls(1);
     }
+
+    public boolean isSuccessStatusCode(int statusCode) {
+        return statusCode >= 200 && statusCode < 400;
+    }
+
+    public abstract void initialize(String value);
 }
