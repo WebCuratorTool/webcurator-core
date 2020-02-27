@@ -8,7 +8,6 @@ import org.webcurator.core.rest.AbstractRestClient;
 
 import java.net.URI;
 
-@Component("NetworkMapRemoteClient")
 public class NetworkMapRemoteClient extends AbstractRestClient implements NetworkMapService {
     public NetworkMapRemoteClient(String scheme, String host, int port, RestTemplateBuilder restTemplateBuilder) {
         super(scheme, host, port, restTemplateBuilder);

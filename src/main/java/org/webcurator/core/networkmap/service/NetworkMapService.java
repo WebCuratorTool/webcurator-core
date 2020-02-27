@@ -33,6 +33,8 @@ public interface NetworkMapService {
             return null;
         }
 
+        log.debug(json);
+
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readValue(json, new TypeReference<List<Long>>() {
@@ -49,6 +51,8 @@ public interface NetworkMapService {
             return null;
         }
 
+        log.debug(json);
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -64,6 +68,8 @@ public interface NetworkMapService {
         if (json == null) {
             return null;
         }
+
+        log.debug(json);
 
         ObjectMapper objectMapper = new ObjectMapper();
 

@@ -109,7 +109,7 @@ public class WCTIndexer extends IndexerBase {
         }
 
         arcHarvestFileDTOList.forEach(arcHarvestFileDTO -> {
-            addToHarvestResult(harvestResultOid, arcHarvestFileDTO);
+            //addToHarvestResult(harvestResultOid, arcHarvestFileDTO);
         });
         arcHarvestFileDTOList.clear();
 

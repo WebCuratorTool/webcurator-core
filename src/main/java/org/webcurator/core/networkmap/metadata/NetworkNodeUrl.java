@@ -14,8 +14,8 @@ public class NetworkNodeUrl extends NetworkNode {
     private boolean metadataParseFlag = false;
 
 
-    public NetworkNodeUrl() {
-        super(NetworkNode.TYPE_URL);
+    public NetworkNodeUrl(long id) {
+        super(id);
     }
 
     @Override

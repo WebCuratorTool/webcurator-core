@@ -4,15 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sleepycat.je.*;
 import org.webcurator.core.networkmap.metadata.NetworkNode;
-import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
-import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
-import java.util.List;
+
 
 /**
  * Borrow(copy) from openwayback
@@ -111,50 +109,6 @@ public class BDBNetworkMap {
      */
     public static String bytesToString(byte[] ba) {
         return new String(ba, UTF8);
-    }
-
-    /**
-     * @param startKey
-     * @return iterator for BDBRecords
-     * @throws DatabaseException
-     */
-    public RecordIterator domainIterator(final String startKey)
-            throws DatabaseException {
-        return domainIterator(startKey, true);
-    }
-
-    /**
-     * @param startKey
-     * @param forward
-     * @return iterator for BDBRecords
-     * @throws DatabaseException
-     */
-    public RecordIterator domainIterator(final String startKey,
-                                         final boolean forward) throws DatabaseException {
-        Cursor cursor = db.openCursor(null, null);
-        return new RecordIterator(cursor, startKey, !forward, NetworkNode.TYPE_DOMAIN);
-    }
-
-    /**
-     * @param startKey
-     * @return iterator for BDBRecords
-     * @throws DatabaseException
-     */
-    public RecordIterator urlIterator(final String startKey)
-            throws DatabaseException {
-        return urlIterator(startKey, true);
-    }
-
-    /**
-     * @param startKey
-     * @param forward
-     * @return iterator for BDBRecords
-     * @throws DatabaseException
-     */
-    public RecordIterator urlIterator(final String startKey,
-                                      final boolean forward) throws DatabaseException {
-        Cursor cursor = db.openCursor(null, null);
-        return new RecordIterator(cursor, startKey, !forward, NetworkNode.TYPE_URL);
     }
 
     /**

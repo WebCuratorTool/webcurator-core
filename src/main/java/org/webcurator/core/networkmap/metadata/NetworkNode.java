@@ -2,17 +2,11 @@ package org.webcurator.core.networkmap.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 abstract public class NetworkNode implements BasicNode {
-    public static final int TYPE_URL = 1;
-    public static final int TYPE_DOMAIN = 2;
-    protected static AtomicLong IdGenerator = new AtomicLong();
-
     private long id;
     private String url;
     private boolean isSeed = false; //true: if url equals seed or domain contains seed url.
-    private int type; //1: url, 2: domain
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // 1. Domain: the total items of all urls contained in this domain.
@@ -26,17 +20,8 @@ abstract public class NetworkNode implements BasicNode {
     private long domainId = -1; //default: no domain
     private List<Long> outlinks = new ArrayList<>();
 
-    public NetworkNode() {
-        this.id = IdGenerator.incrementAndGet();
-    }
-
-    public NetworkNode(int type) {
-        this();
-        this.type = type;
-    }
-
-    public static void init() {
-        IdGenerator = new AtomicLong();
+    public NetworkNode(long id) {
+        this.id = id;
     }
 
     public void addOutlink(long id) {
@@ -64,14 +49,6 @@ abstract public class NetworkNode implements BasicNode {
 
     public void setSeed(boolean seed) {
         isSeed = seed;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public int getTotUrls() {

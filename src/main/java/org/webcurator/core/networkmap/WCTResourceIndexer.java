@@ -4,18 +4,23 @@ import org.archive.io.*;
 import org.archive.io.warc.WARCConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
 import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
 import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
-import org.webcurator.core.store.IndexerBase;
+import org.webcurator.core.util.ApplicationContextFactory;
 import org.webcurator.domain.model.core.ArcHarvestFileDTO;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("all")
+@Component("WCTResourceIndexer")
 public class WCTResourceIndexer {
     private static final Logger log = LoggerFactory.getLogger(WCTResourceIndexer.class);
 
@@ -23,6 +28,8 @@ public class WCTResourceIndexer {
     private long job;
     private Map<String, NetworkNodeDomain> domains = new Hashtable<>();
     private Map<String, NetworkNodeUrl> urls = new Hashtable<>();
+
+    @Autowired
     private BDBNetworkMap db;
 
     public static void main(String[] args) throws IOException {
@@ -32,16 +39,24 @@ public class WCTResourceIndexer {
     }
 
     public WCTResourceIndexer(File directory, long job) throws IOException {
+        ApplicationContext ctx = ApplicationContextFactory.getApplicationContext();
+        this.db = ctx.getBean(BDBNetworkMap.class);
+
         this.directory = directory;
         this.job = job;
-//        this.store = new NetworkMapStore(this.directory);
-        this.db = new BDBNetworkMap();
-        this.db.initializeDB(String.format("%s%sresource", this.directory.getAbsolutePath(), File.separator), "resource.db");
     }
 
     public List<ArcHarvestFileDTO> indexFiles() throws IOException {
-        NetworkNodeDomain.init();
-        File[] fileList = directory.listFiles(new IndexerBase.ARCFilter());
+        File[] fileList = directory.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return (name.toLowerCase().endsWith(".arc") ||
+                        name.toLowerCase().endsWith(".arc.gz") ||
+                        name.toLowerCase().endsWith(".warc") ||
+                        name.toLowerCase().endsWith(".warc.gz"));
+            }
+        });
+
         if (fileList == null) {
             log.error("Could not find any archive files in directory: {}", directory.getAbsolutePath());
             return null;
@@ -135,7 +150,7 @@ public class WCTResourceIndexer {
             Map<String, List<NetworkNodeDomain>> mapGroupByContentType = domain.getChildren().stream().collect(Collectors.groupingBy(NetworkNodeDomain::getContentType));
             domain.clearChildren();
             mapGroupByContentType.forEach((contentType, listOneContentType) -> {
-                NetworkNodeDomain domainOneContentType = new NetworkNodeDomain();
+                NetworkNodeDomain domainOneContentType = new NetworkNodeDomain(0);
                 domainOneContentType.setUrl(contentType);
                 listOneContentType.forEach(e1 -> {
                     domainOneContentType.increaseTotUrls(e1.getTotUrls());
@@ -146,7 +161,7 @@ public class WCTResourceIndexer {
 
                 Map<Long, List<NetworkNodeDomain>> mapGroupByStatusCode = listOneContentType.stream().collect(Collectors.groupingBy(NetworkNodeDomain::getStatusCode));
                 mapGroupByStatusCode.forEach((statusCode, listOneStatusCode) -> {
-                    NetworkNodeDomain domainOneStatusCode = new NetworkNodeDomain();
+                    NetworkNodeDomain domainOneStatusCode = new NetworkNodeDomain(0);
                     domainOneStatusCode.setUrl(Long.toString(statusCode));
                     listOneStatusCode.forEach(e2 -> {
                         domainOneStatusCode.increaseTotUrls(e2.getTotUrls());
@@ -174,5 +189,4 @@ public class WCTResourceIndexer {
         this.urls.values().forEach(NetworkNodeUrl::clear);
         this.urls.clear();
     }
-
 }

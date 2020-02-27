@@ -26,7 +26,7 @@ public abstract class IndexerBase implements RunnableIndex {
 	private Mode mode = Mode.INDEX;
     protected final RestTemplateBuilder restTemplateBuilder;
 
-	public static class ARCFilter implements FilenameFilter {
+	public class ARCFilter implements FilenameFilter {
 	    public boolean accept(File dir, String name) {
 	        return (name.toLowerCase().endsWith(".arc") ||
 	        		name.toLowerCase().endsWith(".arc.gz") ||

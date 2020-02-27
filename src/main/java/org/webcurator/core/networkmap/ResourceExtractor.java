@@ -12,19 +12,21 @@ import org.webcurator.core.util.URLResolverFunc;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 abstract public class ResourceExtractor {
     protected static final int MAX_URL_LENGTH = 1020;
+    protected AtomicLong atomicIdGenerator = new AtomicLong();
     protected Map<String, NetworkNodeDomain> domains;
     protected Map<String, NetworkNodeUrl> results;
     protected BDBNetworkMap db;
     protected long job;
 
-    protected ResourceExtractor(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db,long job) {
+    protected ResourceExtractor(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db, long job) {
         this.domains = domains;
         this.results = results;
         this.db = db;
-        this.job=job;
+        this.job = job;
     }
 
     public void extract(ArchiveReader reader) throws IOException {
@@ -83,7 +85,7 @@ abstract public class ResourceExtractor {
 
         NetworkNodeDomain currentDomain = this.domains.get(currentDomainName);
         if (currentDomain == null) {
-            currentDomain = new NetworkNodeDomain();
+            currentDomain = new NetworkNodeDomain(atomicIdGenerator.incrementAndGet());
             currentDomain.setUrl(currentDomainName);
             this.domains.put(currentDomainName, currentDomain);
         }
@@ -97,7 +99,7 @@ abstract public class ResourceExtractor {
 
         NetworkNodeDomain parentDomain = this.domains.get(parentDomainName);
         if (parentDomain == null) {
-            parentDomain = new NetworkNodeDomain();
+            parentDomain = new NetworkNodeDomain(atomicIdGenerator.incrementAndGet());
             parentDomain.setUrl(parentDomainName);
             this.domains.put(parentDomainName, parentDomain);
         }

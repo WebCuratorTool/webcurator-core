@@ -9,8 +9,8 @@ public class NetworkNodeDomain extends NetworkNode {
     private long statusCode;
     private Map<String, NetworkNodeDomain> children = new HashMap<>();
 
-    public NetworkNodeDomain() {
-        super(NetworkNode.TYPE_DOMAIN);
+    public NetworkNodeDomain(long id) {
+        super(id);
     }
 
     public Collection<NetworkNodeDomain> getChildren() {
@@ -45,7 +45,7 @@ public class NetworkNodeDomain extends NetworkNode {
 
         NetworkNodeDomain childDomainNode = this.children.get(key);
         if (childDomainNode == null) {
-            childDomainNode = new NetworkNodeDomain();
+            childDomainNode = new NetworkNodeDomain(0); //No separate reference, set the id to 0
             childDomainNode.setContentType(contentType);
             childDomainNode.setStatusCode(statusCode);
             this.children.put(key, childDomainNode);

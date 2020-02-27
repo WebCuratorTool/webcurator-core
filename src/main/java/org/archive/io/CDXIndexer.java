@@ -45,7 +45,7 @@ public class CDXIndexer extends IndexerBase{
 	@Override
 	public void indexFiles(Long harvestResultOid) {
         log.info("Generating indexes for " + getResult().getTargetInstanceOid());
-        File[] fileList = directory.listFiles(new ARCFilter());
+        File[] fileList = directory.listFiles(new IndexerBase.ARCFilter());
         if(fileList == null) { 
         	log.error("Could not find any archive files in directory: " + directory.getAbsolutePath() );
         }
