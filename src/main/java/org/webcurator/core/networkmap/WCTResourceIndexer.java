@@ -1,12 +1,12 @@
-package org.webcurator.core.extractor;
+package org.webcurator.core.networkmap;
 
 import org.archive.io.*;
 import org.archive.io.warc.WARCConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.webcurator.core.extractor.bdb.BDBNetworkMap;
-import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
-import org.webcurator.core.extractor.metadata.NetworkNodeUrl;
+import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
+import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
+import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
 import org.webcurator.core.store.IndexerBase;
 import org.webcurator.domain.model.core.ArcHarvestFileDTO;
 
@@ -20,33 +20,34 @@ public class WCTResourceIndexer {
     private static final Logger log = LoggerFactory.getLogger(WCTResourceIndexer.class);
 
     private File directory;
-    private String job;
+    private long job;
     private Map<String, NetworkNodeDomain> domains = new Hashtable<>();
     private Map<String, NetworkNodeUrl> urls = new Hashtable<>();
     private BDBNetworkMap db;
 
     public static void main(String[] args) throws IOException {
-        File directory = new File("/usr/local/wct/store/55/1");
-        WCTResourceIndexer indexer = new WCTResourceIndexer(directory, (long) 55);
+        File directory = new File("/usr/local/wct/store/36/1");
+        WCTResourceIndexer indexer = new WCTResourceIndexer(directory, (long) 36);
         List<ArcHarvestFileDTO> arcHarvestFileDTOS = indexer.indexFiles();
     }
 
-    public WCTResourceIndexer(File directory, Long job) throws IOException {
+    public WCTResourceIndexer(File directory, long job) throws IOException {
         this.directory = directory;
-        this.job = Long.toString(job);
+        this.job = job;
 //        this.store = new NetworkMapStore(this.directory);
         this.db = new BDBNetworkMap();
-        this.db.initializeDB(this.directory.getAbsolutePath(), "resource.db");
+        this.db.initializeDB(String.format("%s%sresource", this.directory.getAbsolutePath(), File.separator), "resource.db");
     }
 
     public List<ArcHarvestFileDTO> indexFiles() throws IOException {
+        NetworkNodeDomain.init();
         File[] fileList = directory.listFiles(new IndexerBase.ARCFilter());
         if (fileList == null) {
             log.error("Could not find any archive files in directory: {}", directory.getAbsolutePath());
             return null;
         }
 
-        ResourceExtractor extractor = new ResourceExtractorWarc(this.domains, this.urls, this.db);
+        ResourceExtractor extractor = new ResourceExtractorWarc(this.domains, this.urls, this.db, this.job);
 
         List<ArcHarvestFileDTO> arcHarvestFileDTOList = new ArrayList();
         for (File f : fileList) {
@@ -65,8 +66,7 @@ public class WCTResourceIndexer {
         this.urls.values().forEach(e -> {
             extractor.addUrl2Domain(e);
 
-            String json = extractor.getJson(e);
-            db.put(BDBNetworkMap.getKeyPath(e.getId()), json);
+            db.put(this.job, e.getId(), e);
 
             if (e.getParentId() <= 0) {
                 rootUrls.add(e.getId());
@@ -76,20 +76,19 @@ public class WCTResourceIndexer {
                 malformedUrls.add(e.getId());
             }
         });
-        db.put(BDBNetworkMap.PATH_ROOT_URLS, extractor.getJson(rootUrls));
+        db.put(this.job, BDBNetworkMap.PATH_ROOT_URLS, rootUrls);
         rootUrls.clear();
-        db.put(BDBNetworkMap.PATH_MALFORMED_URLS, extractor.getJson(malformedUrls));
+        db.put(this.job, BDBNetworkMap.PATH_MALFORMED_URLS, malformedUrls);
         malformedUrls.clear();
 
         //Summarize and save domain
         List<Long> rootDomains = new ArrayList<>();
         this.statDomain();
         this.domains.values().forEach(e -> {
-            String json = extractor.getJson(e);
-            db.put(BDBNetworkMap.getKeyPath(e.getId()), json);
+            db.put(this.job, e.getId(), e);
             rootDomains.add(e.getId());
         });
-        db.put(BDBNetworkMap.PATH_ROOT_DOMAINS, extractor.getJson(rootDomains));
+        db.put(this.job, BDBNetworkMap.PATH_ROOT_DOMAINS, rootDomains);
         rootDomains.clear();
 
         this.clear();

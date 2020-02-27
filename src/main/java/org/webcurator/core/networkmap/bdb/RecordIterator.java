@@ -1,9 +1,9 @@
-package org.webcurator.core.extractor.bdb;
+package org.webcurator.core.networkmap.bdb;
 
 import com.sleepycat.je.*;
-import org.webcurator.core.extractor.metadata.NetworkNode;
-import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
-import org.webcurator.core.extractor.metadata.NetworkNodeUrl;
+import org.webcurator.core.networkmap.metadata.NetworkNode;
+import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
+import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
 
 import java.util.NoSuchElementException;
 

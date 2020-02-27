@@ -1,12 +1,12 @@
-package org.webcurator.core.extractor;
+package org.webcurator.core.networkmap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.archive.io.ArchiveReader;
 import org.archive.io.ArchiveRecord;
-import org.webcurator.core.extractor.bdb.BDBNetworkMap;
-import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
-import org.webcurator.core.extractor.metadata.NetworkNodeUrl;
+import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
+import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
+import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
 import org.webcurator.core.util.URLResolverFunc;
 
 import java.io.IOException;
@@ -18,11 +18,13 @@ abstract public class ResourceExtractor {
     protected Map<String, NetworkNodeDomain> domains;
     protected Map<String, NetworkNodeUrl> results;
     protected BDBNetworkMap db;
+    protected long job;
 
-    protected ResourceExtractor(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db) {
+    protected ResourceExtractor(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db,long job) {
         this.domains = domains;
         this.results = results;
         this.db = db;
+        this.job=job;
     }
 
     public void extract(ArchiveReader reader) throws IOException {

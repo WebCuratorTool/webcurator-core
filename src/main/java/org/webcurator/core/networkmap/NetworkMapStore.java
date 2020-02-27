@@ -1,9 +1,9 @@
-package org.webcurator.core.extractor;
+package org.webcurator.core.networkmap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
-import org.webcurator.core.extractor.metadata.ResourceNode;
+import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
+import org.webcurator.core.networkmap.metadata.ResourceNode;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -31,7 +31,7 @@ public class NetworkMapStore {
             if (domain == null) {
                 return;
             }
-            String fileName = String.format("%d.unl", domain.getKey());
+            String fileName = String.format("%d.unl", domain.getId());
             File urlFile = new File(directory, fileName);
             try {
                 BufferedWriter fw = new BufferedWriter(new FileWriter(urlFile, true));

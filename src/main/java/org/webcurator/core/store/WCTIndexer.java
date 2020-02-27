@@ -20,7 +20,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.webcurator.core.extractor.WCTResourceIndexer;
+import org.webcurator.core.networkmap.WCTResourceIndexer;
 import org.webcurator.core.harvester.coordinator.HarvestCoordinatorPaths;
 import org.webcurator.domain.model.core.ArcHarvestFileDTO;
 import org.webcurator.domain.model.core.ArcHarvestResourceDTO;

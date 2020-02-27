@@ -1,24 +1,27 @@
-package org.webcurator.core.extractor.bdb;
+package org.webcurator.core.networkmap.bdb;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sleepycat.je.*;
-import org.springframework.stereotype.Component;
-import org.webcurator.core.extractor.metadata.NetworkNode;
-import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
+import org.webcurator.core.networkmap.metadata.NetworkNode;
+import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
+import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Borrow(copy) from openwayback
  */
-@Component("BDBNetworkMap")
+@SuppressWarnings("all")
 public class BDBNetworkMap {
-    public final static String PATH_ROOT_URLS="rootUrls";
-    public final static String PATH_MALFORMED_URLS="malformedUrls";
-    public final static String PATH_ROOT_DOMAINS="rootDomains";
+    public final static String PATH_ROOT_URLS = "rootUrls";
+    public final static String PATH_MALFORMED_URLS = "malformedUrls";
+    public final static String PATH_ROOT_DOMAINS = "rootDomains";
 
     public final static Charset UTF8 = StandardCharsets.UTF_8;
 
@@ -185,27 +188,31 @@ public class BDBNetworkMap {
         }
     }
 
-    /**
-     * persistantly store key-value pair
-     *
-     * @param keyStr
-     * @param valueStr
-     * @throws DatabaseException
-     */
-    public void put(String keyStr, String valueStr) throws DatabaseException {
-        DatabaseEntry key = new DatabaseEntry(stringToBytes(keyStr));
+    public void put(long job, String keyStr, String valueStr) throws DatabaseException {
+        DatabaseEntry key = new DatabaseEntry(stringToBytes(getKeyPath(job, keyStr)));
         DatabaseEntry data = new DatabaseEntry(stringToBytes(valueStr));
         db.put(null, key, data);
     }
 
-    /**
-     * retrieve the value assoicated with keyStr from persistant storage
-     *
-     * @param keyStr
-     * @return String value associated with key, or null if no key is found
-     * or an error occurs
-     * @throws DatabaseException
-     */
+    public void put(long job, long id, String valueStr) throws DatabaseException {
+        put(job, Long.toString(id), valueStr);
+    }
+
+    public void put(long job, String keyStr, Object obj) throws DatabaseException {
+        String json = "{}";
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            json = objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        put(job, keyStr, json);
+    }
+
+    public void put(long job, long id, Object obj) throws DatabaseException {
+        put(job, Long.toString(id), obj);
+    }
+
     public String get(String keyStr) throws DatabaseException {
         String result = null;
         DatabaseEntry key = new DatabaseEntry(stringToBytes(keyStr));
@@ -218,8 +225,20 @@ public class BDBNetworkMap {
         return result;
     }
 
-    public static String getKeyPath(long id) {
-        return String.format("id_%d", id);
+    public String get(long job, String keyStr) throws DatabaseException {
+        return get(getKeyPath(job, keyStr));
+    }
+
+    public String get(long job, long id) throws DatabaseException {
+        return get(getKeyPath(job, Long.toString(id)));
+    }
+
+    public static String getKeyPath(long job, long id) {
+        return String.format("%d/%d", job, id);
+    }
+
+    public static String getKeyPath(long job, String path) {
+        return String.format("%d/%s", job, path);
     }
 
 
@@ -241,7 +260,7 @@ public class BDBNetworkMap {
     /**
      * @return Returns the path.
      */
-    public String getPath() {
+    public String sgetPath() {
         return path;
     }
 
@@ -257,5 +276,19 @@ public class BDBNetworkMap {
      */
     public void setDbName(String dbName) {
         this.dbName = dbName;
+    }
+
+    public static void main(String[] args) throws IOException {
+//        File directory = new File("/usr/local/wct/store/36/1");
+//        BDBNetworkMap db = new BDBNetworkMap();
+//        db.initializeDB(String.format("%s%sresource", directory.getAbsolutePath(), File.separator), "resource.db");
+//
+//        long job = 36;
+//        List<Integer> domains = db.getList(job, PATH_ROOT_DOMAINS);
+//        for (int domainId : domains) {
+//            System.out.println(db.get(job, Long.toString(domainId)));
+//        }
+//        System.out.println(db.get(job, PATH_ROOT_DOMAINS));
+//        System.out.println(db.get(job, PATH_ROOT_URLS));
     }
 }

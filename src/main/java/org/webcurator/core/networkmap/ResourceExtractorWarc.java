@@ -1,4 +1,4 @@
-package org.webcurator.core.extractor;
+package org.webcurator.core.networkmap;
 
 import org.apache.commons.httpclient.HttpParser;
 import org.apache.commons.httpclient.StatusLine;
@@ -10,18 +10,17 @@ import org.archive.io.ArchiveRecordHeader;
 import org.archive.io.RecoverableIOException;
 import org.archive.io.warc.WARCConstants;
 import org.archive.io.warc.WARCRecord;
-import org.webcurator.core.extractor.bdb.BDBNetworkMap;
-import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
-import org.webcurator.core.extractor.metadata.NetworkNodeUrl;
-import org.webcurator.core.util.URLResolverFunc;
+import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
+import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
+import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
 
 import java.io.IOException;
 import java.util.Map;
 
 @SuppressWarnings("all")
 public class ResourceExtractorWarc extends ResourceExtractor {
-    public ResourceExtractorWarc(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db) {
-        super(domains, results, db);
+    public ResourceExtractorWarc(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db, long job) {
+        super(domains, results, db, job);
     }
 
     @Override
@@ -135,12 +134,9 @@ public class ResourceExtractorWarc extends ResourceExtractor {
         //Not the parent and finished urls which can be saved immediately
         if (!res.isHasOutlinks() && res.isFinished()) {
             addUrl2Domain(res);
+            db.put(this.job, res.getId(), res);
+
             this.results.remove(res.getUrl());
-
-            String dbKey = BDBNetworkMap.getKeyPath(res.getId());
-            String dbValue = this.getJson(res);
-
-            db.put(dbKey, dbValue);
         }
     }
 

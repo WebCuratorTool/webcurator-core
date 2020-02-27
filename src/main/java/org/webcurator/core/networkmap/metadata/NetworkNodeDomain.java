@@ -1,4 +1,4 @@
-package org.webcurator.core.extractor.metadata;
+package org.webcurator.core.networkmap.metadata;
 
 import org.webcurator.core.util.URLResolverFunc;
 

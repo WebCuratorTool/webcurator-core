@@ -1,4 +1,4 @@
-package org.webcurator.core.extractor;
+package org.webcurator.core.networkmap;
 
 import org.archive.io.ArchiveRecord;
 import org.archive.io.ArchiveRecordHeader;
@@ -6,10 +6,9 @@ import org.archive.io.arc.ARCRecord;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.webcurator.core.extractor.bdb.BDBNetworkMap;
-import org.webcurator.core.extractor.metadata.NetworkNodeDomain;
-import org.webcurator.core.extractor.metadata.NetworkNodeUrl;
-import org.webcurator.core.extractor.metadata.ResourceNode;
+import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
+import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
+import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
 import org.webcurator.core.util.URLResolverFunc;
 
 import java.io.ByteArrayOutputStream;
@@ -17,10 +16,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-
 public class ResourceExtractorArc extends ResourceExtractor {
-    public ResourceExtractorArc(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db) {
-        super(domains, results, db);
+    public ResourceExtractorArc(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db, long job) {
+        super(domains, results, db, job);
     }
 
     @Override
