@@ -4,12 +4,10 @@ import org.archive.io.*;
 import org.archive.io.warc.WARCConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
-import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
-import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
+import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 import org.webcurator.core.util.ApplicationContextFactory;
 import org.webcurator.domain.model.core.ArcHarvestFileDTO;
 
@@ -26,10 +24,9 @@ public class WCTResourceIndexer {
 
     private File directory;
     private long job;
-    private Map<String, NetworkNodeDomain> domains = new Hashtable<>();
-    private Map<String, NetworkNodeUrl> urls = new Hashtable<>();
+    private Map<String, NetworkMapNode> domains = new Hashtable<>();
+    private Map<String, NetworkMapNode> urls = new Hashtable<>();
 
-    @Autowired
     private BDBNetworkMap db;
 
     public static void main(String[] args) throws IOException {
@@ -63,7 +60,6 @@ public class WCTResourceIndexer {
         }
 
         ResourceExtractor extractor = new ResourceExtractorWarc(this.domains, this.urls, this.db, this.job);
-
         List<ArcHarvestFileDTO> arcHarvestFileDTOList = new ArrayList();
         for (File f : fileList) {
             if (!isWarcFormat(f.getName())) {
@@ -83,7 +79,7 @@ public class WCTResourceIndexer {
 
             db.put(this.job, e.getId(), e);
 
-            if (e.getParentId() <= 0) {
+            if (e.isSeed() || e.getParentId() <= 0) {
                 rootUrls.add(e.getId());
             }
 
@@ -147,27 +143,21 @@ public class WCTResourceIndexer {
 
         // Groupby domain's children
         domains.values().forEach(domain -> {
-            Map<String, List<NetworkNodeDomain>> mapGroupByContentType = domain.getChildren().stream().collect(Collectors.groupingBy(NetworkNodeDomain::getContentType));
+            Map<String, List<NetworkMapNode>> mapGroupByContentType = domain.getChildren().stream().collect(Collectors.groupingBy(NetworkMapNode::getContentType));
             domain.clearChildren();
             mapGroupByContentType.forEach((contentType, listOneContentType) -> {
-                NetworkNodeDomain domainOneContentType = new NetworkNodeDomain(0);
+                NetworkMapNode domainOneContentType = new NetworkMapNode();
                 domainOneContentType.setUrl(contentType);
                 listOneContentType.forEach(e1 -> {
-                    domainOneContentType.increaseTotUrls(e1.getTotUrls());
-                    domainOneContentType.increaseTotSuccess(e1.getTotSuccess());
-                    domainOneContentType.increaseTotFailed(e1.getTotFailed());
-                    domainOneContentType.increaseTotSize(e1.getTotSize());
+                    domainOneContentType.accumulate(e1);
                 });
 
-                Map<Long, List<NetworkNodeDomain>> mapGroupByStatusCode = listOneContentType.stream().collect(Collectors.groupingBy(NetworkNodeDomain::getStatusCode));
+                Map<Integer, List<NetworkMapNode>> mapGroupByStatusCode = listOneContentType.stream().collect(Collectors.groupingBy(NetworkMapNode::getStatusCode));
                 mapGroupByStatusCode.forEach((statusCode, listOneStatusCode) -> {
-                    NetworkNodeDomain domainOneStatusCode = new NetworkNodeDomain(0);
+                    NetworkMapNode domainOneStatusCode = new NetworkMapNode(0);
                     domainOneStatusCode.setUrl(Long.toString(statusCode));
                     listOneStatusCode.forEach(e2 -> {
-                        domainOneStatusCode.increaseTotUrls(e2.getTotUrls());
-                        domainOneStatusCode.increaseTotSuccess(e2.getTotSuccess());
-                        domainOneStatusCode.increaseTotFailed(e2.getTotFailed());
-                        domainOneStatusCode.increaseTotSize(e2.getTotSize());
+                        domainOneStatusCode.accumulate(e2);
                     });
                     domainOneContentType.putChild(Long.toString(statusCode), domainOneStatusCode);
                 });
@@ -183,10 +173,10 @@ public class WCTResourceIndexer {
     }
 
     public void clear() {
-        this.db.shutdownDB();
-        this.domains.values().forEach(NetworkNodeDomain::clear);
+//        this.db.shutdownDB();
+        this.domains.values().forEach(NetworkMapNode::clear);
         this.domains.clear();
-        this.urls.values().forEach(NetworkNodeUrl::clear);
+        this.urls.values().forEach(NetworkMapNode::clear);
         this.urls.clear();
     }
 }

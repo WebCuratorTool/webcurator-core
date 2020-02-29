@@ -3,7 +3,7 @@ package org.webcurator.core.networkmap.bdb;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sleepycat.je.*;
-import org.webcurator.core.networkmap.metadata.NetworkNode;
+import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,14 +114,14 @@ public class BDBNetworkMap {
     /**
      * @param itr
      */
-    public void insertRecords(final Iterator<NetworkNode> itr) {
+    public void insertRecords(final Iterator<NetworkMapNode> itr) {
         OperationStatus status = null;
         try {
             Transaction txn = env.beginTransaction(null, null);
             try {
                 Cursor cursor = db.openCursor(txn, null);
                 while (itr.hasNext()) {
-                    NetworkNode node = itr.next();
+                    NetworkMapNode node = itr.next();
                     DatabaseEntry key = new DatabaseEntry(Long.toString(node.getId()).getBytes());
                     DatabaseEntry value = new DatabaseEntry(node.toString().getBytes());
                     status = cursor.put(key, value);
@@ -214,7 +214,7 @@ public class BDBNetworkMap {
     /**
      * @return Returns the path.
      */
-    public String sgetPath() {
+    public String getPath() {
         return path;
     }
 

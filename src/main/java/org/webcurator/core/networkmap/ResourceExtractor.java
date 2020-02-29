@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.archive.io.ArchiveReader;
 import org.archive.io.ArchiveRecord;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
-import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
-import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
+import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 import org.webcurator.core.util.URLResolverFunc;
 
 import java.io.IOException;
@@ -17,12 +16,12 @@ import java.util.concurrent.atomic.AtomicLong;
 abstract public class ResourceExtractor {
     protected static final int MAX_URL_LENGTH = 1020;
     protected AtomicLong atomicIdGenerator = new AtomicLong();
-    protected Map<String, NetworkNodeDomain> domains;
-    protected Map<String, NetworkNodeUrl> results;
+    protected Map<String, NetworkMapNode> domains;
+    protected Map<String, NetworkMapNode> results;
     protected BDBNetworkMap db;
     protected long job;
 
-    protected ResourceExtractor(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db, long job) {
+    protected ResourceExtractor(Map<String, NetworkMapNode> domains, Map<String, NetworkMapNode> results, BDBNetworkMap db, long job) {
         this.domains = domains;
         this.results = results;
         this.db = db;
@@ -77,29 +76,32 @@ abstract public class ResourceExtractor {
     }
 
 
-    public void addUrl2Domain(NetworkNodeUrl resourceNode) {
+    public void addUrl2Domain(NetworkMapNode resourceNode) {
         String currentDomainName = URLResolverFunc.url2domain(resourceNode.getUrl());
         if (currentDomainName == null) {
             return;
         }
 
-        NetworkNodeDomain currentDomain = this.domains.get(currentDomainName);
+        NetworkMapNode currentDomain = this.domains.get(currentDomainName);
         if (currentDomain == null) {
-            currentDomain = new NetworkNodeDomain(atomicIdGenerator.incrementAndGet());
+            currentDomain = new NetworkMapNode(atomicIdGenerator.incrementAndGet());
             currentDomain.setUrl(currentDomainName);
             this.domains.put(currentDomainName, currentDomain);
         }
 
-        currentDomain.increase(resourceNode.getStatusCode(), resourceNode.getContentLength(), resourceNode.getContentType());
+        if(resourceNode.isSeed()){
+            currentDomain.setSeed(true);
+        }
+        currentDomain.accumulateAsChildren(resourceNode.getStatusCode(), resourceNode.getContentLength(), resourceNode.getContentType());
 
         String parentDomainName = URLResolverFunc.url2domain(resourceNode.getViaUrl());
         if (parentDomainName == null) {
             return;
         }
 
-        NetworkNodeDomain parentDomain = this.domains.get(parentDomainName);
+        NetworkMapNode parentDomain = this.domains.get(parentDomainName);
         if (parentDomain == null) {
-            parentDomain = new NetworkNodeDomain(atomicIdGenerator.incrementAndGet());
+            parentDomain = new NetworkMapNode(atomicIdGenerator.incrementAndGet());
             parentDomain.setUrl(parentDomainName);
             this.domains.put(parentDomainName, parentDomain);
         }

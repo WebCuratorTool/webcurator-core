@@ -5,8 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
-import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
+import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,7 +45,7 @@ public interface NetworkMapService {
         return null;
     }
 
-    default public NetworkNodeDomain getNodeDomain(String json) {
+    default public NetworkMapNode getNodeEntity(String json) {
         if (json == null) {
             return null;
         }
@@ -56,25 +55,7 @@ public interface NetworkMapService {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            return objectMapper.readValue(json, NetworkNodeDomain.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    default public NetworkNodeUrl getNodeUrl(String json) {
-        if (json == null) {
-            return null;
-        }
-
-        log.debug(json);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            return objectMapper.readValue(json, NetworkNodeUrl.class);
+            return objectMapper.readValue(json, NetworkMapNode.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

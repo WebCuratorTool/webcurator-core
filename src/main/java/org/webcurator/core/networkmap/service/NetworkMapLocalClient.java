@@ -1,12 +1,7 @@
 package org.webcurator.core.networkmap.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
-import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
-import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
-import org.webcurator.core.util.ApplicationContextFactory;
+import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,91 +25,60 @@ public class NetworkMapLocalClient implements NetworkMapService {
 
     @Override
     public String getOutlinks(long job, long id) {
-        String result = "{}";
-
-        NetworkNodeUrl parentNode = this.getNodeUrl(db.get(job, id));
+        NetworkMapNode parentNode = this.getNodeEntity(db.get(job, id));
         if (parentNode == null) {
-            return result;
+            return null;
         }
 
-        List<NetworkNodeUrl> list = new ArrayList<>();
-        parentNode.getOutlinks().forEach(childId -> {
-            NetworkNodeUrl childNode = this.getNodeUrl(db.get(job, childId));
-            list.add(childNode);
-        });
-
-        result = this.obj2Json(list);
-
+        String result = combineResultFromArrayIDs(job, parentNode.getOutlinks());
         parentNode.clear();
-        list.forEach(NetworkNodeUrl::clear);
-        list.clear();
 
         return result;
     }
 
     @Override
     public String getChildren(long job, long id) {
-        String result = "{}";
-
-        NetworkNodeDomain parentNode = this.getNodeDomain(db.get(job, id));
-        if (parentNode == null) {
-            return result;
-        }
-
-        List<NetworkNodeDomain> list = new ArrayList<>();
-        parentNode.getOutlinks().forEach(childId -> {
-            NetworkNodeDomain childNode = this.getNodeDomain(db.get(job, childId));
-            list.add(childNode);
-        });
-
-        result = this.obj2Json(list);
-
-        parentNode.clear();
-        list.forEach(NetworkNodeDomain::clear);
-        list.clear();
-
-        return result;
+        //TODO
+        return "{}";
     }
 
     @Override
     public String getAllDomains(long job) {
-        List<NetworkNodeDomain> results = new ArrayList<>();
-        List<Long> listIds = this.getArrayList(db.get(job, BDBNetworkMap.PATH_ROOT_DOMAINS));
-        if (listIds == null) {
-            return this.obj2Json(results);
-        }
-        listIds.forEach(id -> {
-            NetworkNodeDomain node = this.getNodeDomain(db.get(job, id));
-            results.add(node);
-        });
-        return this.obj2Json(results);
+        List<Long> ids = this.getArrayList(db.get(job, BDBNetworkMap.PATH_ROOT_DOMAINS));
+        String result = combineResultFromArrayIDs(job, ids);
+        ids.clear();
+        return result;
     }
 
     @Override
     public String getSeedUrls(long job) {
-        List<NetworkNodeUrl> results = new ArrayList<>();
-        List<Long> listIds = this.getArrayList(db.get(job, BDBNetworkMap.PATH_ROOT_URLS));
-        if (listIds == null) {
-            return this.obj2Json(results);
-        }
-        listIds.forEach(id -> {
-            NetworkNodeUrl node = this.getNodeUrl(db.get(job, id));
-            results.add(node);
-        });
-        return this.obj2Json(results);
+        List<Long> ids = this.getArrayList(db.get(job, BDBNetworkMap.PATH_ROOT_URLS));
+        String result = combineResultFromArrayIDs(job, ids);
+        ids.clear();
+        return result;
     }
 
     @Override
     public String getMalformedUrls(long job) {
-        List<NetworkNodeUrl> results = new ArrayList<>();
-        List<Long> listIds = this.getArrayList(db.get(job, BDBNetworkMap.PATH_MALFORMED_URLS));
-        if (listIds == null) {
-            return this.obj2Json(results);
+        List<Long> ids = this.getArrayList(db.get(job, BDBNetworkMap.PATH_MALFORMED_URLS));
+        String result = combineResultFromArrayIDs(job, ids);
+        ids.clear();
+        return result;
+    }
+
+    private String combineResultFromArrayIDs(long job, List<Long> ids) {
+        if (ids == null) {
+            return null;
         }
-        listIds.forEach(id -> {
-            NetworkNodeUrl node = this.getNodeUrl(db.get(job, id));
-            results.add(node);
+
+        final List<String> result = new ArrayList<>();
+        ids.forEach(childId -> {
+            String childStr = db.get(job, childId);
+            if (childStr != null) {
+                result.add(childStr);
+            }
         });
-        return this.obj2Json(results);
+
+        return this.obj2Json(result);
     }
 }

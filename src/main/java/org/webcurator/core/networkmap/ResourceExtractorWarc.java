@@ -11,15 +11,15 @@ import org.archive.io.RecoverableIOException;
 import org.archive.io.warc.WARCConstants;
 import org.archive.io.warc.WARCRecord;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
-import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
-import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
+import org.webcurator.core.networkmap.metadata.NetworkMapNode;
+
 
 import java.io.IOException;
 import java.util.Map;
 
 @SuppressWarnings("all")
 public class ResourceExtractorWarc extends ResourceExtractor {
-    public ResourceExtractorWarc(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db, long job) {
+    public ResourceExtractorWarc(Map<String, NetworkMapNode> domains, Map<String, NetworkMapNode> results, BDBNetworkMap db, long job) {
         super(domains, results, db, job);
     }
 
@@ -66,11 +66,11 @@ public class ResourceExtractorWarc extends ResourceExtractor {
 
         String key = header.getUrl();
 
-        NetworkNodeUrl res = null;
+        NetworkMapNode res = null;
         if (results.containsKey(key)) {
             res = results.get(key);
         } else {
-            res = new NetworkNodeUrl(atomicIdGenerator.incrementAndGet());
+            res = new NetworkMapNode(atomicIdGenerator.incrementAndGet());
             results.put(key, res);
         }
 
@@ -120,14 +120,14 @@ public class ResourceExtractorWarc extends ResourceExtractor {
             String parentUrl = httpHeaders.getValue("via");
             if (parentUrl != null) {
                 res.setViaUrl(parentUrl);
-                NetworkNodeUrl parentNode = this.results.get(parentUrl);
+                NetworkMapNode parentNode = this.results.get(parentUrl);
                 if (parentNode == null) {
                     //TODO: log
-                    parentNode = new NetworkNodeUrl(atomicIdGenerator.incrementAndGet());
+                    parentNode = new NetworkMapNode(atomicIdGenerator.incrementAndGet());
                     parentNode.setUrl(parentUrl);
                 }
                 res.setParentId(parentNode.getId());
-                parentNode.addOutlink(res.getId());
+                parentNode.addOutlink(res);
             }
         }
 

@@ -7,8 +7,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
-import org.webcurator.core.networkmap.metadata.NetworkNodeDomain;
-import org.webcurator.core.networkmap.metadata.NetworkNodeUrl;
+import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 import org.webcurator.core.util.URLResolverFunc;
 
 import java.io.ByteArrayOutputStream;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ResourceExtractorArc extends ResourceExtractor {
-    public ResourceExtractorArc(Map<String, NetworkNodeDomain> domains, Map<String, NetworkNodeUrl> results, BDBNetworkMap db, long job) {
+    public ResourceExtractorArc(Map<String, NetworkMapNode> domains, Map<String, NetworkMapNode> results, BDBNetworkMap db, long job) {
         super(domains, results, db, job);
     }
 
@@ -53,7 +52,7 @@ public class ResourceExtractorArc extends ResourceExtractor {
             return;
         }
 
-        NetworkNodeUrl res = new NetworkNodeUrl(atomicIdGenerator.incrementAndGet());
+        NetworkMapNode res = new NetworkMapNode(atomicIdGenerator.incrementAndGet());
         res.setUrl(header.getUrl());
         res.setOffset(header.getOffset());
         res.setStatusCode(record.getStatusCode());
