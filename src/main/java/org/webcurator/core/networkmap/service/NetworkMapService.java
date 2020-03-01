@@ -13,19 +13,19 @@ import java.util.List;
 public interface NetworkMapService {
     public static final Logger log = LoggerFactory.getLogger(NetworkMapService.class);
 
-    public String get(String key);
+    public String get(long job, int harvestResultNumber, String key);
 
-    public String getNode(long job, long id);
+    public String getNode(long job, int harvestResultNumber,long id);
 
-    public String getOutlinks(long job, long id);
+    public String getOutlinks(long job, int harvestResultNumber,long id);
 
-    public String getChildren(long job, long id);
+    public String getChildren(long job, int harvestResultNumber,long id);
 
-    public String getAllDomains(long job);
+    public String getAllDomains(long job,int harvestResultNumber);
 
-    public String getSeedUrls(long job);
+    public String getSeedUrls(long job,int harvestResultNumber);
 
-    public String getMalformedUrls(long job);
+    public String getMalformedUrls(long job, int harvestResultNumber);
 
     default public List<Long> getArrayList(String json) {
         if (json == null) {

@@ -58,7 +58,7 @@ public class BDBNetworkMap {
         dbName = theDbName;
 
         EnvironmentConfig environmentConfig = new EnvironmentConfig();
-        environmentConfig.setCacheSize(1024 * 1024 * 1024);
+        environmentConfig.setCacheSize(1024 * 1024);
         environmentConfig.setAllowCreate(true);
         environmentConfig.setTransactional(true);
         environmentConfig.setConfigParam("je.log.fileMax", JE_LOG_FILEMAX);
@@ -233,16 +233,6 @@ public class BDBNetworkMap {
     }
 
     public static void main(String[] args) throws IOException {
-//        File directory = new File("/usr/local/wct/store/36/1");
-//        BDBNetworkMap db = new BDBNetworkMap();
-//        db.initializeDB(String.format("%s%sresource", directory.getAbsolutePath(), File.separator), "resource.db");
-//
-//        long job = 36;
-//        List<Integer> domains = db.getList(job, PATH_ROOT_DOMAINS);
-//        for (int domainId : domains) {
-//            System.out.println(db.get(job, Long.toString(domainId)));
-//        }
-//        System.out.println(db.get(job, PATH_ROOT_DOMAINS));
-//        System.out.println(db.get(job, PATH_ROOT_URLS));
+
     }
 }

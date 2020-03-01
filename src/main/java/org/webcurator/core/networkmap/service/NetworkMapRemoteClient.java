@@ -13,8 +13,10 @@ public class NetworkMapRemoteClient extends AbstractRestClient implements Networ
     }
 
     @Override
-    public String get(String key) {
+    public String get(long job, int harvestResultNumber, String key) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(getUrl(NetworkMapServicePath.PATH_GET_COMMON))
+                .queryParam("job",job)
+                .queryParam("harvestResultNumber",harvestResultNumber)
                 .queryParam("key", key);
         URI uri = uriComponentsBuilder.build().toUri();
 
@@ -26,9 +28,10 @@ public class NetworkMapRemoteClient extends AbstractRestClient implements Networ
     }
 
     @Override
-    public String getNode(long job, long id) {
+    public String getNode(long job, int harvestResultNumber, long id) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(getUrl(NetworkMapServicePath.PATH_GET_NODE))
                 .queryParam("job", job)
+                .queryParam("harvestResultNumber",harvestResultNumber)
                 .queryParam("id", id);
         URI uri = uriComponentsBuilder.build().toUri();
 
@@ -40,9 +43,10 @@ public class NetworkMapRemoteClient extends AbstractRestClient implements Networ
     }
 
     @Override
-    public String getOutlinks(long job, long id) {
+    public String getOutlinks(long job, int harvestResultNumber, long id) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(getUrl(NetworkMapServicePath.PATH_GET_OUTLINKS))
                 .queryParam("job", job)
+                .queryParam("harvestResultNumber",harvestResultNumber)
                 .queryParam("id", id);
         URI uri = uriComponentsBuilder.build().toUri();
 
@@ -54,9 +58,10 @@ public class NetworkMapRemoteClient extends AbstractRestClient implements Networ
     }
 
     @Override
-    public String getChildren(long job, long id) {
+    public String getChildren(long job, int harvestResultNumber, long id) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(getUrl(NetworkMapServicePath.PATH_GET_CHILDREN))
                 .queryParam("job", job)
+                .queryParam("harvestResultNumber",harvestResultNumber)
                 .queryParam("id", id);
         URI uri = uriComponentsBuilder.build().toUri();
 
@@ -68,9 +73,10 @@ public class NetworkMapRemoteClient extends AbstractRestClient implements Networ
     }
 
     @Override
-    public String getAllDomains(long job) {
+    public String getAllDomains(long job, int harvestResultNumber) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(getUrl(NetworkMapServicePath.PATH_GET_ALL_DOMAINS))
-                .queryParam("job", job);
+                .queryParam("job", job)
+                .queryParam("harvestResultNumber",harvestResultNumber);
         URI uri = uriComponentsBuilder.build().toUri();
 
         RestTemplate restTemplate = restTemplateBuilder.build();
@@ -81,9 +87,10 @@ public class NetworkMapRemoteClient extends AbstractRestClient implements Networ
     }
 
     @Override
-    public String getSeedUrls(long job) {
+    public String getSeedUrls(long job, int harvestResultNumber) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(getUrl(NetworkMapServicePath.PATH_GET_ROOT_URLS))
-                .queryParam("job", job);
+                .queryParam("job", job)
+                .queryParam("harvestResultNumber",harvestResultNumber);
         URI uri = uriComponentsBuilder.build().toUri();
 
         RestTemplate restTemplate = restTemplateBuilder.build();
@@ -94,9 +101,10 @@ public class NetworkMapRemoteClient extends AbstractRestClient implements Networ
     }
 
     @Override
-    public String getMalformedUrls(long job) {
+    public String getMalformedUrls(long job, int harvestResultNumber) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(getUrl(NetworkMapServicePath.PATH_GET_MALFORMED_URLS))
-                .queryParam("job", job);
+                .queryParam("job", job)
+                .queryParam("harvestResultNumber",harvestResultNumber);
         URI uri = uriComponentsBuilder.build().toUri();
 
         RestTemplate restTemplate = restTemplateBuilder.build();

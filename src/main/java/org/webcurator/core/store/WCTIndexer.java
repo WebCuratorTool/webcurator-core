@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,6 +23,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.webcurator.core.networkmap.WCTResourceIndexer;
 import org.webcurator.core.harvester.coordinator.HarvestCoordinatorPaths;
+import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
+import org.webcurator.core.networkmap.bdb.BDBNetworkMapPool;
+import org.webcurator.core.util.ApplicationContextFactory;
 import org.webcurator.domain.model.core.ArcHarvestFileDTO;
 import org.webcurator.domain.model.core.ArcHarvestResourceDTO;
 import org.webcurator.domain.model.core.HarvestResultDTO;
@@ -95,7 +99,11 @@ public class WCTIndexer extends IndexerBase {
         log.info("Generating indexes for " + getResult().getTargetInstanceOid());
         WCTResourceIndexer indexer = null;
         try {
-            indexer = new WCTResourceIndexer(directory, getResult().getTargetInstanceOid());
+            //Create db files
+            ApplicationContext ctx = ApplicationContextFactory.getApplicationContext();
+            BDBNetworkMapPool pool = ctx.getBean(BDBNetworkMapPool.class);
+            BDBNetworkMap db = pool.createInstance(getResult().getTargetInstanceOid(), getResult().getHarvestNumber());
+            indexer = new WCTResourceIndexer(directory, getResult().getTargetInstanceOid(), db);
         } catch (IOException e) {
             log.error("Failed to create directory: {}", directory);
             return;

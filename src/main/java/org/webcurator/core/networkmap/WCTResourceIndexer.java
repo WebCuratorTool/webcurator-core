@@ -29,21 +29,15 @@ public class WCTResourceIndexer {
 
     private BDBNetworkMap db;
 
-    public static void main(String[] args) throws IOException {
-        File directory = new File("/usr/local/wct/store/36/1");
-        WCTResourceIndexer indexer = new WCTResourceIndexer(directory, (long) 36);
-        List<ArcHarvestFileDTO> arcHarvestFileDTOS = indexer.indexFiles();
-    }
-
-    public WCTResourceIndexer(File directory, long job) throws IOException {
-        ApplicationContext ctx = ApplicationContextFactory.getApplicationContext();
-        this.db = ctx.getBean(BDBNetworkMap.class);
-
+    public WCTResourceIndexer(File directory, long job, BDBNetworkMap db) throws IOException {
         this.directory = directory;
         this.job = job;
+        this.db = db;
     }
 
     public List<ArcHarvestFileDTO> indexFiles() throws IOException {
+        List<ArcHarvestFileDTO> arcHarvestFileDTOList = new ArrayList();
+
         File[] fileList = directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -56,11 +50,10 @@ public class WCTResourceIndexer {
 
         if (fileList == null) {
             log.error("Could not find any archive files in directory: {}", directory.getAbsolutePath());
-            return null;
+            return arcHarvestFileDTOList;
         }
 
         ResourceExtractor extractor = new ResourceExtractorWarc(this.domains, this.urls, this.db, this.job);
-        List<ArcHarvestFileDTO> arcHarvestFileDTOList = new ArrayList();
         for (File f : fileList) {
             if (!isWarcFormat(f.getName())) {
                 continue;
