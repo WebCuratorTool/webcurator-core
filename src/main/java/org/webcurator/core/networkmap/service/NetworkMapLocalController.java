@@ -1,10 +1,7 @@
 package org.webcurator.core.networkmap.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class NetworkMapLocalController implements NetworkMapService {
@@ -51,5 +48,17 @@ public class NetworkMapLocalController implements NetworkMapService {
     @RequestMapping(path = NetworkMapServicePath.PATH_GET_MALFORMED_URLS, method = {RequestMethod.POST, RequestMethod.GET})
     public String getMalformedUrls(@RequestParam("job") long job, @RequestParam("harvestResultNumber") int harvestResultNumber) {
         return client.getMalformedUrls(job, harvestResultNumber);
+    }
+
+    @Override
+    @RequestMapping(path = NetworkMapServicePath.PATH_SEARCH_URLS, method = {RequestMethod.POST, RequestMethod.GET})
+    public String searchUrl(@RequestParam("job") long job, @RequestParam("harvestResultNumber") int harvestResultNumber, @RequestBody NetworkMapServiceSearchCommand searchCommand) {
+        return client.searchUrl(job, harvestResultNumber, searchCommand);
+    }
+
+    @Override
+    @RequestMapping(path = NetworkMapServicePath.PATH_GET_HOP_PATH, method = {RequestMethod.POST, RequestMethod.GET})
+    public String getHopPath(@RequestParam("job") long job, @RequestParam("harvestResultNumber") int harvestResultNumber, @RequestParam("id") long id) {
+        return client.getHopPath(job, harvestResultNumber, id);
     }
 }

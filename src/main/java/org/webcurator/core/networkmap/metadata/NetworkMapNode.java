@@ -24,7 +24,7 @@ public class NetworkMapNode {
     protected long contentLength;
     protected String contentType;
     protected int statusCode;
-    protected long parentId;
+    protected long parentId = -1;
     protected long offset;
     protected long fetchTimeMs; //ms: time used to download the page
     protected boolean hasOutlinks; //the number of outlinks>0
@@ -34,6 +34,8 @@ public class NetworkMapNode {
 
     protected List<Long> outlinks = new ArrayList<>();
     protected Map<String, NetworkMapNode> children = new HashMap<>();
+
+    protected String title;
 
     public NetworkMapNode() {
     }
@@ -320,5 +322,13 @@ public class NetworkMapNode {
         children.forEach(child -> {
             this.children.put(child.getUrl(), child);
         });
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

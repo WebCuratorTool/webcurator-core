@@ -8,4 +8,6 @@ public interface NetworkMapServicePath {
     String PATH_GET_ALL_DOMAINS = "/curator/networkmap/get/all/domains";
     String PATH_GET_ROOT_URLS = "/curator/networkmap/get/root/urls";
     String PATH_GET_MALFORMED_URLS = "/curator/networkmap/get/malformed/urls";
+    String PATH_SEARCH_URLS = "/curator/networkmap/search/urls";
+    String PATH_GET_HOP_PATH = "/curator/networkmap/get/hop/path";
 }

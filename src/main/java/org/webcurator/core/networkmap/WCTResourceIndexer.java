@@ -64,6 +64,9 @@ public class WCTResourceIndexer {
             }
         }
 
+        db.put(job, BDBNetworkMap.PATH_COUNT_DOMAIN, extractor.getDomainCount());
+        db.put(job, BDBNetworkMap.PATH_COUNT_URL, extractor.getUrlCount());
+
         //Process and save url
         List<Long> rootUrls = new ArrayList<>();
         List<Long> malformedUrls = new ArrayList<>();
@@ -89,7 +92,7 @@ public class WCTResourceIndexer {
         List<Long> rootDomains = new ArrayList<>();
         this.statDomain();
         this.domains.values().forEach(e -> {
-            db.put(this.job, e.getId(), e);
+            db.put(this.job, "d@" + e.getId(), e);
             rootDomains.add(e.getId());
         });
         db.put(this.job, BDBNetworkMap.PATH_ROOT_DOMAINS, rootDomains);
@@ -140,7 +143,9 @@ public class WCTResourceIndexer {
             domain.clearChildren();
             mapGroupByContentType.forEach((contentType, listOneContentType) -> {
                 NetworkMapNode domainOneContentType = new NetworkMapNode();
-                domainOneContentType.setUrl(contentType);
+                domainOneContentType.setTitle(contentType);
+                domainOneContentType.setUrl(domain.getUrl());
+                domainOneContentType.setContentType(contentType);
                 listOneContentType.forEach(e1 -> {
                     domainOneContentType.accumulate(e1);
                 });
@@ -148,7 +153,10 @@ public class WCTResourceIndexer {
                 Map<Integer, List<NetworkMapNode>> mapGroupByStatusCode = listOneContentType.stream().collect(Collectors.groupingBy(NetworkMapNode::getStatusCode));
                 mapGroupByStatusCode.forEach((statusCode, listOneStatusCode) -> {
                     NetworkMapNode domainOneStatusCode = new NetworkMapNode(0);
-                    domainOneStatusCode.setUrl(Long.toString(statusCode));
+                    domainOneStatusCode.setTitle(Long.toString(statusCode));
+                    domainOneStatusCode.setUrl(domain.getUrl());
+                    domainOneStatusCode.setContentType(contentType);
+                    domainOneStatusCode.setStatusCode(statusCode);
                     listOneStatusCode.forEach(e2 -> {
                         domainOneStatusCode.accumulate(e2);
                     });

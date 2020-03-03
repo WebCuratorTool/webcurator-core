@@ -15,17 +15,21 @@ public interface NetworkMapService {
 
     public String get(long job, int harvestResultNumber, String key);
 
-    public String getNode(long job, int harvestResultNumber,long id);
+    public String getNode(long job, int harvestResultNumber, long id);
 
-    public String getOutlinks(long job, int harvestResultNumber,long id);
+    public String getOutlinks(long job, int harvestResultNumber, long id);
 
-    public String getChildren(long job, int harvestResultNumber,long id);
+    public String getChildren(long job, int harvestResultNumber, long id);
 
-    public String getAllDomains(long job,int harvestResultNumber);
+    public String getAllDomains(long job, int harvestResultNumber);
 
-    public String getSeedUrls(long job,int harvestResultNumber);
+    public String getSeedUrls(long job, int harvestResultNumber);
 
     public String getMalformedUrls(long job, int harvestResultNumber);
+
+    public String searchUrl(long job, int harvestResultNumber, NetworkMapServiceSearchCommand searchCommand);
+
+    public String getHopPath(long job, int harvestResultNumber, long id);
 
     default public List<Long> getArrayList(String json) {
         if (json == null) {

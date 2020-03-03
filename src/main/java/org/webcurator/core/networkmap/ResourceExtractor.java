@@ -15,7 +15,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 abstract public class ResourceExtractor {
     protected static final int MAX_URL_LENGTH = 1020;
-    protected AtomicLong atomicIdGenerator = new AtomicLong();
+    protected AtomicLong atomicIdGeneratorDomain = new AtomicLong();
+    protected AtomicLong atomicIdGeneratorUrl = new AtomicLong();
+
     protected Map<String, NetworkMapNode> domains;
     protected Map<String, NetworkMapNode> results;
     protected BDBNetworkMap db;
@@ -84,12 +86,13 @@ abstract public class ResourceExtractor {
 
         NetworkMapNode currentDomain = this.domains.get(currentDomainName);
         if (currentDomain == null) {
-            currentDomain = new NetworkMapNode(atomicIdGenerator.incrementAndGet());
+            currentDomain = new NetworkMapNode(atomicIdGeneratorDomain.incrementAndGet());
             currentDomain.setUrl(currentDomainName);
+            currentDomain.setTitle(currentDomainName);
             this.domains.put(currentDomainName, currentDomain);
         }
 
-        if(resourceNode.isSeed()){
+        if (resourceNode.isSeed()) {
             currentDomain.setSeed(true);
         }
         currentDomain.accumulateAsChildren(resourceNode.getStatusCode(), resourceNode.getContentLength(), resourceNode.getContentType());
@@ -101,11 +104,20 @@ abstract public class ResourceExtractor {
 
         NetworkMapNode parentDomain = this.domains.get(parentDomainName);
         if (parentDomain == null) {
-            parentDomain = new NetworkMapNode(atomicIdGenerator.incrementAndGet());
+            parentDomain = new NetworkMapNode(atomicIdGeneratorDomain.incrementAndGet());
             parentDomain.setUrl(parentDomainName);
+            parentDomain.setTitle(parentDomainName);
             this.domains.put(parentDomainName, parentDomain);
         }
 
         parentDomain.addOutlink(currentDomain.getId());
+    }
+
+    public long getDomainCount() {
+        return atomicIdGeneratorDomain.get();
+    }
+
+    public long getUrlCount() {
+        return atomicIdGeneratorUrl.get();
     }
 }

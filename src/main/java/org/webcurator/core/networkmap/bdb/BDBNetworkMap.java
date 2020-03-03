@@ -20,7 +20,8 @@ public class BDBNetworkMap {
     public final static String PATH_ROOT_URLS = "rootUrls";
     public final static String PATH_MALFORMED_URLS = "malformedUrls";
     public final static String PATH_ROOT_DOMAINS = "rootDomains";
-
+    public final static String PATH_COUNT_DOMAIN = "countDomain";
+    public final static String PATH_COUNT_URL = "countUrl";
     public final static Charset UTF8 = StandardCharsets.UTF_8;
 
     /**

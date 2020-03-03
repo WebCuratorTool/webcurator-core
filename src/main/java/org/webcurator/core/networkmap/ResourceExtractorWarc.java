@@ -70,7 +70,7 @@ public class ResourceExtractorWarc extends ResourceExtractor {
         if (results.containsKey(key)) {
             res = results.get(key);
         } else {
-            res = new NetworkMapNode(atomicIdGenerator.incrementAndGet());
+            res = new NetworkMapNode(atomicIdGeneratorUrl.incrementAndGet());
             results.put(key, res);
         }
 
@@ -123,7 +123,7 @@ public class ResourceExtractorWarc extends ResourceExtractor {
                 NetworkMapNode parentNode = this.results.get(parentUrl);
                 if (parentNode == null) {
                     //TODO: log
-                    parentNode = new NetworkMapNode(atomicIdGenerator.incrementAndGet());
+                    parentNode = new NetworkMapNode(atomicIdGeneratorUrl.incrementAndGet());
                     parentNode.setUrl(parentUrl);
                 }
                 res.setParentId(parentNode.getId());
