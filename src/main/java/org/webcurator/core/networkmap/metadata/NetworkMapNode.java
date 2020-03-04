@@ -45,7 +45,7 @@ public class NetworkMapNode {
     }
 
     public NetworkMapNode(String contentType, long contentLength, int statusCode) {
-        this.contentType = contentType;
+        this.contentType = URLResolverFunc.trimContentType(contentType);
         this.contentLength = contentLength;
         this.statusCode = statusCode;
     }
@@ -115,7 +115,6 @@ public class NetworkMapNode {
     public void accumulateAsChildren(int statusCode, long contentLength, String contentType) {
         this.accumulate(statusCode, contentLength, contentType);
 
-        contentType = URLResolverFunc.trimContentType(contentType);
         String key = String.format("%s@%d", contentType, statusCode);
 
         NetworkMapNode childDomainNode = this.children.get(key);
@@ -233,7 +232,7 @@ public class NetworkMapNode {
     }
 
     public void setContentType(String contentType) {
-        this.contentType = contentType;
+        this.contentType = URLResolverFunc.trimContentType(contentType);
     }
 
     public int getStatusCode() {

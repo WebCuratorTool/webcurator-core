@@ -86,9 +86,35 @@ public class NetworkMapLocalClient implements NetworkMapService {
         }
 
         final List<String> result = new ArrayList<>();
-        long countUrls = Long.parseLong(db.get(job, BDBNetworkMap.PATH_COUNT_URL));
+//        long countUrls = Long.parseLong(db.get(job, BDBNetworkMap.PATH_COUNT_URL));
+//
+//        for (long id = 1; id <= countUrls; id++) {
+//            String urlStr = db.get(job, id);
+//            if (urlStr == null) {
+//                log.warn("Null value: job={}, harvestResultNumber={}, nodeId={}", job, harvestResultNumber, id);
+//                continue;
+//            }
+//            NetworkMapNode urlNode = getNodeEntity(urlStr);
+//            if (isIncluded(urlNode, searchCommand)) {
+//                result.add(urlStr);
+//            }
+//        }
 
-        for (long id = 1; id <= countUrls; id++) {
+        List<Long> ids = this.getArrayList(db.get(job, BDBNetworkMap.PATH_ROOT_URLS));
+        searchUrl(job, harvestResultNumber, db, searchCommand, ids, result);
+
+        String json = this.obj2Json(result);
+        result.clear();
+
+        return json;
+    }
+
+    private void searchUrl(long job, int harvestResultNumber, BDBNetworkMap db, NetworkMapServiceSearchCommand searchCommand, List<Long> linkIds, final List<String> result) {
+        if (linkIds == null) {
+            return;
+        }
+
+        for (long id : linkIds) {
             String urlStr = db.get(job, id);
             if (urlStr == null) {
                 log.warn("Null value: job={}, harvestResultNumber={}, nodeId={}", job, harvestResultNumber, id);
@@ -98,12 +124,9 @@ public class NetworkMapLocalClient implements NetworkMapService {
             if (isIncluded(urlNode, searchCommand)) {
                 result.add(urlStr);
             }
+
+            searchUrl(job, harvestResultNumber, db, searchCommand, urlNode.getOutlinks(), result);
         }
-
-        String json = this.obj2Json(result);
-        result.clear();
-
-        return json;
     }
 
     @Override
@@ -199,7 +222,7 @@ public class NetworkMapLocalClient implements NetworkMapService {
         }
 
         for (String e : contentTypeCondition) {
-            if (e.equals(contentType)) {
+            if (contentType.startsWith(e)) {
                 return true;
             }
         }

@@ -132,12 +132,12 @@ public class ResourceExtractorWarc extends ResourceExtractor {
         }
 
         //Not the parent and finished urls which can be saved immediately
-        if (!res.isHasOutlinks() && res.isFinished()) {
-            addUrl2Domain(res);
-            db.put(this.job, res.getId(), res);
-
-            this.results.remove(res.getUrl());
-        }
+//        if (!res.isHasOutlinks() && res.isFinished()) {
+//            addUrl2Domain(res);
+//            db.put(this.job, res.getId(), res);
+//
+//            this.results.remove(res.getUrl());
+//        }
     }
 
 }

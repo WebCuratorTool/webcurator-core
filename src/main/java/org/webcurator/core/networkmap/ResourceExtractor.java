@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.archive.io.ArchiveReader;
 import org.archive.io.ArchiveRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
 import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 import org.webcurator.core.util.URLResolverFunc;
@@ -14,6 +16,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 abstract public class ResourceExtractor {
+    private static final Logger log = LoggerFactory.getLogger(ResourceExtractor.class);
+
     protected static final int MAX_URL_LENGTH = 1020;
     protected AtomicLong atomicIdGeneratorDomain = new AtomicLong();
     protected AtomicLong atomicIdGeneratorUrl = new AtomicLong();
@@ -34,7 +38,10 @@ abstract public class ResourceExtractor {
         preProcess();
         Iterator<ArchiveRecord> it = reader.iterator();
         while (it.hasNext()) {
-            extractRecord(it.next());
+            ArchiveRecord record=it.next();
+            extractRecord(record);
+            record.close();
+            log.info("Extracting, results.size:{}",results.size());
         }
         postProcess();
     }

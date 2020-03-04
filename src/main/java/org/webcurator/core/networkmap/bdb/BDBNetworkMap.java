@@ -3,6 +3,8 @@ package org.webcurator.core.networkmap.bdb;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sleepycat.je.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 
 import java.io.File;
@@ -17,6 +19,7 @@ import java.util.Iterator;
  */
 @SuppressWarnings("all")
 public class BDBNetworkMap {
+    private static final Logger log = LoggerFactory.getLogger(BDBNetworkMap.class);
     public final static String PATH_ROOT_URLS = "rootUrls";
     public final static String PATH_MALFORMED_URLS = "malformedUrls";
     public final static String PATH_ROOT_DOMAINS = "rootDomains";
@@ -83,7 +86,7 @@ public class BDBNetworkMap {
      *
      * @throws DatabaseException
      */
-    public synchronized void shutdownDB() throws DatabaseException {
+    public void shutdownDB() throws DatabaseException {
 
         if (db != null) {
             db.close();
@@ -165,6 +168,7 @@ public class BDBNetworkMap {
     }
 
     public void put(long job, long id, Object obj) throws DatabaseException {
+        log.debug("Put to db: job={}, id={}", job, id);
         put(job, Long.toString(id), obj);
     }
 
@@ -185,7 +189,7 @@ public class BDBNetworkMap {
     }
 
     public String get(long job, long id) throws DatabaseException {
-        return get(getKeyPath(job, Long.toString(id)));
+        return get(job, Long.toString(id));
     }
 
     public static String getKeyPath(long job, long id) {
@@ -234,6 +238,41 @@ public class BDBNetworkMap {
     }
 
     public static void main(String[] args) throws IOException {
+        BDBNetworkMap db = new BDBNetworkMap();
+        db.initializeDB("/usr/local/wct/store/_db_temp", "resource.db");
 
+        long MAX_TRY = 1000000;
+
+        long job = 33;
+
+        long startTime = System.currentTimeMillis();
+        for (long id = 1; id <= MAX_TRY; id++) {
+            db.put(job, id, "Content:" + id);
+            if (id % 1000 == 0) {
+                long endTime = System.currentTimeMillis();
+                System.out.println("Running write:" + id + ", time used:" + (endTime - startTime));
+                startTime = endTime;
+            }
+        }
+
+        db.shutdownDB();
+
+        db.initializeDB("/usr/local/wct/store/_db_temp", "resource.db");
+
+        startTime = System.currentTimeMillis();
+        for (long id = 1; id <= MAX_TRY; id++) {
+            String str = db.get(job, id);
+            if (str == null) {
+                System.out.println("Error:" + id);
+            }
+
+            if (id % 1000 == 0) {
+                long endTime = System.currentTimeMillis();
+                System.out.println("Running read:" + id + ", time used:" + (endTime - startTime));
+                startTime = endTime;
+            }
+        }
+
+        db.shutdownDB();
     }
 }

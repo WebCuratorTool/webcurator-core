@@ -4,11 +4,9 @@ import org.archive.io.*;
 import org.archive.io.warc.WARCConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
 import org.webcurator.core.networkmap.metadata.NetworkMapNode;
-import org.webcurator.core.util.ApplicationContextFactory;
 import org.webcurator.domain.model.core.ArcHarvestFileDTO;
 
 import java.io.File;
@@ -105,6 +103,7 @@ public class WCTResourceIndexer {
 
 
     private ArcHarvestFileDTO indexFile(File archiveFile, ResourceExtractor extractor) {
+        log.info("Indexing file: {}", archiveFile.getAbsolutePath());
         ArchiveReader reader = null;
         try {
             reader = ArchiveReaderFactory.get(archiveFile);

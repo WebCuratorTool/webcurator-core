@@ -83,7 +83,7 @@ public class URLResolverFunc {
         if (idx < 1) {
             return contentType.trim();
         } else {
-            return contentType.substring(0, idx - 1).trim();
+            return contentType.substring(0, idx);
         }
     }
 }
