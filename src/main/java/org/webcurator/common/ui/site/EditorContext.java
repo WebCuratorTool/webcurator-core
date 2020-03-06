@@ -25,6 +25,7 @@ import org.webcurator.domain.model.core.HasIdentity;
 /**
  * @author bbeaumont
  */
+@SuppressWarnings("rawtypes")
 public class EditorContext {
 
     /**

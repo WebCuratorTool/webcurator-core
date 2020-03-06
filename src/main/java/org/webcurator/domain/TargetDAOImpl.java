@@ -67,7 +67,7 @@ import javax.persistence.criteria.Root;
  * @author bbeaumont
  * @see TargetDAO
  */
-@SuppressWarnings("all")
+@SuppressWarnings({"rawtypes","unchecked"})
 @Transactional
 public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
     private Log log = LogFactory.getLog(TargetDAOImpl.class);
@@ -217,14 +217,14 @@ public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
 
             public Object doInHibernate(Session aSession) throws HibernateException {
                 if (!fullyInitialise) {
-                    Target aTarget = (Target) aSession.load(Target.class, targetOid);
+                    Target aTarget = aSession.load(Target.class, targetOid);
                     aTarget.setDirty(false);
                     return aTarget;
                 } else {
                     // Initialise some more items that we'll need. This is used
                     // to prevent lazy load exceptions, since we're doing things
                     // across multiple sessions.
-                    Target t = (Target) aSession.load(Target.class, targetOid);
+                    Target t = aSession.load(Target.class, targetOid);
 
                     Hibernate.initialize(t.getSeeds());
                     Hibernate.initialize(t.getSchedules());
@@ -693,14 +693,14 @@ public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
 
             public Object doInHibernate(Session aSession) throws HibernateException {
                 if (!fullyInitialise) {
-                    TargetGroup aTargetGroup = (TargetGroup) aSession.load(TargetGroup.class, targetGroupOid);
+                    TargetGroup aTargetGroup = aSession.load(TargetGroup.class, targetGroupOid);
                     aTargetGroup.setDirty(false);
                     return aTargetGroup;
                 } else {
                     // Initialise some more items that we'll need. This is used
                     // to prevent lazy load exceptions, since we're doing things
                     // across multiple sessions.
-                    TargetGroup t = (TargetGroup) aSession.load(TargetGroup.class, targetGroupOid);
+                    TargetGroup t = aSession.load(TargetGroup.class, targetGroupOid);
 
                     Hibernate.initialize(t.getSchedules());
                     Hibernate.initialize(t.getOverrides());
@@ -719,7 +719,7 @@ public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
 
 
     public AbstractTarget loadAbstractTarget(Long oid) {
-        return (AbstractTarget) getHibernateTemplate().load(AbstractTarget.class, oid);
+        return getHibernateTemplate().load(AbstractTarget.class, oid);
     }
 
     public void refresh(Object anObject) {
@@ -730,14 +730,14 @@ public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
         // Evict the group from the session and reload.
         currentSession().evict(getHibernateTemplate().load(TargetGroup.class, oid));
 
-        return (TargetGroup) getHibernateTemplate().load(TargetGroup.class, oid);
+        return getHibernateTemplate().load(TargetGroup.class, oid);
     }
 
     public Target reloadTarget(Long oid) {
         // Evict the group from the session and reload.
         currentSession().evict(getHibernateTemplate().load(Target.class, oid));
 
-        return (Target) getHibernateTemplate().load(Target.class, oid);
+        return getHibernateTemplate().load(Target.class, oid);
     }
 
     public Date getLatestScheduledDate(final AbstractTarget aTarget, final Schedule aSchedule) {
@@ -759,7 +759,7 @@ public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
         List<Seed> rst = (List<Seed>) getHibernateTemplate().execute(new HibernateCallback() {
             public Object doInHibernate(Session aSession) {
                 Query q = aSession.createNamedQuery(Seed.QUERY_SEED_BY_TARGET_ID, Seed.class);
-                q.setLong("targetOid", aTarget.getOid());
+                q.setParameter("targetOid", aTarget.getOid());
                 return q.list();
             }
         });
@@ -775,7 +775,7 @@ public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
         Set<Seed> seeds = new HashSet<Seed>();
         seeds.addAll((Set) getHibernateTemplate().execute(new HibernateCallback() {
             public Object doInHibernate(Session aSession) {
-                TargetGroup tg = (TargetGroup) aSession.load(TargetGroup.class, aTarget.getOid());
+                TargetGroup tg = aSession.load(TargetGroup.class, aTarget.getOid());
                 return getSeeds(aSession, tg);
             }
 
@@ -790,7 +790,7 @@ public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
                             if (child instanceof TargetGroup) {
                                 childGroup = (TargetGroup) child;
                             } else {
-                                childGroup = (TargetGroup) aSession.load(TargetGroup.class, child.getOid());
+                                childGroup = aSession.load(TargetGroup.class, child.getOid());
                             }
 
                             //If the childGroup is a sub-group, we don't want to include the seeds from the sub-group members
@@ -802,7 +802,7 @@ public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
                             if (child instanceof Target) {
                                 childTarget = (Target) child;
                             } else {
-                                childTarget = (Target) aSession.load(Target.class, child.getOid());
+                                childTarget = aSession.load(Target.class, child.getOid());
                             }
 
                             if (isApprovedForHarvest(childTarget) && childTarget.getOwner().getAgency().getOid().equals(agencyOid)) {
@@ -830,7 +830,7 @@ public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
             Set<Seed> seeds = aTarget.getSeeds();
             Iterator<Seed> it = seeds.iterator();
             while (it.hasNext()) {
-                seed = (Seed) it.next();
+                seed = it.next();
                 if (!seed.isHarvestable(new Date())) {
                     foundBadSeed = true;
                     break;
@@ -1218,7 +1218,7 @@ public class TargetDAOImpl extends BaseDAOImpl implements TargetDAO {
                 Hibernate.initialize(group);
                 Hibernate.initialize(group.getChildren());
                 for (GroupMember gm : group.getChildren()) {
-                    AbstractTarget childTarget = (AbstractTarget) session.load(AbstractTarget.class, gm.getChild().getOid());
+                    AbstractTarget childTarget = session.load(AbstractTarget.class, gm.getChild().getOid());
                     initTargetAndChildrenInSession(childTarget, session);
                 }
             }

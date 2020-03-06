@@ -20,6 +20,7 @@ import org.webcurator.domain.model.core.Profile;
 import org.webcurator.domain.model.dto.ProfileDTO;
 import org.webcurator.core.exceptions.WCTInvalidStateRuntimeException;
 
+@SuppressWarnings("rawtypes")
 public class MockProfileDAO implements ProfileDAO {
 
 	private static Log log = LogFactory.getLog(MockProfileDAO.class);
@@ -181,7 +182,7 @@ public class MockProfileDAO implements ProfileDAO {
 
 		if(profile.getOid() == null)
 		{
-			profile.setOid(new Long(13000L + pOids.size()));
+			profile.setOid(Long.valueOf(13000L + pOids.size()));
 		}
 
 		if(pOids.containsKey(profile.getOid()))
@@ -394,12 +395,12 @@ public class MockProfileDAO implements ProfileDAO {
     
     private Long getLong(Node child)
     {
-    	return new Long(getString(child));
+    	return Long.valueOf(getString(child));
     }
     
     private Integer getInteger(Node child)
     {
-    	return new Integer(getString(child));
+    	return Integer.valueOf(getString(child));
     }
     
     private boolean getBool(Node child)
@@ -411,7 +412,7 @@ public class MockProfileDAO implements ProfileDAO {
     {
 		Node idNode = child.getAttributes().getNamedItem("id");
 		if(idNode != null){
-		return new Long(idNode.getNodeValue());
+		return Long.valueOf(idNode.getNodeValue());
 		}
 		else
 		{

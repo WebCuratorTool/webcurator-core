@@ -40,7 +40,8 @@ public class NoPrivilegeTag extends TagSupport {
     private String privilege = null;
     private int scope = 1000;
     private AuthorityManager authorityManager = new AuthorityManagerImpl();
-    
+
+    @SuppressWarnings("rawtypes")
     @Override
     public int doStartTag() throws JspException {
         User user = AuthUtil.getRemoteUserObject();

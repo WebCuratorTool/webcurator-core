@@ -15,6 +15,7 @@ import org.webcurator.test.WCTTestUtils;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException; 
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class MockUserRoleDAO implements UserRoleDAO {
 
 	private static Log log = LogFactory.getLog(MockUserRoleDAO.class);
@@ -40,7 +41,7 @@ public class MockUserRoleDAO implements UserRoleDAO {
 	    	if(currentUserNode != null)
 	    	{
 		    	Node idNode = currentUserNode.getAttributes().getNamedItem("id");
-		    	this.currentUserOid = new Long(idNode.getNodeValue());
+		    	this.currentUserOid = Long.valueOf(idNode.getNodeValue());
 	    	}
 	        
 	    	NodeList agencyNodes = theFile.getElementsByTagName("agency");
@@ -456,7 +457,7 @@ public class MockUserRoleDAO implements UserRoleDAO {
     {
     	//Check the oid first
     	Node idNode = agencyNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null && agencyNode.hasChildNodes() && !agencyOids.containsKey(oid))
     	{
     		Agency agency = new Agency();
@@ -558,7 +559,7 @@ public class MockUserRoleDAO implements UserRoleDAO {
     {
     	//Check the oid first
     	Node idNode = roleNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null && roleNode.hasChildNodes() && !roleOids.containsKey(oid))
     	{
         	Role role = new Role();
@@ -614,7 +615,7 @@ public class MockUserRoleDAO implements UserRoleDAO {
     	RolePrivilege rp = null;
 
     	Node idNode = privNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null)
     	{
         	rp = new RolePrivilege();
@@ -629,7 +630,7 @@ public class MockUserRoleDAO implements UserRoleDAO {
 				{
 					if(child.getNodeName().equals("scope"))
 					{
-						rp.setPrivilegeScope(new Integer(child.getTextContent()));
+						rp.setPrivilegeScope(Integer.valueOf(child.getTextContent()));
 					}
 					else if(child.getNodeName().equals("privilege"))
 					{
@@ -661,7 +662,7 @@ public class MockUserRoleDAO implements UserRoleDAO {
     {
     	//Check the oid first
     	Node idNode = userNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null && userNode.hasChildNodes() && !userOids.containsKey(oid))
     	{
 			User user = new User();
@@ -716,7 +717,7 @@ public class MockUserRoleDAO implements UserRoleDAO {
 							if(roleNode.getNodeName().equals("role"))
 							{
 								Node roleIdNode = roleNode.getAttributes().getNamedItem("id");
-								Role role = roleOids.get(new Long(roleIdNode.getNodeValue()));
+								Role role = roleOids.get(Long.valueOf(roleIdNode.getNodeValue()));
 								
 								if(roleUserOids.containsKey(role.getOid()))
 								{

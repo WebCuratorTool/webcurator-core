@@ -40,6 +40,7 @@ public class LockSubject {
 	 * @param clazz The classname of the object to be locked.
 	 * @param oid   The OID of the object to be locked.
 	 */
+	@SuppressWarnings("rawtypes")
 	public LockSubject(Class clazz, Long oid) {
 		this.id = oid;
 		this.classname = clazz.getName();

@@ -90,6 +90,7 @@ public class DateUtils implements MessageSourceAware {
 	/**
 	 * @param messageSource the messageSource to set
 	 */
+	@SuppressWarnings("static")
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}	

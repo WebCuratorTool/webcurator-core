@@ -64,6 +64,7 @@ public class WCTNodeTree extends NodeTree<HarvestResource> {
 	 * @param id        The ID of the node to delete.
 	 * @param propagate true to delete all children of node as well. 
 	 */
+	@SuppressWarnings("rawtypes")
 	private void innerMarkForDelete(long id, boolean propagate) {
 		WCTNode node = (WCTNode) getNodeCache().get(id);
 		node.markForDelete(false);

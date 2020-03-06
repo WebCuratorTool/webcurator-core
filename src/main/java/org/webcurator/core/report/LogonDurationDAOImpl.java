@@ -32,6 +32,7 @@ import org.webcurator.domain.model.report.LogonDuration;
  * @author MDubos
  *
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class LogonDurationDAOImpl extends HibernateDaoSupport implements LogonDurationDAO {
 	
     private static Log log = LogFactory.getLog(LogonDurationDAOImpl.class); 

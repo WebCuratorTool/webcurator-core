@@ -16,6 +16,7 @@
 package org.webcurator.domain.model.core;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.List;
 
@@ -358,11 +359,11 @@ public class ProfileOverrides {
 		}
 		if (overrideH3DataLimit) {
 			profileOptions.setDataLimitUnit(ProfileDataUnit.valueOf(h3DataLimitUnit));
-			profileOptions.setDataLimit(new BigDecimal(h3DataLimit).setScale(8, BigDecimal.ROUND_HALF_UP));
+			profileOptions.setDataLimit(new BigDecimal(h3DataLimit).setScale(8, RoundingMode.HALF_UP));
 		}
 		if (overrideH3TimeLimit) {
 			profileOptions.setTimeLimitUnit(ProfileTimeUnit.valueOf(h3TimeLimitUnit));
-			profileOptions.setTimeLimit(new BigDecimal(h3TimeLimit).setScale(8, BigDecimal.ROUND_HALF_UP));
+			profileOptions.setTimeLimit(new BigDecimal(h3TimeLimit).setScale(8, RoundingMode.HALF_UP));
 		}
 		if (overrideH3MaxPathDepth) {
 			profileOptions.setMaxPathDepth(h3MaxPathDepth);

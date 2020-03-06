@@ -183,6 +183,7 @@ public class ArcHarvestFile {
 	 * @return A Map of URI to HarvestResource. 
 	 * @throws IOException if indexing fails.
 	 */
+	@SuppressWarnings("rawtypes")
 	public Map<String, HarvestResource> index(File baseDir) throws IOException {
 		Map<String, HarvestResource> results = new HashMap<String, HarvestResource>();
 		

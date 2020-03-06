@@ -40,6 +40,7 @@ import org.webcurator.common.ui.profiles.renderers.TextRenderer;
  * @author bbeaumont
  *
  */
+@SuppressWarnings("rawtypes")
 public class RendererManager {
 	
 	/**

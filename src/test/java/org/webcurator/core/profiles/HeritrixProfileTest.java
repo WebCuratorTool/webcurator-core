@@ -191,7 +191,7 @@ public class HeritrixProfileTest extends BaseWCTTest<HeritrixProfile>{
 			ProfileElement element = testInstance.getElement(ELEM_TOE_THREADS);
 			int count = (Integer)element.getValue();
 			testInstance.setToeThreads(count+1);
-			assertEquals((Integer)element.getValue(), new Integer(count+1));
+			assertEquals((Integer)element.getValue(),Integer.valueOf(count+1));
 		}
 		catch(Exception e)
 		{

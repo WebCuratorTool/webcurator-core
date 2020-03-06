@@ -36,6 +36,7 @@ import org.webcurator.common.ui.validation.TemplateValidatorHelper;
  * @see PermissionTemplateManager
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 public class PermissionTemplateManagerImpl implements PermissionTemplateManager {
 
     PermissionTemplateDAO permissionTemplateDAO;

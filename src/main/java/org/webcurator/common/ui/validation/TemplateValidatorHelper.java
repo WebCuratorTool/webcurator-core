@@ -77,6 +77,7 @@ public class TemplateValidatorHelper  {
     * @return The template string with all variables replaced. Missing
     *         variables will not be replaced.
     */
+   @SuppressWarnings("rawtypes")
     public String parseTemplate(Map values) {
         String target = template;
         Matcher m = varPattern.matcher(target);

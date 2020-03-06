@@ -586,12 +586,12 @@ public class MockSiteDAO implements SiteDAO {
     
     private Integer getInteger(Node child)
     {
-    	return new Integer(getString(child));
+    	return Integer.valueOf(getString(child));
     }
     
     private Double getDouble(Node child)
     {
-    	return new Double(getString(child));
+    	return Double.valueOf(getString(child));
     }
     
     private boolean getBool(Node child)
@@ -601,7 +601,7 @@ public class MockSiteDAO implements SiteDAO {
     
     private Long getLong(Node child)
     {
-    	return new Long(getString(child));
+    	return Long.valueOf(getString(child));
     }
     
     private Date getDate(Node child)
@@ -626,7 +626,7 @@ public class MockSiteDAO implements SiteDAO {
     {
 		Node idNode = child.getAttributes().getNamedItem("id");
 		if(idNode != null){
-		return new Long(idNode.getNodeValue());
+		return Long.valueOf(idNode.getNodeValue());
 		}
 		else
 		{

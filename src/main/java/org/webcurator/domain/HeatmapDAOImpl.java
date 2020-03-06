@@ -17,6 +17,7 @@ import org.webcurator.domain.model.core.HeatmapConfig;
 
 import javax.transaction.Transactional;
 
+@SuppressWarnings({"rawtypes","unchecked"})
 @Transactional
 public class HeatmapDAOImpl extends HibernateDaoSupport implements HeatmapDAO {
 
@@ -66,7 +67,7 @@ public class HeatmapDAOImpl extends HibernateDaoSupport implements HeatmapDAO {
 					public Object doInHibernate(Session session) {
 						Query query = session
 								.getNamedQuery(HeatmapConfig.QRY_GET_CONFIG_BY_OID);
-						query.setLong(1, oid);
+						query.setParameter(1, oid);
 						return query.uniqueResult();
 					}
 				});

@@ -234,7 +234,7 @@ public class SiteManagerImpl implements SiteManager {
         }
 
         if (sites.size() == 1) {
-            Site s = (Site) sites.iterator().next();
+            Site s = sites.iterator().next();
             if (s.getOid().equals(aSite.getOid())) {
                 return true;
             }

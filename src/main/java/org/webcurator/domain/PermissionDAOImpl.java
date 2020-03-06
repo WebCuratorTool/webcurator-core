@@ -27,9 +27,10 @@ import java.util.List;
 public class PermissionDAOImpl extends HibernateDaoSupport implements PermissionDAO {
     @Override
     public Permission load(long permissionOid) {
-        return (Permission) getHibernateTemplate().load(Permission.class, permissionOid);
+        return getHibernateTemplate().load(Permission.class, permissionOid);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Permission> loadBySiteId(final long siteId){
         Query query=currentSession().createNamedQuery(Permission.QUERY_BY_SITE_ID);

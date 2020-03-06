@@ -50,6 +50,7 @@ public class HasPrivilegeTag extends TagSupport {
      * @param scope the scope of the Privilege
      * @return true if the User has the Privilege
      */
+    @SuppressWarnings("rawtypes")
     public boolean hasPrivilege(String privilege, int scope) {
         User user = AuthUtil.getRemoteUserObject();
         HashMap privs = authorityManager.getPrivilegesForUser(user);

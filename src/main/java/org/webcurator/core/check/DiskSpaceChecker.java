@@ -69,7 +69,7 @@ public class DiskSpaceChecker extends AbstractChecker {
 		errorThreshold = aErrorThreshold;
 		
 		for (String mnt : aMounts) {
-			mounts.put(mnt, new Integer(0));
+			mounts.put(mnt, Integer.valueOf(0));
 		} 
 	}
 	

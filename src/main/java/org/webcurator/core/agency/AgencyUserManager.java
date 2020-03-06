@@ -34,6 +34,7 @@ import org.webcurator.domain.model.dto.UserDTO;
  * Provides the mechanism for accessing user, role and agency data.
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 public interface AgencyUserManager{
 
     /**

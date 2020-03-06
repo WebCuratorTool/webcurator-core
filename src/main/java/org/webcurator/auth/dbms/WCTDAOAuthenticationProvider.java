@@ -40,6 +40,7 @@ import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
  * @author bprice
  */
 // TODO (Kurt) - look at spring security documentation to see how to get this done as per spring security
+@SuppressWarnings("rawtypes")
 public class WCTDAOAuthenticationProvider extends JdbcDaoImpl {
     protected MappingSqlQuery authoritiesByUsernameMapping;
     protected MappingSqlQuery usersByUsernameMapping;

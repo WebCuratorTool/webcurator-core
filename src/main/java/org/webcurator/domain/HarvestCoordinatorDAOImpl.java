@@ -38,6 +38,7 @@ import org.webcurator.domain.model.core.BandwidthRestriction;
  * The implementation of the HarvestCoordinatorDAO interface.
  * @author nwaight
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 @Transactional
 public class HarvestCoordinatorDAOImpl extends HibernateDaoSupport implements HarvestCoordinatorDAO {
     /** the logger. */
@@ -72,7 +73,7 @@ public class HarvestCoordinatorDAOImpl extends HibernateDaoSupport implements Ha
 
     /** @see org.webcurator.domain.HarvestCoordinatorDAO#getBandwidthRestriction(Long). */
     public BandwidthRestriction getBandwidthRestriction(Long aOid) {        
-        return (BandwidthRestriction) getHibernateTemplate().load(BandwidthRestriction.class, aOid);
+        return getHibernateTemplate().load(BandwidthRestriction.class, aOid);
     }
     
     /** @see org.webcurator.domain.HarvestCoordinatorDAO#getBandwidthRestriction(String, Date). */

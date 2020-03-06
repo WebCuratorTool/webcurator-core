@@ -18,7 +18,7 @@ package org.webcurator.core.notification;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringBufferInputStream;
+import java.io.ByteArrayInputStream;
 
 import javax.activation.DataSource;
 
@@ -42,7 +42,7 @@ public class StringDataSource implements DataSource {
      * @see javax.activation.DataSource#getInputStream()
      */
     public InputStream getInputStream() throws IOException {
-         return new StringBufferInputStream(this.data);
+         return new ByteArrayInputStream(this.data.getBytes("UTF-8"));
     }
 
     /* (non-Javadoc)

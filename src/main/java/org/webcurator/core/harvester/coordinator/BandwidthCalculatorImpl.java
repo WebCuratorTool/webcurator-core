@@ -31,6 +31,7 @@ import org.webcurator.domain.model.core.TargetInstance;
  * target instances.
  * @author nwaight
  */
+@SuppressWarnings("rawtypes")
 public class BandwidthCalculatorImpl implements BandwidthCalculator {
 	/** the logger. */
 	private static Log log = LogFactory.getLog(BandwidthCalculatorImpl.class);
@@ -111,9 +112,9 @@ public class BandwidthCalculatorImpl implements BandwidthCalculator {
 		
 		if (aBandwidthPercentTIs.size() == 1) {			
 			ti = aBandwidthPercentTIs.iterator().next();				
-			allocatedbw = new Double(maxbw * (ti.getBandwidthPercent() / 100d));			
+			allocatedbw = Double.valueOf(maxbw * (ti.getBandwidthPercent() / 100d));
             remainingbw -= allocatedbw.doubleValue();
-            ti.setAllocatedBandwidth(new Long(allocatedbw.longValue()));  
+            ti.setAllocatedBandwidth(Long.valueOf(allocatedbw.longValue()));
             aResults.put(ti.getOid(), ti);
 		}
 		else {
@@ -131,9 +132,9 @@ public class BandwidthCalculatorImpl implements BandwidthCalculator {
             it = aBandwidthPercentTIs.iterator();
             while (it.hasNext()) {
                 ti = (TargetInstance) it.next();
-                allocatedbw = new Double(maxAllocateableBW * (ti.getBandwidthPercent() / totalBWPercents));               
+                allocatedbw = Double.valueOf(maxAllocateableBW * (ti.getBandwidthPercent() / totalBWPercents));
                 remainingbw -= allocatedbw.doubleValue();                
-                ti.setAllocatedBandwidth(new Long(allocatedbw.longValue()));                  
+                ti.setAllocatedBandwidth(Long.valueOf(allocatedbw.longValue()));
                 aResults.put(ti.getOid(), ti);
             }
 		}
@@ -159,8 +160,8 @@ public class BandwidthCalculatorImpl implements BandwidthCalculator {
 		Iterator it = aStandardTIs.iterator();
         while (it.hasNext()) {
             ti = (TargetInstance) it.next();
-            allocatedbw = new Double(aRemainingBandwidth / aStandardTIs.size());                
-            ti.setAllocatedBandwidth(new Long(allocatedbw.longValue()));                
+            allocatedbw = Double.valueOf(aRemainingBandwidth / aStandardTIs.size());
+            ti.setAllocatedBandwidth(Long.valueOf(allocatedbw.longValue()));
             aResults.put(ti.getOid(), ti);
         }
 	}

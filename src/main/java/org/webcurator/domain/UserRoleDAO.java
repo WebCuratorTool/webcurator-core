@@ -27,6 +27,7 @@ import org.webcurator.domain.model.dto.UserDTO;
  * data from the persistent data store. 
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 public interface UserRoleDAO {
 	/**
 	 * Save or update the specified object to the persistent data store.

@@ -29,6 +29,7 @@ import javax.servlet.jsp.tagext.TagSupport;
  * @author bbeaumont
  *
  */
+@SuppressWarnings("rawtypes")
 public class TreeTag extends TagSupport {
 	/** Version ID for serialisation. */
 	private static final long serialVersionUID = -210301172665342852L;

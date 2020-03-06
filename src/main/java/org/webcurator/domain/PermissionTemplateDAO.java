@@ -23,6 +23,7 @@ import org.webcurator.domain.model.core.PermissionTemplate;
  * Persistance Interface for the managing the Permission Template Request object
  * @author BPrice
  */
+@SuppressWarnings("rawtypes")
 public interface PermissionTemplateDAO {
 
     /**

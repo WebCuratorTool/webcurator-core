@@ -28,12 +28,10 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
+import org.apache.tools.ant.types.resources.Restrict;
+import org.hibernate.*;
 import org.hibernate.criterion.*;
 import org.hibernate.query.Query;
-import org.hibernate.Session;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.transaction.TransactionStatus;
@@ -52,7 +50,7 @@ import org.webcurator.domain.model.dto.TargetInstanceDTO;
  * The implementation of the TargetInstanceDAO interface.
  * @author nwaight
  */
-@SuppressWarnings("all")
+@SuppressWarnings({"rawtypes","unchecked"})
 @Transactional
 public class TargetInstanceDAOImpl extends HibernateDaoSupport implements TargetInstanceDAO {
 	
@@ -170,7 +168,7 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
                     public Object doInTransaction(TransactionStatus ts) {
                         try { 
                             log.debug("Before deleting harvest result resources");
-							currentSession().createQuery("DELETE HarvestResource WHERE result.oid=:hrOid").setLong("hrOid", harvestResultId)
+							currentSession().createQuery("DELETE HarvestResource WHERE result.oid=:hrOid").setParameter("hrOid", harvestResultId)
 									.executeUpdate();
                             log.debug("After deleting harvest result resources");
                         }
@@ -194,7 +192,7 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
                     public Object doInTransaction(TransactionStatus ts) {
                         try { 
                             log.debug("Before deleting harvest result files");
-							currentSession().createQuery("DELETE ArcHarvestFile WHERE arcHarvestResult.oid=:hrOid").setLong("hrOid", harvestResultId)
+							currentSession().createQuery("DELETE ArcHarvestFile WHERE arcHarvestResult.oid=:hrOid").setParameter("hrOid", harvestResultId)
 									.executeUpdate();
                             log.debug("After deleting harvest result files");
                         }
@@ -232,7 +230,7 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 	
 	
 	public TargetInstance load(final long targetInstanceOid) {
-		return (TargetInstance) getHibernateTemplate().load(TargetInstance.class, targetInstanceOid);
+		return getHibernateTemplate().load(TargetInstance.class, targetInstanceOid);
 	}
 	
 
@@ -291,9 +289,16 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 		return resources;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<HarvestResult> getHarvestResults(final long targetInstanceId) {
-		return (List<HarvestResult>) getHibernateTemplate().find("select hr from ArcHarvestResult hr where hr.targetInstance.oid=?0 order by hr.harvestNumber", targetInstanceId);
+		return getHibernateTemplate().execute(new HibernateCallback<List<HarvestResult>>() {
+			@Override
+			public List<HarvestResult> doInHibernate(Session session) throws HibernateException {
+				Query q = session.createQuery("select hr from ArcHarvestResult hr where hr.targetInstance.oid=?0 order by hr.harvestNumber");
+				q.setParameter("targetInstanceId", targetInstanceId);
+				return q.getResultList();
+			}
+		});
+//		return (List<HarvestResult>) getHibernateTemplate().find("select hr from ArcHarvestResult hr where hr.targetInstance.oid=?0 order by hr.harvestNumber", targetInstanceId);
 	}
 	
 	public Pagination search(final TargetInstanceCriteria aCriteria, final int aPage, final int aPageSize) {
@@ -331,8 +336,8 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 			            }
 					}
 
-					query.add(Expression.between("scheduledTime", from, to));
-					cntQuery.add(Expression.between("scheduledTime", from, to));
+					query.add(Restrictions.between("scheduledTime", from, to));
+					cntQuery.add(Restrictions.between("scheduledTime", from, to));
 										
 					if (aCriteria.getStates() != null && !aCriteria.getStates().isEmpty()) {
 						Disjunction stateDisjunction = Restrictions.disjunction();
@@ -502,7 +507,7 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 				            }
 						}
 
-						query.add(Expression.between("scheduledTime", from, to));
+						query.add(Restrictions.between("scheduledTime", from, to));
 											
 						if (aCriteria.getStates() != null && !aCriteria.getStates().isEmpty()) {
 							Disjunction stateDisjunction = Restrictions.disjunction();
@@ -542,9 +547,9 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 				new HibernateCallback() {
 					public Object doInHibernate(Session session) {	
 						Query query = session.getNamedQuery(TargetInstance.QRY_GET_PURGEABLE_TIS);
-						query.setTimestamp(TargetInstance.QRY_PARAM_PURGE_TIME, aPurgeDate);
-						query.setString(TargetInstance.QRY_PARAM_ARCHIVED_STATE, TargetInstance.STATE_ARCHIVED);
-						query.setString(TargetInstance.QRY_PARAM_REJECTED_STATE, TargetInstance.STATE_REJECTED);
+						query.setParameter(TargetInstance.QRY_PARAM_PURGE_TIME, aPurgeDate);
+						query.setParameter(TargetInstance.QRY_PARAM_ARCHIVED_STATE, TargetInstance.STATE_ARCHIVED);
+						query.setParameter(TargetInstance.QRY_PARAM_REJECTED_STATE, TargetInstance.STATE_REJECTED);
 						
 						return query.list();
 					}
@@ -558,8 +563,8 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 				new HibernateCallback() {
 					public Object doInHibernate(Session session) {	
 						Query query = session.getNamedQuery(TargetInstance.QRY_GET_PURGEABLE_ABORTED_TIS);
-						query.setTimestamp(TargetInstance.QRY_PARAM_PURGE_TIME, aPurgeDate);
-						query.setString(TargetInstance.QRY_PARAM_ABORTED_STATE, TargetInstance.STATE_ABORTED);
+						query.setParameter(TargetInstance.QRY_PARAM_PURGE_TIME, aPurgeDate);
+						query.setParameter(TargetInstance.QRY_PARAM_ABORTED_STATE, TargetInstance.STATE_ABORTED);
 						
 						return query.list();
 					}
@@ -588,7 +593,7 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 					
 					Query query = session.createQuery(q.toString());
 					
-					query.setTimestamp("ed", new Date());
+					query.setParameter("ed", new Date());
 					
 					return query.list();
 				}
@@ -610,7 +615,7 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 					
 					Query query = session.createQuery(q.toString());
 					
-					query.setTimestamp("ed", new Date(System.currentTimeMillis()+futureMs));
+					query.setParameter("ed", new Date(System.currentTimeMillis()+futureMs));
 					
 					return query.list();
 				}
@@ -639,8 +644,8 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 					
 					Query query = session.createQuery(q.toString());
 					
-					query.setDate("ed", new Date());
-					query.setLong("toid", targetOid);
+					query.setParameter("ed", new Date());
+					query.setParameter("toid", targetOid);
 					
 					return query.list();
 				}
@@ -667,8 +672,8 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 					
 					Query query = session.createQuery(q.toString());
 					
-					query.setDate("ed", new Date());
-					query.setLong("toid", targetOid);
+					query.setParameter("ed", new Date());
+					query.setParameter("toid", targetOid);
 					
 					return query.list().get(0);
 				}
@@ -680,7 +685,7 @@ public class TargetInstanceDAOImpl extends HibernateDaoSupport implements Target
 	public TargetInstance populate(final TargetInstance aTargetInstance) {
 		TargetInstance ti = (TargetInstance) getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session aSession) throws HibernateException {
-				TargetInstance ati = (TargetInstance) aSession.load(TargetInstance.class, aTargetInstance.getOid());
+				TargetInstance ati = aSession.load(TargetInstance.class, aTargetInstance.getOid());
 				if(ati != null)
 				{
 					Hibernate.initialize(ati.getOriginalSeeds());

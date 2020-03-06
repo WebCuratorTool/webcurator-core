@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.webcurator.core.report.OperationalReport;
 import org.webcurator.core.report.ReportGenerator;
@@ -36,6 +37,7 @@ import org.webcurator.domain.model.report.AbstractTargetScheduleView;
  * @author oakleigh_sk
  *
  */
+@SuppressWarnings("rawtypes")
 public class SummaryTargetSchedulesReport extends HibernateDaoSupport implements ReportGenerator {
 
 	private static String[] schedules = {"Mondays at 9:00pm", "Custom", "Daily", "Weekly", "Monthly", "Bi-Monthly", "Quarterly", "Half-Yearly", "Annually" };

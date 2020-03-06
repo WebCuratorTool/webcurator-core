@@ -32,6 +32,7 @@ public class StatusTreeTag extends TreeTag {
 	/* (non-Javadoc)
 	 * @see org.webcurator.core.store.tools.tree.TreeTag#displayExtraInfo(javax.servlet.jsp.JspWriter, org.webcurator.core.store.tools.tree.Node)
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void displayExtraInfo(JspWriter out, Node node) throws IOException {
 		WCTNode n = (WCTNode) node;

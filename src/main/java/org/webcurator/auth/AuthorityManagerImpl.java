@@ -35,6 +35,7 @@ import org.webcurator.domain.model.auth.User;
  * The implementation of the AuthorityManager interface.
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 public class AuthorityManagerImpl implements AuthorityManager {
 
     private Log log = null;

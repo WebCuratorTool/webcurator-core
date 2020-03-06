@@ -30,6 +30,7 @@ import javax.persistence.*;
 // lazy="false"
 @Entity
 @Table(name = "ANNOTATIONS")
+@SuppressWarnings("rawtypes")
 @NamedQuery(name = "org.webcurator.domain.model.core.Annotation.getNotesForObject",
 		query="from org.webcurator.domain.model.core.Annotation an where an.objectType = :type and an.objectOid = :oid")
 public class Annotation implements Comparable {

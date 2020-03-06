@@ -35,6 +35,7 @@ import org.webcurator.domain.model.core.IndicatorCriteria;
  * querying any objects related to indicator criteria. 
  * @author oakleigh_sk
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 @Transactional
 public class IndicatorCriteriaDAOImpl extends HibernateDaoSupport implements IndicatorCriteriaDAO{
     
@@ -86,7 +87,7 @@ public class IndicatorCriteriaDAOImpl extends HibernateDaoSupport implements Ind
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) {
                         Query query = session.getNamedQuery(IndicatorCriteria.QRY_GET_INDICATOR_CRITERIA_BY_OID);
-                        query.setLong(1,indicatorCriteriaOid);
+                        query.setParameter(1,indicatorCriteriaOid);
                         return query.uniqueResult();
                     }
                 }

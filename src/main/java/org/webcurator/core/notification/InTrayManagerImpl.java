@@ -52,6 +52,7 @@ import org.webcurator.common.ui.Constants;
  * @see InTrayManager
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 public class InTrayManagerImpl implements InTrayManager{
 
     private static Log log = LogFactory.getLog(InTrayManagerImpl.class);
@@ -262,7 +263,7 @@ public class InTrayManagerImpl implements InTrayManager{
 		List<Task> tasksToDelete = inTrayDAO.getTasks(aResourceOid, aResourceType, aTaskType);
 		if ( tasksToDelete != null ) {
 			for (Iterator<Task> it = tasksToDelete.iterator(); it.hasNext(); ) {
-				Task toDelete = (Task)it.next();
+				Task toDelete = it.next();
 				inTrayDAO.delete(toDelete);
 			}
 		}

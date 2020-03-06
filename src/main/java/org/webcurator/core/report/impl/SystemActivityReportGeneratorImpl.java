@@ -37,6 +37,7 @@ import org.webcurator.domain.model.audit.Audit;
  * 
  * @author MDubos
  */
+@SuppressWarnings("rawtypes")
 public class SystemActivityReportGeneratorImpl extends HibernateDaoSupport 
 	implements ReportGenerator {
 	

@@ -52,7 +52,7 @@ public class HarvestAgentManagerImpl implements HarvestAgentManager {
 			log.debug("Obtained lock for ti " + tiOid);
 
 			TargetInstance ti = targetInstanceDao.load(tiOid);
-			HarvesterStatusDTO harvesterStatusDto = (HarvesterStatusDTO) harvesterStatusMap.get(key);
+			HarvesterStatusDTO harvesterStatusDto = harvesterStatusMap.get(key);
 
 			updateStatusWithEnvironment(harvesterStatusDto);
 			HarvesterStatus harvesterStatus = createHarvesterStatus(ti, harvesterStatusDto);
@@ -324,7 +324,7 @@ public class HarvestAgentManagerImpl implements HarvestAgentManager {
 			Long allocated = targetInstance.getAllocatedBandwidth();
 			if (allocated == null || targetInstance.getAllocatedBandwidth().intValue() <= 0) {
 				// zero signifies unlimited bandwidth, prevent this
-				targetInstance.setAllocatedBandwidth(new Long(1));
+				targetInstance.setAllocatedBandwidth(Long.valueOf(1));
 			}
 			agent.restrictBandwidth(targetInstance.getJobName(), targetInstance.getAllocatedBandwidth().intValue());
 			targetInstanceDao.save(targetInstance);

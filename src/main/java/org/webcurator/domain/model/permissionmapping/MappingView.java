@@ -31,6 +31,7 @@ import javax.persistence.*;
  * @author bbeaumont
  */
 // lazy="true"
+@SuppressWarnings("overrides")
 @Entity
 @Table(name = "URL_PERMISSION_MAPPING_VIEW")
 @NamedQuery(name = "org.webcurator.domain.model.permissionmapping.MappingView.LIST",

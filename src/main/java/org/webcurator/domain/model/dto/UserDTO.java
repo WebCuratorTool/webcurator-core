@@ -23,6 +23,7 @@ import org.webcurator.domain.model.auth.User;
  * loading all the other relationships with a User
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 public class UserDTO implements Comparable {
     
 	/** The OID of the user */

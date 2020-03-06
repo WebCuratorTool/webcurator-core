@@ -45,6 +45,7 @@ import org.webcurator.domain.model.dto.ProfileDTO;
  * The implementation of the ProfileDAO interface.
  * @author bbeaumont
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 @Repository
 @Transactional
 public class ProfileDAOImpl extends BaseDAOImpl implements ProfileDAO {
@@ -53,7 +54,7 @@ public class ProfileDAOImpl extends BaseDAOImpl implements ProfileDAO {
 	
 	
 	public Profile load(Long oid) {
-		return (Profile) getHibernateTemplate().load(Profile.class, oid);
+		return getHibernateTemplate().load(Profile.class, oid);
 	}
 
 	public void saveOrUpdate(final Profile aProfile) {

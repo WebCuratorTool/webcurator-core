@@ -28,6 +28,7 @@ import org.webcurator.domain.model.core.Task;
  * via email or their in tray.
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 public interface InTrayManager {
     /**
      * This flag specifices if the List of privileges must all exist for a User to receive the Notification

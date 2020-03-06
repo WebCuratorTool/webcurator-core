@@ -27,6 +27,7 @@ import java.util.TreeSet;
  *
  * @param <SUBJECT>
  */
+@SuppressWarnings("rawtypes")
 public class Node<SUBJECT> implements Comparable {
     /** The renderer for this node */
     private static NodeRenderer renderer = new NodeRenderer();

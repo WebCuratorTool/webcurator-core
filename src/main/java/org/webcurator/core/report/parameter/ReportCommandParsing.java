@@ -87,7 +87,7 @@ public class ReportCommandParsing {
 	public void parse() {
 			
 		String chosenReport = reportCommand.getSelectedReport();
-		List<String> params = (List<String>) reportCommand.getParameters();
+		List<String> params = reportCommand.getParameters();
 		Object[] parameterProperties = new Object[5];
 		
 		if(params != null){
@@ -129,7 +129,7 @@ public class ReportCommandParsing {
 					}
 					else if(optional == null){
 						optional = paramsElt;
-						parameterProperties[OPTIONAL] = new Boolean((String)paramsElt);
+						parameterProperties[OPTIONAL] = Boolean.valueOf(paramsElt);
 						doOnOptional(paramsElt);
 						
 						doOnEndOfParameterParsing(reportCommand, parameterProperties, errors);

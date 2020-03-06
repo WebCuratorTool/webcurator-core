@@ -33,12 +33,15 @@ import org.webcurator.domain.model.core.Site;
 import org.webcurator.domain.model.permissionmapping.Mapping;
 import org.webcurator.domain.model.permissionmapping.MappingView;
 
+import javax.persistence.criteria.CriteriaBuilder;
+
 /**
  * Implementation of the Hierarchical Permission Mapping DAO.
  *
  * @author bbeaumont
  * @see org.webcurator.core.permissionmapping.HierPermMappingDAO
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 @Transactional
 public class HierPermMappingDAOImpl extends HibernateDaoSupport implements HierPermMappingDAO {
     /**
@@ -208,7 +211,8 @@ public class HierPermMappingDAOImpl extends HibernateDaoSupport implements HierP
                     public Object doInTransaction(TransactionStatus ts) {
                         try {
 
-                            Criteria query = currentSession().createCriteria(Mapping.class);
+                            CriteriaBuilder criteriaBuilder = currentSession().getCriteriaBuilder();
+                            Criteria query = (Criteria) criteriaBuilder.createQuery(Mapping.class);
                             query.createCriteria("permission")
                                     .createCriteria("site")
                                     .add(Restrictions.eq("oid", aSite.getOid()));

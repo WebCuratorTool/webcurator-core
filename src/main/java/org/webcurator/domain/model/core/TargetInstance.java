@@ -399,9 +399,9 @@ public class TargetInstance implements Annotatable, Overrideable, UserInTrayReso
      */
     public TreeMap<Integer, String> getPriorities() {
     	TreeMap<Integer, String> p = new TreeMap<Integer, String>();
-    	p.put(new Integer(PRI_LOW), "Low");
-    	p.put(new Integer(PRI_NRML), "Normal");
-    	p.put(new Integer(PRI_HI), "High");
+    	p.put(Integer.valueOf(PRI_LOW), "Low");
+    	p.put(Integer.valueOf(PRI_NRML), "Normal");
+    	p.put(Integer.valueOf(PRI_HI), "High");
     	
     	return p;
     }
@@ -612,6 +612,7 @@ public class TargetInstance implements Annotatable, Overrideable, UserInTrayReso
      * objects by state and scheduled date and time.
      * @author nwaight
      */
+    @SuppressWarnings("rawtypes")
     public static class TargetInstanceComparator implements Comparator {
         /** @see Comparator#compare(java.lang.Object, java.lang.Object). */
         public int compare(Object o1, Object o2) {
@@ -758,6 +759,7 @@ public class TargetInstance implements Annotatable, Overrideable, UserInTrayReso
 	/*(non-Javadoc)
 	 * @see org.webcurator.domain.model.core.Annotatable#sortAnnotations()
 	 */
+	@SuppressWarnings("unchecked")
 	public void sortAnnotations()
 	{
 		Collections.sort(annotations);

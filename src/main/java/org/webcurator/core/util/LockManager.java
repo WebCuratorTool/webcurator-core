@@ -29,6 +29,7 @@ import org.webcurator.domain.model.core.Lockable;
  * @author bbeaumont
  *
  */
+@SuppressWarnings("rawtypes")
 public class LockManager {
 	/** The map of locked objects and who they are locked by */
 	private Map<LockSubject,String> locksByObject = new HashMap<LockSubject,String>();

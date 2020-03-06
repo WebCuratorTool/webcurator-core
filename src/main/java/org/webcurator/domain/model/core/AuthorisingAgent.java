@@ -331,6 +331,7 @@ public class AuthorisingAgent extends AbstractIdentityObject implements Annotata
     /*(non-Javadoc)
      * @see org.webcurator.domain.model.core.Annotatable#sortAnnotations()
      */
+    @SuppressWarnings("unchecked")
     public void sortAnnotations() {
         Collections.sort(annotations);
         annotationsSorted = true;

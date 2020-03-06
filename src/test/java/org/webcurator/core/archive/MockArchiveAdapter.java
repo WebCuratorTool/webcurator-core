@@ -9,7 +9,8 @@ import org.apache.commons.logging.LogFactory;
 public class MockArchiveAdapter implements ArchiveAdapter {
 
 	protected static Log log = LogFactory.getLog(MockArchiveAdapter.class);
-	
+
+	@SuppressWarnings("rawtypes")
 	public void submitToArchive(TargetInstance instance, String sipXML, Map customDepositFormElements,
 			int harvestNumber) throws Exception {
 		if(log.isInfoEnabled())

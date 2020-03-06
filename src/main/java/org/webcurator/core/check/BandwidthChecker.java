@@ -87,7 +87,7 @@ public class BandwidthChecker extends AbstractChecker {
 			tot += agent.getCurrentKBs();
 		}
 
-		Double total = new Double(tot);
+		Double total = Double.valueOf(tot);
 		return total.longValue();
 	}
 

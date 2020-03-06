@@ -30,7 +30,7 @@ import org.webcurator.test.WCTTestUtils;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-@SuppressWarnings("all")
+@SuppressWarnings("rawtypes")
 public class MockTargetInstanceDAO implements TargetInstanceDAO {
 
 	private static Log log = LogFactory.getLog(MockTargetInstanceDAO.class);
@@ -901,7 +901,7 @@ public class MockTargetInstanceDAO implements TargetInstanceDAO {
     		return null;
     	}
     	
-    	return new Integer(getString(child));
+    	return Integer.valueOf(getString(child));
     }
     
     private Double getDouble(Node child)
@@ -911,7 +911,7 @@ public class MockTargetInstanceDAO implements TargetInstanceDAO {
     		return null;
     	}
     	
-    	return new Double(getString(child));
+    	return Double.valueOf(getString(child));
     }
     
     private boolean getBool(Node child)
@@ -926,7 +926,7 @@ public class MockTargetInstanceDAO implements TargetInstanceDAO {
     		return null;
     	}
     	
-    	return new Long(getString(child));
+    	return Long.valueOf(getString(child));
     }
     
     private Date getDate(Node child)
@@ -951,7 +951,7 @@ public class MockTargetInstanceDAO implements TargetInstanceDAO {
     {
 		Node idNode = child.getAttributes().getNamedItem("id");
 		if(idNode != null){
-		return new Long(idNode.getNodeValue());
+		return Long.valueOf(idNode.getNodeValue());
 		}
 		else
 		{

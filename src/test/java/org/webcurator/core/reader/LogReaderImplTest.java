@@ -101,7 +101,7 @@ public class LogReaderImplTest extends BaseWCTTest<LogReaderImpl>{
 
 	@Test
 	public final void testFindFirstLineAfterTimeStamp() {
-		Long timestamp = new Long(20080618062122L);
+		Long timestamp = Long.valueOf(20080618062122L);
 		Integer result = testInstance.findFirstLineAfterTimeStamp("Dummy", "crawl.log", timestamp);
 		assertNotNull(result);
 		assertTrue(result.intValue() == 4656);

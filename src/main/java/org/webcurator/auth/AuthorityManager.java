@@ -90,6 +90,7 @@ public interface AuthorityManager {
      * @param scope the scope of the Privilege to check for
      * @return true if this user has the correctly scoped privilege
      */
+    @SuppressWarnings("rawtypes")
     boolean hasPrivilege(String privilege, int scope);
     
     /**
@@ -99,6 +100,7 @@ public interface AuthorityManager {
      * @param user the User object
      * @return a HashMap of all Privileges this user has keyed by the Privilege code
      */
+    @SuppressWarnings("rawtypes")
     HashMap getPrivilegesForUser(User user);
     
     /**

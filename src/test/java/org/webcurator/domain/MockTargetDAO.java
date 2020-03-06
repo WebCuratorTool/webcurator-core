@@ -40,6 +40,7 @@ import org.webcurator.domain.model.core.TargetInstance;
 import org.webcurator.domain.model.dto.AbstractTargetDTO;
 import org.webcurator.domain.model.dto.GroupMemberDTO;
 
+@SuppressWarnings("rawtypes")
 public class MockTargetDAO implements TargetDAO {
 
 	private static Log log = LogFactory.getLog(TargetInstanceDAO.class);
@@ -236,7 +237,7 @@ public class MockTargetDAO implements TargetDAO {
 			while(it.hasNext())
 			{
 				GroupMember gm = it.next();
-				states.add(new Integer(gm.getChild().getState()));
+				states.add(Integer.valueOf(gm.getChild().getState()));
 			}
 			return states;
 		}		
@@ -1121,12 +1122,12 @@ public class MockTargetDAO implements TargetDAO {
     
     private Integer getInteger(Node child)
     {
-    	return new Integer(getString(child));
+    	return Integer.valueOf(getString(child));
     }
     
     private Double getDouble(Node child)
     {
-    	return new Double(getString(child));
+    	return Double.valueOf(getString(child));
     }
     
     private boolean getBool(Node child)
@@ -1138,7 +1139,7 @@ public class MockTargetDAO implements TargetDAO {
     {
     	String longValue = getString(child);
     	if (!longValue.equals("")) {
-    		return new Long(longValue);
+    		return Long.valueOf(longValue);
     	} 
     	return null;
     }
@@ -1165,7 +1166,7 @@ public class MockTargetDAO implements TargetDAO {
     {
 		Node idNode = child.getAttributes().getNamedItem("id");
 		if(idNode != null){
-		return new Long(idNode.getNodeValue());
+		return Long.valueOf(idNode.getNodeValue());
 		}
 		else
 		{

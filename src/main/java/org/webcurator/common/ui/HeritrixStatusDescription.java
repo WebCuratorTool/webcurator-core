@@ -3,6 +3,7 @@ package org.webcurator.common.ui;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("static")
 public class HeritrixStatusDescription {
 	
 	private static final HashMap<Integer, String> description = new HashMap<Integer, String>();

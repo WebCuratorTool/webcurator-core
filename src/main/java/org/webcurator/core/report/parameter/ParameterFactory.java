@@ -67,6 +67,7 @@ public class ParameterFactory {
 	 * @param errors Object handling errors
 	 * @return An instance of a {@link Parameter}
 	 */
+	@SuppressWarnings("rawtypes")
 	public static Parameter buildParameter(Object[] params, Errors errors) {
 		
 //		log.debug("n=" + params[ReportCommandParsing.NAME] );

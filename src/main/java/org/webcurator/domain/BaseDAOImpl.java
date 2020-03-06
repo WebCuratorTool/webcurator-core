@@ -29,6 +29,7 @@ import org.webcurator.core.exceptions.WCTRuntimeException;
  * The implementation of the BaseDAO interface.
  * @author bbeaumont
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class BaseDAOImpl extends HibernateDaoSupport implements BaseDAO {
 	private Log log = LogFactory.getLog(BaseDAOImpl.class);
 	

@@ -33,6 +33,7 @@ import org.springframework.validation.ObjectError;
  *      
  * @author MDubos
  */
+@SuppressWarnings({"unchecked","rawtypes","dep-ann"})
 public class SimpleErrors implements Errors {
 	
 	private boolean hasSomeErrors = false;

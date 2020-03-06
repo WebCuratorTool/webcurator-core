@@ -136,6 +136,7 @@ public class QaRecommendationServiceImpl implements QaRecommendationService {
      * @throws DroolsParserException
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
 	public final void applyRules(TargetInstance ti, TargetInstance referenceCrawl, List<IndicatorCriteria> criterias) throws DroolsParserException, IOException {
 		
         // fetch the indictors to compute

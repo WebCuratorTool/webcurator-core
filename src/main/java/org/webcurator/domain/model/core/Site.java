@@ -406,6 +406,7 @@ public class Site extends AbstractIdentityObject implements Annotatable, AgencyO
 	/*(non-Javadoc)
 	 * @see org.webcurator.domain.model.core.Annotatable#sortAnnotations()
 	 */
+	@SuppressWarnings("unchecked")
 	public void sortAnnotations()
 	{
 		Collections.sort(annotations);

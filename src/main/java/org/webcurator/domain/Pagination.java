@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.query.ParameterMetadata;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -37,6 +38,7 @@ import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
  * to help display them in a page by page manner.
  * @author bprice
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class Pagination extends HibernateDaoSupport {
 	/** the list of results. */
 	private List results;
@@ -182,7 +184,7 @@ public class Pagination extends HibernateDaoSupport {
 	 */
 	public boolean isNextPage() {
 		// return true unless we're on the last page
-		if( page == (int)(total/pageSize) ) {
+		if( page == (total/pageSize) ) {
 			return false;
 		} else {
 			return true;
@@ -219,7 +221,7 @@ public class Pagination extends HibernateDaoSupport {
 	 * @param map the query parameters
 	 */
 	private void bindQueryParams(Query q, Map map) {
-		String[] allParams = q.getNamedParameters();
+		String[] allParams = ((ParameterMetadata) q).getNamedParameterNames().toArray(new String[0]);
 		log.debug("Binding parameters in Pagination");
 		for (int i = 0; i < allParams.length; i++) {
 			// for each named parameter, bind it to the query

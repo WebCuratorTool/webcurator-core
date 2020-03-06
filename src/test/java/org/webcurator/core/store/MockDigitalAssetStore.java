@@ -99,6 +99,7 @@ public class MockDigitalAssetStore implements DigitalAssetStore {
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void submitToArchive(String targetInstanceOid, String sip,
 			Map attributes, int harvestNumber)
 			throws DigitalAssetStoreException {

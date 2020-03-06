@@ -47,6 +47,7 @@ public class WCTAuthoritiesPopulator implements LdapAuthoritiesPopulator {
      * @param username the user name to get the authorities for
      * @return the list of granted authorities
      */
+    @SuppressWarnings("rawtypes")
     public Collection<GrantedAuthority> getGrantedAuthorities(DirContextOperations userData, String username) {
 
         List<GrantedAuthority> roles = new ArrayList<>();

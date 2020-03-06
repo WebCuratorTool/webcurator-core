@@ -37,11 +37,14 @@ import org.webcurator.core.report.parameter.Parameter;
 import org.webcurator.core.report.parameter.StringParameter;
 import org.webcurator.domain.model.core.TargetInstance;
 
+import javax.persistence.criteria.CriteriaBuilder;
+
 /**
  * Report for Crawler Activity.
  * @author beaumontb
  *
  */
+@SuppressWarnings("rawtypes")
 public class CrawlerActivityReport extends HibernateDaoSupport implements ReportGenerator {
 
 	private Log log = LogFactory.getLog(CrawlerActivityReport.class);
@@ -84,7 +87,8 @@ public class CrawlerActivityReport extends HibernateDaoSupport implements Report
 
 			@SuppressWarnings("unchecked")
 			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria query = session.createCriteria(TargetInstance.class);
+				CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+				Criteria query = (Criteria) criteriaBuilder.createQuery(TargetInstance.class);
 				Criteria owner = null;
 				if (userName != null && !userName.equals("All users")) {
 					owner = query.createCriteria("owner").add(Restrictions.eq("username", userName));

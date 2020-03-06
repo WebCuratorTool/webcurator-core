@@ -38,6 +38,7 @@ import org.webcurator.common.util.DateUtils;
  * @see ArchiveAdapter
  * @author aparker
  */
+@SuppressWarnings("rawtypes")
 public class ArchiveAdapterImpl implements ArchiveAdapter {
 	/** the logger. */
 	private static Log log = LogFactory.getLog(ArchiveAdapterImpl.class);

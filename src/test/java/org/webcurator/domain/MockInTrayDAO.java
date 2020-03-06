@@ -72,6 +72,7 @@ public class MockInTrayDAO implements InTrayDAO {
 		return null;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Object load(Class clazz, Long oid) {
 		// TODO Auto-generated method stub
 		return null;

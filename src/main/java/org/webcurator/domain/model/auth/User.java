@@ -27,6 +27,7 @@ import java.util.Set;
  * @author bprice
  */
 // lazy="false"
+@SuppressWarnings("rawtypes")
 @Entity
 @Table(name = "WCTUSER")
 @NamedQueries({

@@ -25,6 +25,7 @@ import org.webcurator.domain.model.core.RejReason;
  * data from the persistent data store. 
  * @author oakleigh_sk
  */
+@SuppressWarnings("rawtypes")
 public interface RejReasonDAO {
 	/**
 	 * Save or update the specified object to the persistent data store.

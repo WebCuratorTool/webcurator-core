@@ -34,6 +34,7 @@ public class WCTNodeRenderer extends NodeRenderer {
 	/* (non-Javadoc)
 	 * @see org.webcurator.core.store.tools.tree.NodeRenderer#renderDisplayName(javax.servlet.jsp.JspWriter, org.webcurator.core.store.tools.tree.Node)
 	 */
+	@SuppressWarnings("rawtypes")
 	public void renderDisplayName(JspWriter out, Node n) throws IOException {
 		WCTNode node = (WCTNode) n;
 		if( node.isMarkedForDelete() && node.isMarkedForImport()) {

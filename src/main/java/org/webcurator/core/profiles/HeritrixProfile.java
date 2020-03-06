@@ -67,6 +67,7 @@ import org.xml.sax.XMLReader;
  * @author bbeaumont
  *
  */
+@SuppressWarnings("rawtypes")
 public class HeritrixProfile {
 	/** The logger for this class */
 	private Log log = LogFactory.getLog(HeritrixProfile.class);

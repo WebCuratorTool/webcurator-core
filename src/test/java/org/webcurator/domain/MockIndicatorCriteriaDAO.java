@@ -186,7 +186,7 @@ public class MockIndicatorCriteriaDAO implements IndicatorCriteriaDAO {
     
     private Float getFloat(Node child)
     {
-    	return new Float(getString(child));
+    	return Float.valueOf(getString(child));
     }
     
     private Date getDate(Node child)
@@ -211,7 +211,7 @@ public class MockIndicatorCriteriaDAO implements IndicatorCriteriaDAO {
     {
 		Node idNode = child.getAttributes().getNamedItem("id");
 		if(idNode != null){
-		return new Long(idNode.getNodeValue());
+		return Long.valueOf(idNode.getNodeValue());
 		}
 		else
 		{
@@ -266,7 +266,7 @@ public class MockIndicatorCriteriaDAO implements IndicatorCriteriaDAO {
     {
     	//Check the oid first
     	Node idNode = agencyNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null && !agencyOids.containsKey(oid))
     	{
     		Agency agency = new Agency();
@@ -368,7 +368,7 @@ public class MockIndicatorCriteriaDAO implements IndicatorCriteriaDAO {
     {
     	//Check the oid first
     	Node idNode = userNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null && userNode.hasChildNodes() && !userOids.containsKey(oid))
     	{
 			User user = new User();
@@ -423,7 +423,7 @@ public class MockIndicatorCriteriaDAO implements IndicatorCriteriaDAO {
 							if(roleNode.getNodeName().equals("role"))
 							{
 								Node roleIdNode = roleNode.getAttributes().getNamedItem("id");
-								Role role = roleOids.get(new Long(roleIdNode.getNodeValue()));
+								Role role = roleOids.get(Long.valueOf(roleIdNode.getNodeValue()));
 								
 								if(roleUserOids.containsKey(role.getOid()))
 								{
@@ -473,7 +473,7 @@ public class MockIndicatorCriteriaDAO implements IndicatorCriteriaDAO {
     {
     	//Check the oid first
     	Node idNode = roleNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null && roleNode.hasChildNodes() && !roleOids.containsKey(oid))
     	{
         	Role role = new Role();
@@ -529,7 +529,7 @@ public class MockIndicatorCriteriaDAO implements IndicatorCriteriaDAO {
     	RolePrivilege rp = null;
 
     	Node idNode = privNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null)
     	{
         	rp = new RolePrivilege();
@@ -544,7 +544,7 @@ public class MockIndicatorCriteriaDAO implements IndicatorCriteriaDAO {
 				{
 					if(child.getNodeName().equals("scope"))
 					{
-						rp.setPrivilegeScope(new Integer(child.getTextContent()));
+						rp.setPrivilegeScope(Integer.valueOf(child.getTextContent()));
 					}
 					else if(child.getNodeName().equals("privilege"))
 					{

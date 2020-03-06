@@ -31,6 +31,7 @@ import org.webcurator.domain.model.core.PermissionTemplate;
  * The implementation of the PermissionTemplateDAO interface.
  * @author bprice
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class PermissionTemplateDAOImpl extends HibernateDaoSupport implements PermissionTemplateDAO {
 
     private Log log = LogFactory.getLog(PermissionTemplateDAOImpl.class);
@@ -42,7 +43,7 @@ public class PermissionTemplateDAOImpl extends HibernateDaoSupport implements Pe
     }
 
     public PermissionTemplate getTemplate(Long oid) {
-        return (PermissionTemplate)getHibernateTemplate().load(PermissionTemplate.class,oid);
+        return getHibernateTemplate().load(PermissionTemplate.class,oid);
     }
 
     public List getTemplates(Long agencyOid) {
@@ -81,7 +82,7 @@ public class PermissionTemplateDAOImpl extends HibernateDaoSupport implements Pe
     }
 
     public Permission getPermission(Long oid) {
-        return (Permission)getHibernateTemplate().load(Permission.class,oid);
+        return getHibernateTemplate().load(Permission.class,oid);
     }
 
     public void delete(final Object aObject) {

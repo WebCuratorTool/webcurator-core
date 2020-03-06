@@ -35,6 +35,7 @@ import java.util.List;
  * and Privilges.
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 @Repository
 @Transactional
 public class UserRoleDAOImpl implements UserRoleDAO {
@@ -90,7 +91,7 @@ public class UserRoleDAOImpl implements UserRoleDAO {
     }
 
     public Agency getAgencyByOid(Long oid) {
-        return (Agency)sessionFactory.getCurrentSession().get(Agency.class, oid);
+        return sessionFactory.getCurrentSession().get(Agency.class, oid);
     }
     
     public List getUserPrivileges(String username) {

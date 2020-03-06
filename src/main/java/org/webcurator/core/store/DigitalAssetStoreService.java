@@ -49,6 +49,7 @@ public interface DigitalAssetStoreService {
     byte[] getSmallResource(String targetInstanceName, int harvestResultNumber, HarvestResourceDTO resourcex)
             throws DigitalAssetStoreException;
 
+    @SuppressWarnings("rawtypes")
     void submitToArchive(String targetInstanceOid, String SIP, Map xAttributes, int harvestNumber)
             throws DigitalAssetStoreException;
 

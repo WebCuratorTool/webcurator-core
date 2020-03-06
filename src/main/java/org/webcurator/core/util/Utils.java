@@ -144,6 +144,7 @@ public class Utils {
 		return sDays + ":" + sHours + ":" + sMinutes + ":" + sSeconds;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static String getPrefixClassName(Class clazz) {
 		String clazzName = clazz.getName();
 		int idx = clazzName.indexOf('$');

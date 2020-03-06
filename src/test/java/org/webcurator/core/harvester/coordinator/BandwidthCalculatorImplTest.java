@@ -48,8 +48,8 @@ public class BandwidthCalculatorImplTest extends TestCase {
 		HashMap<Long, TargetInstance> results = underTest.calculateBandwidthAllocation(runningTIs, 100, 80);
 		
 		assertTrue("Wrong number of results returned", results.size() == 1);	
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(1)));
-		ti = (TargetInstance) results.get(new Long(1));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(1)));
+		ti = results.get(Long.valueOf(1));
 		assertEquals("Target Instances allocated bandwidth does not match", 100, ti.getAllocatedBandwidth().longValue());
 	}
 	
@@ -67,11 +67,11 @@ public class BandwidthCalculatorImplTest extends TestCase {
 		HashMap<Long, TargetInstance> results = underTest.calculateBandwidthAllocation(runningTIs, 100, 80);
 		
 		assertTrue("Wrong number of results returned", results.size() == 2);	
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(1)));
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(2)));
-		ti = (TargetInstance) results.get(new Long(1));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(1)));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(2)));
+		ti = results.get(Long.valueOf(1));
 		assertEquals("Target Instances allocated bandwidth does not match", 50, ti.getAllocatedBandwidth().longValue());
-		ti = (TargetInstance) results.get(new Long(2));
+		ti = results.get(Long.valueOf(2));
 		assertEquals("Target Instances allocated bandwidth does not match", 50, ti.getAllocatedBandwidth().longValue());
 	}
 	
@@ -86,8 +86,8 @@ public class BandwidthCalculatorImplTest extends TestCase {
 		HashMap<Long, TargetInstance> results = underTest.calculateBandwidthAllocation(runningTIs, 100, 80);
 		
 		assertTrue("Wrong number of results returned", results.size() == 1);	
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(1)));
-		ti = (TargetInstance) results.get(new Long(1));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(1)));
+		ti = results.get(Long.valueOf(1));
 		assertEquals("Target Instances allocated bandwidth does not match ", 100, ti.getAllocatedBandwidth().longValue());
 	}
 	
@@ -107,11 +107,11 @@ public class BandwidthCalculatorImplTest extends TestCase {
 		HashMap<Long, TargetInstance> results = underTest.calculateBandwidthAllocation(runningTIs, 100, 80);
 		
 		assertTrue("Wrong number of results returned", results.size() == 2);	
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(1)));
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(2)));
-		ti = (TargetInstance) results.get(new Long(1));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(1)));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(2)));
+		ti = results.get(Long.valueOf(1));
 		assertEquals("Target Instances allocated bandwidth does not match", 50, ti.getAllocatedBandwidth().longValue());
-		ti = (TargetInstance) results.get(new Long(2));
+		ti = results.get(Long.valueOf(2));
 		assertEquals("Target Instances allocated bandwidth does not match", 50, ti.getAllocatedBandwidth().longValue());
 	}
 	
@@ -130,11 +130,11 @@ public class BandwidthCalculatorImplTest extends TestCase {
 		HashMap<Long, TargetInstance> results = underTest.calculateBandwidthAllocation(runningTIs, 100, 80);
 		
 		assertTrue("Wrong number of results returned", results.size() == 2);	
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(1)));
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(2)));
-		ti = (TargetInstance) results.get(new Long(1));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(1)));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(2)));
+		ti = results.get(Long.valueOf(1));
 		assertEquals("Target Instances allocated bandwidth does not match", 50, ti.getAllocatedBandwidth().longValue());
-		ti = (TargetInstance) results.get(new Long(2));
+		ti = results.get(Long.valueOf(2));
 		assertEquals("Target Instances allocated bandwidth does not match", 50, ti.getAllocatedBandwidth().longValue());		
 	}
 	
@@ -157,14 +157,14 @@ public class BandwidthCalculatorImplTest extends TestCase {
 		HashMap<Long, TargetInstance> results = underTest.calculateBandwidthAllocation(runningTIs, 100, 80);
 		
 		assertTrue("Wrong number of results returned", results.size() == 3);	
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(1)));
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(2)));
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(3)));
-		ti = (TargetInstance) results.get(new Long(1));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(1)));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(2)));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(3)));
+		ti = results.get(Long.valueOf(1));
 		assertEquals("Target Instances allocated bandwidth does not match", 50, ti.getAllocatedBandwidth().longValue());
-		ti = (TargetInstance) results.get(new Long(2));
+		ti = results.get(Long.valueOf(2));
 		assertEquals("Target Instances allocated bandwidth does not match", 25, ti.getAllocatedBandwidth().longValue());		
-		ti = (TargetInstance) results.get(new Long(3));
+		ti = results.get(Long.valueOf(3));
 		assertEquals("Target Instances allocated bandwidth does not match", 25, ti.getAllocatedBandwidth().longValue());
 	}
 	
@@ -188,14 +188,14 @@ public class BandwidthCalculatorImplTest extends TestCase {
 		HashMap<Long, TargetInstance> results = underTest.calculateBandwidthAllocation(runningTIs, 100, 80);
 		
 		assertTrue("Wrong number of results returned", results.size() == 3);	
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(1)));
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(2)));
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(3)));
-		ti = (TargetInstance) results.get(new Long(1));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(1)));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(2)));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(3)));
+		ti = results.get(Long.valueOf(1));
 		assertEquals("Target Instances allocated bandwidth does not match", 40, ti.getAllocatedBandwidth().longValue());
-		ti = (TargetInstance) results.get(new Long(2));
+		ti = results.get(Long.valueOf(2));
 		assertEquals("Target Instances allocated bandwidth does not match", 40, ti.getAllocatedBandwidth().longValue());		
-		ti = (TargetInstance) results.get(new Long(3));
+		ti = results.get(Long.valueOf(3));
 		assertEquals("Target Instances allocated bandwidth does not match", 20, ti.getAllocatedBandwidth().longValue());
 	}
 	
@@ -223,17 +223,17 @@ public class BandwidthCalculatorImplTest extends TestCase {
 		HashMap<Long, TargetInstance> results = underTest.calculateBandwidthAllocation(runningTIs, 100, 80);
 		
 		assertTrue("Wrong number of results returned", results.size() == 4);	
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(1)));
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(2)));
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(3)));
-		assertNotNull("Target Instance passed in does not exist in the result", results.get(new Long(4)));
-		ti = (TargetInstance) results.get(new Long(1));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(1)));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(2)));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(3)));
+		assertNotNull("Target Instance passed in does not exist in the result", results.get(Long.valueOf(4)));
+		ti = results.get(Long.valueOf(1));
 		assertEquals("Target Instances allocated bandwidth does not match", 40, ti.getAllocatedBandwidth().longValue());
-		ti = (TargetInstance) results.get(new Long(2));
+		ti = results.get(Long.valueOf(2));
 		assertEquals("Target Instances allocated bandwidth does not match", 40, ti.getAllocatedBandwidth().longValue());		
-		ti = (TargetInstance) results.get(new Long(3));
+		ti = results.get(Long.valueOf(3));
 		assertEquals("Target Instances allocated bandwidth does not match", 10, ti.getAllocatedBandwidth().longValue());
-		ti = (TargetInstance) results.get(new Long(3));
+		ti = results.get(Long.valueOf(3));
 		assertEquals("Target Instances allocated bandwidth does not match", 10, ti.getAllocatedBandwidth().longValue());
 	}
 

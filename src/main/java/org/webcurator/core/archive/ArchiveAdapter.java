@@ -33,5 +33,6 @@ public interface ArchiveAdapter {
 	 * @param harvestNumber the number of the harvest being archived
 	 * @throws Exception thrown if there is an error
 	 */
+	@SuppressWarnings("rawtypes")
 	public void submitToArchive(TargetInstance instance, String sipXML, Map customDepositFormElements, int harvestNumber)throws Exception;
 }

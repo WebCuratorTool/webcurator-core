@@ -235,8 +235,8 @@ public class BandwidthRestriction {
             return 0;
         }
         
-        Double start = new Double(startTime.getTime());
-        Double end = new Double(endTime.getTime());
+        Double start = Double.valueOf(startTime.getTime());
+        Double end = Double.valueOf(endTime.getTime());
         
         Double p = ((end - start) / 86400000) * 100; 
         return p.intValue();

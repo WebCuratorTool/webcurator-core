@@ -36,6 +36,7 @@ public interface BaseDAO {
 	 * Delete all objects in the collection.
 	 * @param aCollection The collection of objects to remove.
 	 */
+	@SuppressWarnings("rawtypes")
 	public void deleteAll(Collection aCollection);
 	
 	/**

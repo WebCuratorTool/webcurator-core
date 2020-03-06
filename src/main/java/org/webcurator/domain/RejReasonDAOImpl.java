@@ -35,6 +35,7 @@ import org.webcurator.domain.model.core.RejReason;
  * querying any objects related to rejection reasons. 
  * @author oakleigh_sk
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class RejReasonDAOImpl extends HibernateDaoSupport implements RejReasonDAO{
     
     private Log log = LogFactory.getLog(RejReasonDAOImpl.class);

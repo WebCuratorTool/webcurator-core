@@ -35,6 +35,7 @@ import org.webcurator.domain.model.core.IndicatorReportLine;
  * querying any objects related to indicator report lines. 
  * @author oakleigh_sk
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class IndicatorReportLineDAOImpl extends HibernateDaoSupport implements IndicatorReportLineDAO{
     
     private Log log = LogFactory.getLog(IndicatorReportLineDAOImpl.class);
@@ -85,7 +86,7 @@ public class IndicatorReportLineDAOImpl extends HibernateDaoSupport implements I
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) {
                         Query query = session.getNamedQuery(IndicatorReportLine.QRY_GET_INDICATOR_REPORT_LINE_BY_OID);
-                        query.setLong(0,indicatorReportLineOid);
+                        query.setParameter(0,indicatorReportLineOid);
                         return query.uniqueResult();
                     }
                 }

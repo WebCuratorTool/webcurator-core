@@ -25,6 +25,7 @@ import org.springframework.beans.propertyeditors.CustomCollectionEditor;
  * @author MDubos
  *
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class ParameterEditor extends CustomCollectionEditor { 
 	
 	private Log log = LogFactory.getLog(ParameterEditor.class);

@@ -50,6 +50,7 @@ import org.webcurator.common.ui.Constants;
  * The implementation of the SiteDAO interface.
  * @author bbeaumont
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 @Transactional
 public class SiteDAOImpl extends HibernateDaoSupport implements SiteDAO {
 	private Log log = LogFactory.getLog(SiteDAOImpl.class);
@@ -97,10 +98,10 @@ public class SiteDAOImpl extends HibernateDaoSupport implements SiteDAO {
 	
 	public Site load(final long siteOid, boolean fullyInitialise) {
 		if( !fullyInitialise) {
-			return (Site) getHibernateTemplate().load(Site.class, siteOid);
+			return getHibernateTemplate().load(Site.class, siteOid);
 		}
 		else {
-			Site site = (Site) getHibernateTemplate().load(Site.class, siteOid);
+			Site site = getHibernateTemplate().load(Site.class, siteOid);
 			
 			// Initialise some more items that we'll need. This is used
 			// to prevent lazy load exceptions, since we're doing things
@@ -123,7 +124,7 @@ public class SiteDAOImpl extends HibernateDaoSupport implements SiteDAO {
 	 * @return The authorising agent.
 	 */
 	public AuthorisingAgent loadAuthorisingAgent(final long authAgentOid) {
-		return (AuthorisingAgent) getHibernateTemplate().load(AuthorisingAgent.class, authAgentOid);
+		return getHibernateTemplate().load(AuthorisingAgent.class, authAgentOid);
 	}	
 
 	@SuppressWarnings("unchecked")
@@ -144,7 +145,7 @@ public class SiteDAOImpl extends HibernateDaoSupport implements SiteDAO {
 		Object o = getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(final Session session) {
 				Query query = session.createQuery("from Site s where lower(s.title) = :siteTitle");
-				query.setString("siteTitle", aTitle);
+				query.setParameter("siteTitle", aTitle);
 				
 				return query.list();
 			}
@@ -341,7 +342,7 @@ public class SiteDAOImpl extends HibernateDaoSupport implements SiteDAO {
 
 	@Transactional
 	public Permission loadPermission(long permOid) {
-		Permission perm = (Permission) currentSession().load(Permission.class, permOid);
+		Permission perm = currentSession().load(Permission.class, permOid);
 		Hibernate.initialize(perm.getUrls());
 		return perm;
 	}	

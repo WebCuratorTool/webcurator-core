@@ -41,11 +41,14 @@ import org.webcurator.domain.model.core.Target;
 import org.webcurator.domain.model.core.TargetGroup;
 import org.webcurator.domain.model.report.AbstractTargetScheduleView;
 
+import javax.persistence.criteria.CriteriaBuilder;
+
 /**
  * Report of Target/Groups Schedules
  * @author oakleigh_sk
  *
  */
+@SuppressWarnings("rawtypes")
 public class TargetGroupSchedulesReport extends HibernateDaoSupport implements ReportGenerator {
 
     private Log log = LogFactory.getLog(TargetGroupSchedulesReport.class);
@@ -86,8 +89,9 @@ public class TargetGroupSchedulesReport extends HibernateDaoSupport implements R
 
 			@SuppressWarnings("unchecked")
 			public Object doInHibernate(Session session) throws HibernateException {
-				
-				Criteria query = session.createCriteria(AbstractTargetScheduleView.class);
+
+				CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+				Criteria query = (Criteria) criteriaBuilder.createQuery(AbstractTargetScheduleView.class);
 
 				query.add(Restrictions.in("state", new Object[] {Target.STATE_APPROVED, TargetGroup.STATE_ACTIVE } ));
 				

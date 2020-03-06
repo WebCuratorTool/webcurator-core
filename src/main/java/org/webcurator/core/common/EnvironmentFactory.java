@@ -31,7 +31,7 @@ public class EnvironmentFactory {
 		if(environment==null) {
 			ApplicationContext ctx = ApplicationContextFactory.getApplicationContext();
 //			environment = (Environment) ctx.getBean("environmentWCT");
-			environment = (Environment) ctx.getBean(Environment.class);
+			environment = ctx.getBean(Environment.class);
 		}
 		return environment;
 	}

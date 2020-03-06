@@ -41,6 +41,7 @@ public class ProcessorMapRenderer extends Renderer {
 	/* (non-Javadoc)
 	 * @see org.webcurator.common.ui.profiles.renderers.Renderer#render(org.webcurator.core.profiles.ProfileElement, javax.servlet.jsp.PageContext, org.webcurator.common.ui.profiles.renderers.RendererFilter)
 	 */
+	@SuppressWarnings("rawtypes")
 	public void render(ProfileElement element, PageContext context, RendererFilter filter) throws IOException {
 		// Get the writer.
 		JspWriter out = context.getOut();

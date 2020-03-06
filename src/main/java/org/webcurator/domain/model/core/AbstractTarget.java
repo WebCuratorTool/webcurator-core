@@ -420,6 +420,7 @@ public abstract class AbstractTarget extends AbstractIdentityObject implements U
 	/*(non-Javadoc)
 	 * @see org.webcurator.domain.model.core.Annotatable#sortAnnotations()
 	 */
+	@SuppressWarnings("unchecked")
 	public void sortAnnotations()
 	{
 		Collections.sort(annotations);

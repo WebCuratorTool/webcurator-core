@@ -26,6 +26,7 @@ import org.webcurator.core.report.parameter.Parameter;
  * 
  * @author MDubos
  */
+@SuppressWarnings("rawtypes")
 public class Report {
 
 	// Name of the report

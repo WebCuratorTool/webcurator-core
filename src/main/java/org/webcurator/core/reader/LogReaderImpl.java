@@ -291,7 +291,7 @@ public class LogReaderImpl implements LogReader {
 	       			i++;
 	       			continue;
 	       		}
-	            Long ldatetime = new Long(sb.toString());
+	            Long ldatetime = Long.valueOf(sb.toString());
                 if(ldatetime >= timestamp){
                     // Found a match
                     return i;

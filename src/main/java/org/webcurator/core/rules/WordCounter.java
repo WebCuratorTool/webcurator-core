@@ -53,7 +53,8 @@ public class WordCounter {
 		}
 		return searchCount;
 	}
-	
+
+	@SuppressWarnings({"rawtypes","unchecked"})
 	public static final ArrayList<String> getColumn(int columnNumber, String columnDelimiter, File file) {
 		ArrayList<String> lines = new ArrayList();
 		

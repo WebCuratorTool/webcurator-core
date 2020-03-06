@@ -32,6 +32,7 @@ public class NodeRenderer {
 	 * @param n   The node to output.
 	 * @throws IOException if there are IO errors.
 	 */
+	@SuppressWarnings("rawtypes")
 	public void renderDisplayName(JspWriter out, Node n) throws IOException {
 		out.print(n.getDisplayName());
 	}

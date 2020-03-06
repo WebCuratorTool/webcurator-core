@@ -170,7 +170,7 @@ public class MockIndicatorDAO implements IndicatorDAO {
     private Float getFloat(Node child)
     {
     	if (getString(child) != null) {
-    		return new Float(getString(child));
+    		return Float.valueOf(getString(child));
     	} else 
     		return null;
     }
@@ -197,7 +197,7 @@ public class MockIndicatorDAO implements IndicatorDAO {
     {
 		Node idNode = child.getAttributes().getNamedItem("id");
 		if(idNode != null){
-		return new Long(idNode.getNodeValue());
+		return Long.valueOf(idNode.getNodeValue());
 		}
 		else
 		{
@@ -210,7 +210,7 @@ public class MockIndicatorDAO implements IndicatorDAO {
 		if (aObject instanceof Indicator) {
 			Indicator indicator = (Indicator)aObject;
 			if (indicator.getOid() == null) {
-				indicator.setOid(new Long(iOids.size()));
+				indicator.setOid(Long.valueOf(iOids.size()));
 			} 
 			iOids.put(indicator.getOid(), indicator);
 		}

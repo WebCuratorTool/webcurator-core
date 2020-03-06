@@ -35,6 +35,7 @@ import org.webcurator.domain.model.core.Indicator;
  * querying any objects related to indicator criteria. 
  * @author oakleigh_sk
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class IndicatorDAOImpl extends HibernateDaoSupport implements IndicatorDAO{
     
     private Log log = LogFactory.getLog(IndicatorDAOImpl.class);

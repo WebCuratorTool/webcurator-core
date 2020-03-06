@@ -35,6 +35,7 @@ import org.webcurator.domain.model.core.Flag;
  * querying any objects related to indicator criteria. 
  * @author oakleigh_sk
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 @Transactional
 public class FlagDAOImpl extends HibernateDaoSupport implements FlagDAO{
     

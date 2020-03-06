@@ -752,6 +752,7 @@ public class Permission extends AbstractIdentityObject implements Annotatable, A
     /*(non-Javadoc)
      * @see org.webcurator.domain.model.core.Annotatable#sortAnnotations()
      */
+    @SuppressWarnings("unchecked")
     public void sortAnnotations() {
         Collections.sort(annotations);
         annotationsSorted = true;

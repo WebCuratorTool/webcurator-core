@@ -198,6 +198,7 @@ public class DigitalAssetStoreClient extends AbstractRestClient implements Digit
                 request, Boolean.class);
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void submitToArchive(String targetInstanceOid, String sip, Map xAttributes, int harvestNumber)
             throws DigitalAssetStoreException {
         xAttributes.put("sip", sip);

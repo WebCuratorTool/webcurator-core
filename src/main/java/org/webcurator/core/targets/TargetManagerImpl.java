@@ -75,7 +75,7 @@ import org.webcurator.common.ui.target.TargetEditorContext;
  * @see TargetManager
  * @author bbeaumont
  */
-@SuppressWarnings("all")
+@SuppressWarnings("unchecked")
 public class TargetManagerImpl implements TargetManager {
 	/** The logger for the Target Manager */
 	private static Log log = LogFactory.getLog(TargetManagerImpl.class);
@@ -932,7 +932,7 @@ public class TargetManagerImpl implements TargetManager {
 			Set<Seed> seeds = target.getSeeds();
 			Iterator<Seed> it = seeds.iterator();
 			while (it.hasNext()) {
-				seed = (Seed) it.next();
+				seed = it.next();
 				if (!seed.isHarvestable(new Date())) {
 					foundBadSeed = true;
 					break;
@@ -1681,7 +1681,7 @@ public class TargetManagerImpl implements TargetManager {
 			for (Permission p : ps) {
 				if (p.getStartDate().before(now) && (p.getEndDate() == null || p.getEndDate().after(now))) {
 					if (permissions.containsKey(p.getOid())) {
-						psdto = (PermissionSeedDTO) permissions.get(p.getOid());
+						psdto = permissions.get(p.getOid());
 					} else {
 						psdto = new PermissionSeedDTO(p);
 					}

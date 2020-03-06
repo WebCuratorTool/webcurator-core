@@ -69,6 +69,7 @@ public class CrawlLogIndexer extends IndexerBase {
 		return getClass().getCanonicalName();
 	}
 
+	@SuppressWarnings("static")
 	@Override
 	public void indexFiles(Long harvestResultOid) {
 		

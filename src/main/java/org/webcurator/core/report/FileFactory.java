@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author MDubos
  *
  */
+@SuppressWarnings("unchecked")
 public class FileFactory {
 	
 	/** CSV format */
@@ -83,7 +84,7 @@ public class FileFactory {
 	 * List of all available formats 
 	 * @return A <code>List</code> of <code>String</code> formats
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static List<String> getFormats(){
 		ArrayList formats = new ArrayList<String>();
 		formats.add(CSV_FORMAT);

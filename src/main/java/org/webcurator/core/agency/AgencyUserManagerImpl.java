@@ -39,6 +39,7 @@ import java.util.*;
  * @see AgencyUserManager
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 public class AgencyUserManagerImpl implements AgencyUserManager{
 	private static Log log = LogFactory.getLog(AgencyUserManagerImpl.class);
 

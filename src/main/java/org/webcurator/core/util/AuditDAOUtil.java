@@ -31,6 +31,7 @@ import org.webcurator.domain.model.auth.User;
  * system.
  * @author bprice
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class AuditDAOUtil extends HibernateDaoSupport implements Auditor {
 	/** the logger. */
     private static Log log = LogFactory.getLog(AuditDAOUtil.class); 

@@ -52,6 +52,7 @@ import org.webcurator.domain.model.core.Task;
  * The implementation of the InTrayDAO interface.
  * @author bprice
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 @Transactional
 public class InTrayDAOImpl extends HibernateDaoSupport implements InTrayDAO {
 
@@ -99,7 +100,7 @@ public class InTrayDAOImpl extends HibernateDaoSupport implements InTrayDAO {
 			public Object doInHibernate(Session session) throws HibernateException {
 				
 				Query query = session.createQuery("select count(*) from Notification n where n.recipientOid = :userOid ");
-				query.setLong("userOid", userOid);
+				query.setParameter("userOid", userOid);
 				
 				return ((Number) query.uniqueResult()).longValue();
 			}
@@ -317,7 +318,7 @@ public class InTrayDAOImpl extends HibernateDaoSupport implements InTrayDAO {
                             
                             String hqlDelete = "delete Notification n where n.recipientOid = :recipientOid";
                             int deletedEntities = currentSession().createQuery( hqlDelete )
-                                    .setLong( "recipientOid", userOid )
+                                    .setParameter( "recipientOid", userOid )
                                     .executeUpdate();
                             
                             //getHibernateTemplate().delete(obj);

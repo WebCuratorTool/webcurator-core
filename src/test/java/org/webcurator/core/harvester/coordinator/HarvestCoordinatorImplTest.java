@@ -5,9 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -53,6 +53,7 @@ import com.google.common.collect.Lists;
 @Import(TestBaseConfig.class)
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
+@SuppressWarnings("unchecked")
 public class HarvestCoordinatorImplTest extends BaseWCTTest<HarvestCoordinatorImpl> {
 
     private MockHarvestAgentFactory harvestAgentFactory = new MockHarvestAgentFactory();
@@ -291,7 +292,7 @@ public class HarvestCoordinatorImplTest extends BaseWCTTest<HarvestCoordinatorIm
         aStatus.setMaxHarvests(2);
         testInstance.heartbeat(aStatus);
 
-        HarvestAgentStatusDTO has = (HarvestAgentStatusDTO) testInstance.getHarvestAgents().get("Test Agent");
+        HarvestAgentStatusDTO has = testInstance.getHarvestAgents().get("Test Agent");
 
         testInstance.harvest(ti, has);
 
@@ -312,7 +313,7 @@ public class HarvestCoordinatorImplTest extends BaseWCTTest<HarvestCoordinatorIm
         aStatus.setMaxHarvests(2);
         testInstance.heartbeat(aStatus);
 
-        HarvestAgentStatusDTO has = (HarvestAgentStatusDTO) testInstance.getHarvestAgents().get("Test Agent");
+        HarvestAgentStatusDTO has = testInstance.getHarvestAgents().get("Test Agent");
 
         mockTargetInstanceManager.setStoreSeedHistory(true);
 
@@ -337,7 +338,7 @@ public class HarvestCoordinatorImplTest extends BaseWCTTest<HarvestCoordinatorIm
         aStatus.setMaxHarvests(2);
         testInstance.heartbeat(aStatus);
 
-        HarvestAgentStatusDTO has = (HarvestAgentStatusDTO) testInstance.getHarvestAgents().get("Test Agent");
+        HarvestAgentStatusDTO has = testInstance.getHarvestAgents().get("Test Agent");
 
         mockTargetInstanceManager.setStoreSeedHistory(false);
 
@@ -364,7 +365,7 @@ public class HarvestCoordinatorImplTest extends BaseWCTTest<HarvestCoordinatorIm
         aStatus.setMaxHarvests(2);
         testInstance.heartbeat(aStatus);
 
-        HarvestAgentStatusDTO has = (HarvestAgentStatusDTO) testInstance.getHarvestAgents().get("Test Agent");
+        HarvestAgentStatusDTO has = testInstance.getHarvestAgents().get("Test Agent");
 
         testInstance.harvest(ti, has);
 
@@ -386,7 +387,7 @@ public class HarvestCoordinatorImplTest extends BaseWCTTest<HarvestCoordinatorIm
         aStatus.setMemoryWarning(true);
         testInstance.heartbeat(aStatus);
 
-        HarvestAgentStatusDTO has = (HarvestAgentStatusDTO) testInstance.getHarvestAgents().get("Test Agent");
+        HarvestAgentStatusDTO has = testInstance.getHarvestAgents().get("Test Agent");
 
         testInstance.harvest(ti, has);
 
@@ -407,7 +408,7 @@ public class HarvestCoordinatorImplTest extends BaseWCTTest<HarvestCoordinatorIm
         aStatus.setMaxHarvests(2);
         testInstance.heartbeat(aStatus);
 
-        HarvestAgentStatusDTO has = (HarvestAgentStatusDTO) testInstance.getHarvestAgents().get("Test Agent");
+        HarvestAgentStatusDTO has = testInstance.getHarvestAgents().get("Test Agent");
 
         testInstance.harvest(ti, has);
 

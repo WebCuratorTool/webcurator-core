@@ -58,6 +58,7 @@ public interface TargetInstanceDAO {
 	 * persistent data store.
 	 * @param collection the collection of objects to save
 	 */
+	@SuppressWarnings("rawtypes")
 	void saveAll(Collection collection);
 	
 	/**

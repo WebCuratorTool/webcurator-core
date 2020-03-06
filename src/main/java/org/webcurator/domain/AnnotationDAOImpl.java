@@ -35,6 +35,7 @@ import org.webcurator.domain.model.core.Annotation;
  * The implemantation of the AnnotationDAO interface.
  * @author nwaight
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 @Transactional
 public class AnnotationDAOImpl extends HibernateDaoSupport implements AnnotationDAO {
 	/** the logger. */
@@ -52,8 +53,8 @@ public class AnnotationDAOImpl extends HibernateDaoSupport implements Annotation
 		Object obj = getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session aSession) throws HibernateException {
 				Query q = aSession.getNamedQuery(Annotation.QRY_GET_NOTES);
-				q.setString(Annotation.PARAM_TYPE, aType);
-				q.setLong(Annotation.PARAM_OID, aOid);
+				q.setParameter(Annotation.PARAM_TYPE, aType);
+				q.setParameter(Annotation.PARAM_OID, aOid);
 				
 				return q.list();
 			}

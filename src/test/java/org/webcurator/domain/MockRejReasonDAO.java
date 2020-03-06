@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException; 
 
 
-
+@SuppressWarnings({"rawtypes","unchecked"})
 public class MockRejReasonDAO implements RejReasonDAO {
 
 	private static Log log = LogFactory.getLog(MockUserRoleDAO.class);
@@ -159,7 +159,7 @@ public class MockRejReasonDAO implements RejReasonDAO {
     {
     	//Check the oid first
     	Node idNode = agencyNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null && agencyNode.hasChildNodes() && !agencyOids.containsKey(oid))
     	{
     		Agency agency = new Agency();
@@ -261,7 +261,7 @@ public class MockRejReasonDAO implements RejReasonDAO {
     {
     	//Check the oid first
     	Node idNode = reasonNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null && reasonNode.hasChildNodes() && !rejReasonOids.containsKey(oid))
     	{
     		RejReason rejReason = new RejReason();
@@ -290,7 +290,7 @@ public class MockRejReasonDAO implements RejReasonDAO {
 					}
 					else if(child.getNodeName().equals("agencyId"))
 					{
-						rejReason.setAgency(agencyOids.get(new Long(child.getTextContent())));
+						rejReason.setAgency(agencyOids.get(Long.valueOf(child.getTextContent())));
 					}
 				}
 			}
@@ -320,7 +320,7 @@ public class MockRejReasonDAO implements RejReasonDAO {
     {
     	//Check the oid first
     	Node idNode = roleNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null && roleNode.hasChildNodes() && !roleOids.containsKey(oid))
     	{
         	Role role = new Role();
@@ -376,7 +376,7 @@ public class MockRejReasonDAO implements RejReasonDAO {
     	RolePrivilege rp = null;
 
     	Node idNode = privNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null)
     	{
         	rp = new RolePrivilege();
@@ -391,7 +391,7 @@ public class MockRejReasonDAO implements RejReasonDAO {
 				{
 					if(child.getNodeName().equals("scope"))
 					{
-						rp.setPrivilegeScope(new Integer(child.getTextContent()));
+						rp.setPrivilegeScope(Integer.valueOf(child.getTextContent()));
 					}
 					else if(child.getNodeName().equals("privilege"))
 					{
@@ -423,7 +423,7 @@ public class MockRejReasonDAO implements RejReasonDAO {
     {
     	//Check the oid first
     	Node idNode = userNode.getAttributes().getNamedItem("id");
-    	Long oid = new Long(idNode.getNodeValue());
+    	Long oid = Long.valueOf(idNode.getNodeValue());
     	if(oid != null && userNode.hasChildNodes() && !userOids.containsKey(oid))
     	{
 			User user = new User();
@@ -478,7 +478,7 @@ public class MockRejReasonDAO implements RejReasonDAO {
 							if(roleNode.getNodeName().equals("role"))
 							{
 								Node roleIdNode = roleNode.getAttributes().getNamedItem("id");
-								Role role = roleOids.get(new Long(roleIdNode.getNodeValue()));
+								Role role = roleOids.get(Long.valueOf(roleIdNode.getNodeValue()));
 								
 								if(roleUserOids.containsKey(role.getOid()))
 								{

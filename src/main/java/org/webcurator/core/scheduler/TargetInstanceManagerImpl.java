@@ -86,6 +86,7 @@ public class TargetInstanceManagerImpl implements TargetInstanceManager {
     }
         
     /** @see TargetInstanceManager#getNextTargetInstanceToHarvest(). */
+    @SuppressWarnings("rawtypes")
     public TargetInstance getNextTargetInstanceToHarvest() {                
     	List queue = targetInstanceDao.getQueue();
     	if (queue != null && !queue.isEmpty()) {

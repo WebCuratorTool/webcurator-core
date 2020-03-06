@@ -39,6 +39,7 @@ import org.webcurator.domain.model.report.LogonDuration;
  * 
  * @author MDubos
  */
+@SuppressWarnings("rawtypes")
 public class SystemUsageReportGeneratorImpl extends HibernateDaoSupport 
 	implements ReportGenerator {
 	

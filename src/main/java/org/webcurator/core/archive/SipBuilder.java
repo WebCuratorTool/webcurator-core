@@ -116,7 +116,7 @@ public class SipBuilder {
 		
 		if(sipSections.containsKey("targetSection"))
 		{
-			String targetSection = (String)sipSections.get("targetSection");
+			String targetSection = sipSections.get("targetSection");
 			int refNumIdx = targetSection.indexOf("<wct:ReferenceNumber></wct:ReferenceNumber>");
 			if(refNumIdx >= 0)
 			{

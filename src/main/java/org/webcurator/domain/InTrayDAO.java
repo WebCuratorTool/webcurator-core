@@ -26,6 +26,7 @@ import org.webcurator.domain.model.core.Task;
  * Persistence methods commonly used by the In-tray
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 public interface InTrayDAO {
 
 	/**

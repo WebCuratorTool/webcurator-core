@@ -25,6 +25,7 @@ import org.webcurator.domain.model.core.PermissionTemplate;
  * Provides the helper methods required to manage PermissionTemplates.
  * @author bprice
  */
+@SuppressWarnings("rawtypes")
 public interface PermissionTemplateManager {
 
     /**

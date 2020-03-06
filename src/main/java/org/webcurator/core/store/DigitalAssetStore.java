@@ -157,6 +157,7 @@ public interface DigitalAssetStore {
 	 * @param harvestNumber     The number of the harvest result to submit.
 	 * @throws DigitalAssetStoreException if any errors occur.
 	 */
+	@SuppressWarnings("rawtypes")
 	void submitToArchive(String targetInstanceOid, String sip, Map xAttributes, int harvestNumber)
             throws DigitalAssetStoreException;
 

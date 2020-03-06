@@ -35,6 +35,7 @@ import org.webcurator.domain.model.dto.GroupMemberDTO;
  * from the persistent store.
  * @author bbeaumont
  */
+@SuppressWarnings("rawtypes")
 public interface TargetDAO extends BaseDAO {	
 	/**
 	 * Basic save all method. This will save all of the objects in the 

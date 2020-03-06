@@ -2,6 +2,7 @@ package org.webcurator.core.profiles;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,7 +110,7 @@ public class Heritrix3ProfileOptions {
         if (dataLimitUnit == null) {
             // default to bytes
             dataLimitUnit = ProfileDataUnit.B;
-            return new BigDecimal(dataLimitAsBytes).setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
+            return new BigDecimal(dataLimitAsBytes).setScale(BIG_DECIMAL_SCALE, RoundingMode.HALF_UP);
         }
         return convertBytesToProfileDataUnit(dataLimitAsBytes, dataLimitUnit);
     }
@@ -122,7 +123,7 @@ public class Heritrix3ProfileOptions {
         if (dataLimitUnit == null) {
             // default to bytes
             dataLimitUnit = ProfileDataUnit.B;
-            dataLimitAsBytes = value.setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP).toBigInteger();
+            dataLimitAsBytes = value.setScale(BIG_DECIMAL_SCALE, RoundingMode.HALF_UP).toBigInteger();
         }
         dataLimitAsBytes = convertProfileDataUnitToBytes(value, dataLimitUnit);
     }
@@ -135,7 +136,7 @@ public class Heritrix3ProfileOptions {
         if (maxFileSizeUnit == null) {
             // default to bytes
             maxFileSizeUnit = ProfileDataUnit.B;
-            return new BigDecimal(maxFileSizeAsBytes).setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
+            return new BigDecimal(maxFileSizeAsBytes).setScale(BIG_DECIMAL_SCALE, RoundingMode.HALF_UP);
         }
         return convertBytesToProfileDataUnit(maxFileSizeAsBytes, maxFileSizeUnit);
     }
@@ -148,7 +149,7 @@ public class Heritrix3ProfileOptions {
         if (maxFileSizeUnit == null) {
             // default to bytes
             maxFileSizeUnit = ProfileDataUnit.B;
-            maxFileSizeAsBytes = value.setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP).toBigInteger();
+            maxFileSizeAsBytes = value.setScale(BIG_DECIMAL_SCALE, RoundingMode.HALF_UP).toBigInteger();
         }
         maxFileSizeAsBytes = convertProfileDataUnitToBytes(value, maxFileSizeUnit);
     }
@@ -161,7 +162,7 @@ public class Heritrix3ProfileOptions {
         if (timeLimitUnit == null) {
             // default to seconds
             timeLimitUnit = ProfileTimeUnit.SECOND;
-            return new BigDecimal(timeLimitAsSeconds).setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
+            return new BigDecimal(timeLimitAsSeconds).setScale(BIG_DECIMAL_SCALE, RoundingMode.HALF_UP);
         }
         return convertSecondsToProfileTimeUnit(timeLimitAsSeconds, timeLimitUnit);
     }
@@ -174,29 +175,29 @@ public class Heritrix3ProfileOptions {
         if (timeLimitUnit == null) {
             // default to seconds
             timeLimitUnit = ProfileTimeUnit.SECOND;
-            timeLimitAsSeconds = value.setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP).toBigInteger();
+            timeLimitAsSeconds = value.setScale(BIG_DECIMAL_SCALE, RoundingMode.HALF_UP).toBigInteger();
         }
         timeLimitAsSeconds = convertProfileTimeUnitToSeconds(value, timeLimitUnit);
     }
 
     private BigDecimal convertBytesToProfileDataUnit(BigInteger bytes, ProfileDataUnit unit) {
         BigDecimal factor = createProfileDataUnitFactor(unit);
-        return new BigDecimal(bytes).divide(factor, BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP).setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
+        return new BigDecimal(bytes).divide(factor, BIG_DECIMAL_SCALE, RoundingMode.HALF_UP).setScale(BIG_DECIMAL_SCALE, RoundingMode.HALF_UP);
     }
 
     private BigDecimal convertSecondsToProfileTimeUnit(BigInteger seconds, ProfileTimeUnit unit) {
         BigDecimal factor = createProfileTimeUnitFactor(unit);
-        return new BigDecimal(seconds).divide(factor, BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP).setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
+        return new BigDecimal(seconds).divide(factor, BIG_DECIMAL_SCALE, RoundingMode.HALF_UP).setScale(BIG_DECIMAL_SCALE, RoundingMode.HALF_UP);
     }
 
     private BigInteger convertProfileDataUnitToBytes(BigDecimal value, ProfileDataUnit unit) {
         BigDecimal factor = createProfileDataUnitFactor(unit);
-        return value.multiply(factor).setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP).toBigInteger();
+        return value.multiply(factor).setScale(BIG_DECIMAL_SCALE, RoundingMode.HALF_UP).toBigInteger();
     }
 
     private BigInteger convertProfileTimeUnitToSeconds(BigDecimal value, ProfileTimeUnit unit) {
         BigDecimal factor = createProfileTimeUnitFactor(unit);
-        return value.multiply(factor).setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP).toBigInteger();
+        return value.multiply(factor).setScale(BIG_DECIMAL_SCALE, RoundingMode.HALF_UP).toBigInteger();
     }
 
     private BigDecimal createProfileDataUnitFactor(ProfileDataUnit unit) {

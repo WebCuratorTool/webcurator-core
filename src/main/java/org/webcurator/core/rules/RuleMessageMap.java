@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
  * @author twoods
  *
  */
+@SuppressWarnings({"rawtypes","unchecked","serial"})
 public class RuleMessageMap<K, V> extends LinkedHashMap {
 	
 	/**

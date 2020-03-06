@@ -45,6 +45,7 @@ import org.webcurator.domain.model.core.Site;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+@SuppressWarnings("rawtypes")
 public class MockPermissionTemplateDAO implements PermissionTemplateDAO {
 
 	private static Log log = LogFactory.getLog(MockPermissionTemplateDAO.class);
@@ -196,7 +197,7 @@ public class MockPermissionTemplateDAO implements PermissionTemplateDAO {
 	private Long getOid(Node child) {
 		Node idNode = child.getAttributes().getNamedItem("id");
 		if (idNode != null) {
-			return new Long(idNode.getNodeValue());
+			return Long.valueOf(idNode.getNodeValue());
 		} else {
 			return null;
 		}
