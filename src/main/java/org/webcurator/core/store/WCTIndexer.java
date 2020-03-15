@@ -103,7 +103,7 @@ public class WCTIndexer extends IndexerBase {
             ApplicationContext ctx = ApplicationContextFactory.getApplicationContext();
             BDBNetworkMapPool pool = ctx.getBean(BDBNetworkMapPool.class);
             BDBNetworkMap db = pool.createInstance(getResult().getTargetInstanceOid(), getResult().getHarvestNumber());
-            indexer = new WCTResourceIndexer(directory, getResult().getTargetInstanceOid(), db);
+            indexer = new WCTResourceIndexer(directory, db);
         } catch (IOException e) {
             log.error("Failed to create directory: {}", directory);
             return;

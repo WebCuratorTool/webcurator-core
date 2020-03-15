@@ -24,14 +24,14 @@ public class NetworkMapLocalClient implements NetworkMapService {
     @Override
     public String getNode(long job, int harvestResultNumber, long id) {
         BDBNetworkMap db = pool.getInstance(job, harvestResultNumber);
-        return db.get(job, id);
+        return db.get(id);
     }
 
     @Override
     public String getOutlinks(long job, int harvestResultNumber, long id) {
         BDBNetworkMap db = pool.getInstance(job, harvestResultNumber);
 
-        NetworkMapNode parentNode = this.getNodeEntity(db.get(job, id));
+        NetworkMapNode parentNode = this.getNodeEntity(db.get(id));
         if (parentNode == null) {
             return null;
         }
@@ -52,17 +52,14 @@ public class NetworkMapLocalClient implements NetworkMapService {
     public String getAllDomains(long job, int harvestResultNumber) {
         BDBNetworkMap db = pool.getInstance(job, harvestResultNumber);
 
-        List<Long> ids = this.getArrayList(db.get(job, BDBNetworkMap.PATH_ROOT_DOMAINS));
-        String result = combineDomainResultFromArrayIDs(job, harvestResultNumber, ids);
-        ids.clear();
-        return result;
+        return db.get(BDBNetworkMap.PATH_GROUP_BY_DOMAIN);
     }
 
     @Override
     public String getSeedUrls(long job, int harvestResultNumber) {
         BDBNetworkMap db = pool.getInstance(job, harvestResultNumber);
 
-        List<Long> ids = this.getArrayList(db.get(job, BDBNetworkMap.PATH_ROOT_URLS));
+        List<Long> ids = this.getArrayList(db.get(BDBNetworkMap.PATH_ROOT_URLS));
         String result = combineUrlResultFromArrayIDs(job, harvestResultNumber, ids);
         ids.clear();
         return result;
@@ -72,7 +69,7 @@ public class NetworkMapLocalClient implements NetworkMapService {
     public String getMalformedUrls(long job, int harvestResultNumber) {
         BDBNetworkMap db = pool.getInstance(job, harvestResultNumber);
 
-        List<Long> ids = this.getArrayList(db.get(job, BDBNetworkMap.PATH_MALFORMED_URLS));
+        List<Long> ids = this.getArrayList(db.get(BDBNetworkMap.PATH_MALFORMED_URLS));
         String result = combineUrlResultFromArrayIDs(job, harvestResultNumber, ids);
         ids.clear();
         return result;
@@ -86,22 +83,9 @@ public class NetworkMapLocalClient implements NetworkMapService {
         }
 
         final List<String> result = new ArrayList<>();
-//        long countUrls = Long.parseLong(db.get(job, BDBNetworkMap.PATH_COUNT_URL));
-//
-//        for (long id = 1; id <= countUrls; id++) {
-//            String urlStr = db.get(job, id);
-//            if (urlStr == null) {
-//                log.warn("Null value: job={}, harvestResultNumber={}, nodeId={}", job, harvestResultNumber, id);
-//                continue;
-//            }
-//            NetworkMapNode urlNode = getNodeEntity(urlStr);
-//            if (isIncluded(urlNode, searchCommand)) {
-//                result.add(urlStr);
-//            }
-//        }
 
-        List<Long> ids = this.getArrayList(db.get(job, BDBNetworkMap.PATH_ROOT_URLS));
-        searchUrl(job, harvestResultNumber, db, searchCommand, ids, result);
+        List<Long> ids = this.getArrayList(db.get(BDBNetworkMap.PATH_ROOT_URLS));
+        searchUrlInternal(job, harvestResultNumber, db, searchCommand, ids, result);
 
         String json = this.obj2Json(result);
         result.clear();
@@ -109,13 +93,13 @@ public class NetworkMapLocalClient implements NetworkMapService {
         return json;
     }
 
-    private void searchUrl(long job, int harvestResultNumber, BDBNetworkMap db, NetworkMapServiceSearchCommand searchCommand, List<Long> linkIds, final List<String> result) {
+    private void searchUrlInternal(long job, int harvestResultNumber, BDBNetworkMap db, NetworkMapServiceSearchCommand searchCommand, List<Long> linkIds, final List<String> result) {
         if (linkIds == null) {
             return;
         }
 
         for (long id : linkIds) {
-            String urlStr = db.get(job, id);
+            String urlStr = db.get(id);
             if (urlStr == null) {
                 log.warn("Null value: job={}, harvestResultNumber={}, nodeId={}", job, harvestResultNumber, id);
                 continue;
@@ -125,7 +109,7 @@ public class NetworkMapLocalClient implements NetworkMapService {
                 result.add(urlStr);
             }
 
-            searchUrl(job, harvestResultNumber, db, searchCommand, urlNode.getOutlinks(), result);
+            searchUrlInternal(job, harvestResultNumber, db, searchCommand, urlNode.getOutlinks(), result);
         }
     }
 
@@ -137,14 +121,14 @@ public class NetworkMapLocalClient implements NetworkMapService {
         }
 
         List<NetworkMapNode> listHopPath = new ArrayList<>();
-        NetworkMapNode curNode = this.getNodeEntity(db.get(job, id));
+        NetworkMapNode curNode = this.getNodeEntity(db.get(id));
         while (curNode != null) {
             listHopPath.add(curNode);
             long parentId = curNode.getParentId();
             if (parentId <= 0) {
                 break;
             }
-            curNode = this.getNodeEntity(db.get(job, parentId));
+            curNode = this.getNodeEntity(db.get(parentId));
         }
         String json = this.obj2Json(listHopPath);
 
@@ -163,28 +147,7 @@ public class NetworkMapLocalClient implements NetworkMapService {
 
         final List<String> result = new ArrayList<>();
         ids.forEach(childId -> {
-            String childStr = db.get(job, childId);
-            if (childStr != null) {
-                result.add(childStr);
-            }
-        });
-
-        String json = this.obj2Json(result);
-        result.clear();
-
-        return json;
-    }
-
-    private String combineDomainResultFromArrayIDs(long job, int harvestResultNumber, List<Long> ids) {
-        BDBNetworkMap db = pool.getInstance(job, harvestResultNumber);
-
-        if (ids == null || db == null) {
-            return null;
-        }
-
-        final List<String> result = new ArrayList<>();
-        ids.forEach(childId -> {
-            String childStr = db.get(job, "d@" + childId);
+            String childStr = db.get(childId);
             if (childStr != null) {
                 result.add(childStr);
             }

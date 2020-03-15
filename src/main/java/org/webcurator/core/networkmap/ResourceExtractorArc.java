@@ -6,7 +6,6 @@ import org.archive.io.arc.ARCRecord;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
 import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 import org.webcurator.core.util.URLResolverFunc;
 
@@ -16,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ResourceExtractorArc extends ResourceExtractor {
-    public ResourceExtractorArc(Map<String, NetworkMapNode> domains, Map<String, NetworkMapNode> results, BDBNetworkMap db, long job) {
-        super(domains, results, db, job);
+    public ResourceExtractorArc(Map<String, NetworkMapNode> results) {
+        super(results);
     }
 
     @Override

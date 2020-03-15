@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class NetworkMapLocalController implements NetworkMapService {
+public class NetworkMapController implements NetworkMapService {
     @Autowired
-    private NetworkMapLocalClient client;
+    private NetworkMapService client;
 
     @Override
     @RequestMapping(path = NetworkMapServicePath.PATH_GET_COMMON, method = {RequestMethod.POST, RequestMethod.GET})

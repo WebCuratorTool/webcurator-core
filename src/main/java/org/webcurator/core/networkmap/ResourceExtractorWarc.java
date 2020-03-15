@@ -10,7 +10,6 @@ import org.archive.io.ArchiveRecordHeader;
 import org.archive.io.RecoverableIOException;
 import org.archive.io.warc.WARCConstants;
 import org.archive.io.warc.WARCRecord;
-import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
 import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 
 
@@ -19,8 +18,8 @@ import java.util.Map;
 
 @SuppressWarnings("all")
 public class ResourceExtractorWarc extends ResourceExtractor {
-    public ResourceExtractorWarc(Map<String, NetworkMapNode> domains, Map<String, NetworkMapNode> results, BDBNetworkMap db, long job) {
-        super(domains, results, db, job);
+    public ResourceExtractorWarc(Map<String, NetworkMapNode> results) {
+        super(results);
     }
 
     @Override
@@ -116,28 +115,8 @@ public class ResourceExtractorWarc extends ResourceExtractor {
             }
             res.setSeed(httpHeaders.get("seed") != null);
             res.setHasOutlinks(httpHeaders.get("outlink") != null);
-
-            String parentUrl = httpHeaders.getValue("via");
-            if (parentUrl != null) {
-                res.setViaUrl(parentUrl);
-                NetworkMapNode parentNode = this.results.get(parentUrl);
-                if (parentNode == null) {
-                    //TODO: log
-                    parentNode = new NetworkMapNode(atomicIdGeneratorUrl.incrementAndGet());
-                    parentNode.setUrl(parentUrl);
-                }
-                res.setParentId(parentNode.getId());
-                parentNode.addOutlink(res);
-            }
+            res.setViaUrl(httpHeaders.getValue("via"));
         }
-
-        //Not the parent and finished urls which can be saved immediately
-//        if (!res.isHasOutlinks() && res.isFinished()) {
-//            addUrl2Domain(res);
-//            db.put(this.job, res.getId(), res);
-//
-//            this.results.remove(res.getUrl());
-//        }
     }
 
 }

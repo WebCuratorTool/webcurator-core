@@ -47,7 +47,7 @@ public class BDBNetworkMapTest {
     public void testExtractor(BDBNetworkMap db, long job, int harvestResultNumber) {
         String directory = String.format("%s/%d/1", DIR_ROOT, job);
         try {
-            WCTResourceIndexer indexer = new WCTResourceIndexer(new File(directory), job, db);
+            WCTResourceIndexer indexer = new WCTResourceIndexer(new File(directory), db);
             indexer.indexFiles();
         } catch (IOException e) {
             e.printStackTrace();

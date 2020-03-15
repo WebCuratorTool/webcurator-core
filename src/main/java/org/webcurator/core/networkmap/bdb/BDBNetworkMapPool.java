@@ -3,6 +3,7 @@ package org.webcurator.core.networkmap.bdb;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.webcurator.core.networkmap.WCTResourceIndexer;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +72,20 @@ public class BDBNetworkMapPool {
 
     //Open with read mode
     synchronized public BDBNetworkMap getInstance(long job, int harvestResultNumber) {
+        String dbPath = this.getDbPath(job, harvestResultNumber);
+        File dbPathFile = new File(dbPath);
+        if (!dbPathFile.exists()) {  //
+            System.out.println("Indexing: job=" + job + ", harvestResultNumber=" + harvestResultNumber);
+            try {
+                WCTResourceIndexer indexer = new WCTResourceIndexer(dbPathFile.getParentFile(), createInstance(job, harvestResultNumber));
+                indexer.indexFiles();
+                indexer.clear();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("Indexing finished");
+        }
         String dbName = getDbName(job, harvestResultNumber);
         if (map.containsKey(dbName)) {
             return map.get(dbName);
@@ -84,7 +99,6 @@ public class BDBNetworkMapPool {
         }
 
         BDBNetworkMap db = new BDBNetworkMap();
-        String dbPath = this.getDbPath(job, harvestResultNumber);
         try {
             db.initializeDB(dbPath, dbName);
             queue.add(db);

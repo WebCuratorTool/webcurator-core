@@ -8,6 +8,8 @@ import java.util.*;
 public class NetworkMapNode {
     protected long id;
     protected String url;
+    @JsonIgnore
+    protected String viaUrl;
     protected boolean isSeed = false; //true: if url equals seed or domain contains seed url.
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -20,40 +22,38 @@ public class NetworkMapNode {
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     protected long domainId = -1; //default: no domain
-    protected String viaUrl;
     protected long contentLength;
     protected String contentType;
     protected int statusCode;
     protected long parentId = -1;
     protected long offset;
     protected long fetchTimeMs; //ms: time used to download the page
+
+    @JsonIgnore
     protected boolean hasOutlinks; //the number of outlinks>0
+    @JsonIgnore
     protected boolean requestParseFlag = false;
+    @JsonIgnore
     protected boolean responseParseFlag = false;
+    @JsonIgnore
     protected boolean metadataParseFlag = false;
 
     protected List<Long> outlinks = new ArrayList<>();
-    protected Map<String, NetworkMapNode> children = new HashMap<>();
+    protected List<NetworkMapNode> children = new ArrayList<>();
 
     protected String title;
 
-    public NetworkMapNode() {
+    private NetworkMapNode() {
     }
 
     public NetworkMapNode(long id) {
         this.id = id;
     }
 
-    public NetworkMapNode(String contentType, long contentLength, int statusCode) {
-        this.contentType = URLResolverFunc.trimContentType(contentType);
-        this.contentLength = contentLength;
-        this.statusCode = statusCode;
-    }
-
     @JsonIgnore
     public void clear() {
         this.outlinks.clear();
-        this.children.values().forEach(NetworkMapNode::clear);
+        this.children.forEach(NetworkMapNode::clear);
         this.children.clear();
     }
 
@@ -104,31 +104,19 @@ public class NetworkMapNode {
     }
 
     @JsonIgnore
-    public void accumulate(NetworkMapNode e) {
-        this.increaseTotSize(e.getTotSize());
-        this.increaseTotUrls(e.getTotUrls());
-        this.increaseTotSuccess(e.getTotSuccess());
-        this.increaseTotFailed(e.getTotFailed());
-    }
-
-    @JsonIgnore
-    public void accumulateAsChildren(int statusCode, long contentLength, String contentType) {
-        this.accumulate(statusCode, contentLength, contentType);
-
-        String key = String.format("%s@%d", contentType, statusCode);
-
-        NetworkMapNode childDomainNode = this.children.get(key);
-        if (childDomainNode == null) {
-            childDomainNode = new NetworkMapNode(contentType, contentLength, statusCode); //No separate reference, set the id to 0
-            this.children.put(key, childDomainNode);
+    public void accumulate(List<NetworkMapNode> list) {
+        if (list == null) {
+            return;
         }
 
-        childDomainNode.accumulate(statusCode, contentLength, contentType);
+        list.forEach(e -> {
+            this.accumulate(e.getStatusCode(), e.getContentLength(), e.getContentType());
+        });
     }
 
     @JsonIgnore
-    public void putChild(String key, NetworkMapNode value) {
-        this.children.put(key, value);
+    public void putChild(NetworkMapNode e) {
+        this.children.add(e);
     }
 
     @JsonIgnore
@@ -210,10 +198,39 @@ public class NetworkMapNode {
         this.domainId = domainId;
     }
 
+    @JsonIgnore
+    public String getGreatDomainName() {
+        String domain = URLResolverFunc.url2domain(this.getUrl());
+        if (domain == null) {
+            return "invalidDomain";
+        }
+
+        //Get the second part as the great domain name
+        String[] items = domain.split("\\.");
+        if ((items.length == 2) && (items[1].equals("com") || items[1].equals("org"))) {
+            return items[0];
+        } else if (items.length > 1) {
+            return items[1];
+        }
+
+        return domain;
+    }
+
+    @JsonIgnore
+    public String getDomainName() {
+        String domain = URLResolverFunc.url2domain(this.getUrl());
+        if (domain == null) {
+            return "invalidDomain";
+        }
+        return domain;
+    }
+
+    @JsonIgnore
     public String getViaUrl() {
         return viaUrl;
     }
 
+    @JsonIgnore
     public void setViaUrl(String viaUrl) {
         this.viaUrl = viaUrl;
     }
@@ -228,6 +245,9 @@ public class NetworkMapNode {
     }
 
     public String getContentType() {
+        if (contentType == null) {
+            return "Unknown";
+        }
         return contentType;
     }
 
@@ -273,34 +293,42 @@ public class NetworkMapNode {
         this.fetchTimeMs = fetchTimeMs;
     }
 
+    @JsonIgnore
     public boolean isHasOutlinks() {
         return hasOutlinks;
     }
 
+    @JsonIgnore
     public void setHasOutlinks(boolean hasOutlinks) {
         this.hasOutlinks = hasOutlinks;
     }
 
+    @JsonIgnore
     public boolean isRequestParseFlag() {
         return requestParseFlag;
     }
 
+    @JsonIgnore
     public void setRequestParseFlag(boolean requestParseFlag) {
         this.requestParseFlag = requestParseFlag;
     }
 
+    @JsonIgnore
     public boolean isResponseParseFlag() {
         return responseParseFlag;
     }
 
+    @JsonIgnore
     public void setResponseParseFlag(boolean responseParseFlag) {
         this.responseParseFlag = responseParseFlag;
     }
 
+    @JsonIgnore
     public boolean isMetadataParseFlag() {
         return metadataParseFlag;
     }
 
+    @JsonIgnore
     public void setMetadataParseFlag(boolean metadataParseFlag) {
         this.metadataParseFlag = metadataParseFlag;
     }
@@ -313,14 +341,12 @@ public class NetworkMapNode {
         this.outlinks = outlinks;
     }
 
-    public Collection<NetworkMapNode> getChildren() {
-        return children.values();
+    public List<NetworkMapNode> getChildren() {
+        return children;
     }
 
-    public void setChildren(Collection<NetworkMapNode> children) {
-        children.forEach(child -> {
-            this.children.put(child.getUrl(), child);
-        });
+    public void setChildren(List<NetworkMapNode> children) {
+        this.children = children;
     }
 
     public String getTitle() {
@@ -330,4 +356,6 @@ public class NetworkMapNode {
     public void setTitle(String title) {
         this.title = title;
     }
+
+
 }

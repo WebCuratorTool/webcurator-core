@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
+import org.webcurator.core.networkmap.metadata.NetworkMapDomain;
+import org.webcurator.core.networkmap.metadata.NetworkMapDomainManager;
 import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 import org.webcurator.domain.model.core.ArcHarvestFileDTO;
 
@@ -13,7 +15,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicLong;
 
 @SuppressWarnings("all")
 @Component("WCTResourceIndexer")
@@ -21,15 +23,12 @@ public class WCTResourceIndexer {
     private static final Logger log = LoggerFactory.getLogger(WCTResourceIndexer.class);
 
     private File directory;
-    private long job;
-    private Map<String, NetworkMapNode> domains = new Hashtable<>();
     private Map<String, NetworkMapNode> urls = new Hashtable<>();
 
     private BDBNetworkMap db;
 
-    public WCTResourceIndexer(File directory, long job, BDBNetworkMap db) throws IOException {
+    public WCTResourceIndexer(File directory, BDBNetworkMap db) throws IOException {
         this.directory = directory;
-        this.job = job;
         this.db = db;
     }
 
@@ -51,7 +50,7 @@ public class WCTResourceIndexer {
             return arcHarvestFileDTOList;
         }
 
-        ResourceExtractor extractor = new ResourceExtractorWarc(this.domains, this.urls, this.db, this.job);
+        ResourceExtractor extractor = new ResourceExtractorWarc(this.urls);
         for (File f : fileList) {
             if (!isWarcFormat(f.getName())) {
                 continue;
@@ -62,45 +61,12 @@ public class WCTResourceIndexer {
             }
         }
 
-        db.put(job, BDBNetworkMap.PATH_COUNT_DOMAIN, extractor.getDomainCount());
-        db.put(job, BDBNetworkMap.PATH_COUNT_URL, extractor.getUrlCount());
-
-        //Process and save url
-        List<Long> rootUrls = new ArrayList<>();
-        List<Long> malformedUrls = new ArrayList<>();
-        this.urls.values().forEach(e -> {
-            extractor.addUrl2Domain(e);
-
-            db.put(this.job, e.getId(), e);
-
-            if (e.isSeed() || e.getParentId() <= 0) {
-                rootUrls.add(e.getId());
-            }
-
-            if (!e.isFinished()) {
-                malformedUrls.add(e.getId());
-            }
-        });
-        db.put(this.job, BDBNetworkMap.PATH_ROOT_URLS, rootUrls);
-        rootUrls.clear();
-        db.put(this.job, BDBNetworkMap.PATH_MALFORMED_URLS, malformedUrls);
-        malformedUrls.clear();
-
-        //Summarize and save domain
-        List<Long> rootDomains = new ArrayList<>();
-        this.statDomain();
-        this.domains.values().forEach(e -> {
-            db.put(this.job, "d@" + e.getId(), e);
-            rootDomains.add(e.getId());
-        });
-        db.put(this.job, BDBNetworkMap.PATH_ROOT_DOMAINS, rootDomains);
-        rootDomains.clear();
+        this.statAndSave();
 
         this.clear();
 
         return arcHarvestFileDTOList;
     }
-
 
     private ArcHarvestFileDTO indexFile(File archiveFile, ResourceExtractor extractor) {
         log.info("Indexing file: {}", archiveFile.getAbsolutePath());
@@ -133,38 +99,67 @@ public class WCTResourceIndexer {
         return arcHarvestFileDTO;
     }
 
-    private void statDomain() {
-        String json = "{}";
+    private void statAndSave() {
+        AtomicLong domainIdGenerator = new AtomicLong();
+        NetworkMapDomainManager domainManager = new NetworkMapDomainManager();
 
-        // Groupby domain's children
-        domains.values().forEach(domain -> {
-            Map<String, List<NetworkMapNode>> mapGroupByContentType = domain.getChildren().stream().collect(Collectors.groupingBy(NetworkMapNode::getContentType));
-            domain.clearChildren();
-            mapGroupByContentType.forEach((contentType, listOneContentType) -> {
-                NetworkMapNode domainOneContentType = new NetworkMapNode();
-                domainOneContentType.setTitle(contentType);
-                domainOneContentType.setUrl(domain.getUrl());
-                domainOneContentType.setContentType(contentType);
-                listOneContentType.forEach(e1 -> {
-                    domainOneContentType.accumulate(e1);
-                });
+        //Statistic by domain
+        NetworkMapDomain rootDomainNode = new NetworkMapDomain(NetworkMapDomain.DOMAIN_NAME_LEVEL_ROOT, 0);
+        rootDomainNode.addChildren(this.urls.values(), domainIdGenerator, domainManager);
+        rootDomainNode.addStatData(this.urls.values());
 
-                Map<Integer, List<NetworkMapNode>> mapGroupByStatusCode = listOneContentType.stream().collect(Collectors.groupingBy(NetworkMapNode::getStatusCode));
-                mapGroupByStatusCode.forEach((statusCode, listOneStatusCode) -> {
-                    NetworkMapNode domainOneStatusCode = new NetworkMapNode(0);
-                    domainOneStatusCode.setTitle(Long.toString(statusCode));
-                    domainOneStatusCode.setUrl(domain.getUrl());
-                    domainOneStatusCode.setContentType(contentType);
-                    domainOneStatusCode.setStatusCode(statusCode);
-                    listOneStatusCode.forEach(e2 -> {
-                        domainOneStatusCode.accumulate(e2);
-                    });
-                    domainOneContentType.putChild(Long.toString(statusCode), domainOneStatusCode);
-                });
+        //Process parent relationship, outlinks and domain's outlink
+        this.urls.values().forEach(node -> {
+            /**
+             * if url u-->v then domain du->dv, DU->DV, du->DV, DU->dv
+             */
 
-                domain.putChild(contentType, domainOneContentType);
-            });
+            NetworkMapDomain domainNodeHigh = domainManager.getHighDomain(node);
+            NetworkMapDomain domainNodeLower = domainManager.getLowerDomain(node);
+            if (node.isSeed()) {
+                domainNodeHigh.setSeed(true);
+                domainNodeLower.setSeed(true);
+            }
+
+            String viaUrl = node.getViaUrl();
+            if (viaUrl == null || !this.urls.containsKey(viaUrl)) {
+                node.setParentId(-1);
+            } else {
+                NetworkMapNode parentNode = this.urls.get(viaUrl);
+                parentNode.addOutlink(node);
+
+                NetworkMapDomain parentDomainNodeHigh = domainManager.getHighDomain(parentNode);
+                NetworkMapDomain parentDomainNodeLower = domainManager.getLowerDomain(parentNode);
+
+                node.setParentId(parentNode.getId());
+
+                parentDomainNodeHigh.addOutlink(domainNodeHigh.getId());
+                parentDomainNodeHigh.addOutlink(domainNodeLower.getId());
+                parentDomainNodeLower.addOutlink(domainNodeHigh.getId());
+                parentDomainNodeLower.addOutlink(domainNodeLower.getId());
+            }
         });
+//        db.put(BDBNetworkMap.PATH_METADATA_DOMAIN_NAME, statDomainMap.keySet());
+        db.put(BDBNetworkMap.PATH_GROUP_BY_DOMAIN, rootDomainNode);
+
+        //Process and save url
+        List<Long> rootUrls = new ArrayList<>();
+        List<Long> malformedUrls = new ArrayList<>();
+        this.urls.values().forEach(e -> {
+            db.put(e.getId(), e);
+
+            if (e.isSeed() || e.getParentId() <= 0) {
+                rootUrls.add(e.getId());
+            }
+
+            if (!e.isFinished()) {
+                malformedUrls.add(e.getId());
+            }
+        });
+        db.put(BDBNetworkMap.PATH_ROOT_URLS, rootUrls);
+        rootUrls.clear();
+        db.put(BDBNetworkMap.PATH_MALFORMED_URLS, malformedUrls);
+        malformedUrls.clear();
     }
 
     private boolean isWarcFormat(String name) {
@@ -173,9 +168,6 @@ public class WCTResourceIndexer {
     }
 
     public void clear() {
-//        this.db.shutdownDB();
-        this.domains.values().forEach(NetworkMapNode::clear);
-        this.domains.clear();
         this.urls.values().forEach(NetworkMapNode::clear);
         this.urls.clear();
     }

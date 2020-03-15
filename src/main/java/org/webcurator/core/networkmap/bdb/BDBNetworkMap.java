@@ -22,9 +22,16 @@ public class BDBNetworkMap {
     private static final Logger log = LoggerFactory.getLogger(BDBNetworkMap.class);
     public final static String PATH_ROOT_URLS = "rootUrls";
     public final static String PATH_MALFORMED_URLS = "malformedUrls";
-    public final static String PATH_ROOT_DOMAINS = "rootDomains";
     public final static String PATH_COUNT_DOMAIN = "countDomain";
     public final static String PATH_COUNT_URL = "countUrl";
+
+    public final static String PATH_GROUP_BY_DOMAIN = "keyGroupByDomain";
+    public final static String PATH_GROUP_BY_CONTENT_TYPE = "keyGroupByContentType";
+    public final static String PATH_GROUP_BY_STATUS_CODE = "keyGroupByStatusCode";
+    public final static String PATH_METADATA_DOMAIN_NAME = "keyMetadataDomainName";
+    public final static String PATH_METADATA_CONTENT_TYPE = "keyMetadataContentType";
+    public final static String PATH_METADATA_STATUS_CODE = "keyMetadataStatusCode";
+
     public final static Charset UTF8 = StandardCharsets.UTF_8;
 
     /**
@@ -146,17 +153,18 @@ public class BDBNetworkMap {
         }
     }
 
-    public void put(long job, String keyStr, String valueStr) throws DatabaseException {
-        DatabaseEntry key = new DatabaseEntry(stringToBytes(getKeyPath(job, keyStr)));
+    public void put(String keyStr, String valueStr) throws DatabaseException {
+        System.out.println(keyStr + ": " + valueStr);
+        DatabaseEntry key = new DatabaseEntry(stringToBytes(keyStr));
         DatabaseEntry data = new DatabaseEntry(stringToBytes(valueStr));
         db.put(null, key, data);
     }
 
-    public void put(long job, long id, String valueStr) throws DatabaseException {
-        put(job, Long.toString(id), valueStr);
+    public void put(long id, String valueStr) throws DatabaseException {
+        put(Long.toString(id), valueStr);
     }
 
-    public void put(long job, String keyStr, Object obj) throws DatabaseException {
+    public void put(String keyStr, Object obj) throws DatabaseException {
         String json = "{}";
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -164,12 +172,11 @@ public class BDBNetworkMap {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        put(job, keyStr, json);
+        put(keyStr, json);
     }
 
-    public void put(long job, long id, Object obj) throws DatabaseException {
-        log.debug("Put to db: job={}, id={}", job, id);
-        put(job, Long.toString(id), obj);
+    public void put(long id, Object obj) throws DatabaseException {
+        put(Long.toString(id), obj);
     }
 
     public String get(String keyStr) throws DatabaseException {
@@ -184,22 +191,10 @@ public class BDBNetworkMap {
         return result;
     }
 
-    public String get(long job, String keyStr) throws DatabaseException {
-        return get(getKeyPath(job, keyStr));
-    }
 
-    public String get(long job, long id) throws DatabaseException {
-        return get(job, Long.toString(id));
+    public String get(long id) throws DatabaseException {
+        return get(Long.toString(id));
     }
-
-    public static String getKeyPath(long job, long id) {
-        return String.format("%d/%d", job, id);
-    }
-
-    public static String getKeyPath(long job, String path) {
-        return String.format("%d/%s", job, path);
-    }
-
 
     /**
      * @param keyStr
@@ -243,11 +238,9 @@ public class BDBNetworkMap {
 
         long MAX_TRY = 1000000;
 
-        long job = 33;
-
         long startTime = System.currentTimeMillis();
         for (long id = 1; id <= MAX_TRY; id++) {
-            db.put(job, id, "Content:" + id);
+            db.put(id, "Content:" + id);
             if (id % 1000 == 0) {
                 long endTime = System.currentTimeMillis();
                 System.out.println("Running write:" + id + ", time used:" + (endTime - startTime));
@@ -261,7 +254,7 @@ public class BDBNetworkMap {
 
         startTime = System.currentTimeMillis();
         for (long id = 1; id <= MAX_TRY; id++) {
-            String str = db.get(job, id);
+            String str = db.get(id);
             if (str == null) {
                 System.out.println("Error:" + id);
             }
