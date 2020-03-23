@@ -36,7 +36,7 @@ public interface NetworkMapService {
             return null;
         }
 
-        log.debug(json);
+//        log.debug(json);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -54,7 +54,7 @@ public interface NetworkMapService {
             return null;
         }
 
-        log.debug(json);
+//        log.debug(json);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
