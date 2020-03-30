@@ -171,7 +171,7 @@ public class NetworkMapLocalClient implements NetworkMapService {
         }
 
         for (String e : domainNameCondition) {
-            if (e.contains(domainName)) {
+            if (domainName.equals(e)) {
                 return true;
             }
         }

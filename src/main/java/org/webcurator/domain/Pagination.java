@@ -133,9 +133,9 @@ public class Pagination extends HibernateDaoSupport {
 	}
 	
 	private void init(Criteria cntQuery, Criteria query) {
-		query.setFirstResult(page * pageSize).setMaxResults(pageSize + 1);		
+		query.setFirstResult(page * pageSize).setMaxResults(pageSize + 1);
 		results = query.list();
-		
+
 		total = ((Number)cntQuery.uniqueResult()).intValue();
 	}
 	
