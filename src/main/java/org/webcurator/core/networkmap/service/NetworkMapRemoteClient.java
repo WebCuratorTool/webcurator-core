@@ -7,6 +7,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.webcurator.core.rest.AbstractRestClient;
 
 import java.net.URI;
+import java.util.List;
 
 public class NetworkMapRemoteClient extends AbstractRestClient implements NetworkMapService {
     public NetworkMapRemoteClient(String scheme, String host, int port, RestTemplateBuilder restTemplateBuilder) {
@@ -142,6 +143,21 @@ public class NetworkMapRemoteClient extends AbstractRestClient implements Networ
 
         String result;
         result = restTemplate.getForObject(uri, String.class);
+        return result;
+    }
+
+    @Override
+    public String getHierarchy(long job, int harvestResultNumber, List<Long> ids) {
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(getUrl(NetworkMapServicePath.PATH_GET_HIERARCHY_URLS))
+                .queryParam("job", job)
+                .queryParam("harvestResultNumber", harvestResultNumber);
+        URI uri = uriComponentsBuilder.build().toUri();
+
+        HttpEntity<String> request = createHttpRequestEntity(ids);
+        RestTemplate restTemplate = restTemplateBuilder.build();
+
+        String result;
+        result = restTemplate.postForObject(uri, request, String.class);
         return result;
     }
 }

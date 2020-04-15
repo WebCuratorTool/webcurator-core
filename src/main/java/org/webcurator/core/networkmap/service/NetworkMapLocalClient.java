@@ -6,7 +6,9 @@ import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 import org.webcurator.core.util.URLResolverFunc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NetworkMapLocalClient implements NetworkMapService {
     private BDBNetworkMapPool pool;
@@ -93,6 +95,7 @@ public class NetworkMapLocalClient implements NetworkMapService {
         return json;
     }
 
+
     private void searchUrlInternal(long job, int harvestResultNumber, BDBNetworkMap db, NetworkMapServiceSearchCommand searchCommand, List<Long> linkIds, final List<String> result) {
         if (linkIds == null) {
             return;
@@ -136,6 +139,44 @@ public class NetworkMapLocalClient implements NetworkMapService {
         listHopPath.clear();
 
         return json;
+    }
+
+    @Override
+    public String getHierarchy(long job, int harvestResultNumber, List<Long> ids) {
+        BDBNetworkMap db = pool.getInstance(job, harvestResultNumber);
+        Map<Long, NetworkMapNode> walkedNodes = new HashMap<>();
+        List<NetworkMapNode> result = new ArrayList<>();
+        for (long urlId : ids) {
+            NetworkMapNode node = getNodeEntity(db.get(urlId));
+            combineHierarchy(db, node, node.getParentId(), walkedNodes, result);
+        }
+
+        String json=obj2Json(result);
+        walkedNodes.values().forEach(NetworkMapNode::clear);
+        walkedNodes.clear();
+        result.clear();
+        return json;
+    }
+
+    private void combineHierarchy(BDBNetworkMap db, NetworkMapNode childNode, long parentId, Map<Long, NetworkMapNode> walkedNodes, List<NetworkMapNode> result) {
+        NetworkMapNode parentNode = null;
+        if (walkedNodes.containsKey(parentId)) {
+            parentNode = walkedNodes.get(parentId);
+        } else {
+            parentNode = getNodeEntity(db.get(parentId));
+            walkedNodes.put(parentId, parentNode);
+        }
+        if (parentNode == null) {
+            log.error("Can not find NetworkMapNode: {}", parentId);
+            return;
+        }
+        parentNode.putChild(childNode);
+
+        if (parentNode.getParentId() <= 0) {
+            result.add(parentNode);
+        } else {
+            combineHierarchy(db, parentNode, parentNode.getParentId(), walkedNodes, result);
+        }
     }
 
     private String combineUrlResultFromArrayIDs(long job, int harvestResultNumber, List<Long> ids) {

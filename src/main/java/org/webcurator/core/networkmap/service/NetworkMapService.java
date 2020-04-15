@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.webcurator.core.networkmap.metadata.NetworkMapNode;
 
 import java.io.IOException;
@@ -30,6 +31,8 @@ public interface NetworkMapService {
     public String searchUrl(long job, int harvestResultNumber, NetworkMapServiceSearchCommand searchCommand);
 
     public String getHopPath(long job, int harvestResultNumber, long id);
+
+    public String getHierarchy(long job, int harvestResultNumber, List<Long> ids);
 
     default public List<Long> getArrayList(String json) {
         if (json == null) {
