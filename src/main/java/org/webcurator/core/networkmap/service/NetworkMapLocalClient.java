@@ -212,7 +212,7 @@ public class NetworkMapLocalClient implements NetworkMapService {
         }
 
         for (String e : domainNameCondition) {
-            if (domainName.equals(e)) {
+            if (domainName.contains(e)) {
                 return true;
             }
         }
