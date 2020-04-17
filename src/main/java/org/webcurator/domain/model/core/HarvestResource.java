@@ -39,8 +39,8 @@ public class HarvestResource {
     /**
      * The via name of the resource
      */
-    @Column(name = "HRC_VIA_NAME", length = 1020, nullable = false)
-    protected String viaName;
+//    @Column(name = "HRC_VIA_NAME", length = 1020, nullable = false)
+//    protected String viaName;
     /**
      * The length of the resource
      */
@@ -76,8 +76,8 @@ public class HarvestResource {
     /**
      * The content type of the resource
      */
-    @Column(name = "HRC_CONTENT_TYPE", nullable = false)
-    protected String contentType;
+//    @Column(name = "HRC_CONTENT_TYPE", nullable = false)
+//    protected String contentType;
 
     /**
      * No-arg constructor.
@@ -97,8 +97,8 @@ public class HarvestResource {
         this.name = aResource.getName();
         this.length = aResource.getLength();
         this.statusCode = aResource.getStatusCode();
-        this.viaName = aResource.getViaName();
-        this.contentType = aResource.getContentType();
+//        this.viaName = aResource.getViaName();
+//        this.contentType = aResource.getContentType();
         this.result = aResult;
     }
 
@@ -167,18 +167,18 @@ public class HarvestResource {
      *
      * @return The name of the resource.
      */
-    public String getViaName() {
-        return viaName;
-    }
+//    public String getViaName() {
+//        return viaName;
+//    }
 
     /**
      * Set the via name of the resource.
      *
      * @param viaName The via name of the resource.
      */
-    public void setViaName(String viaName) {
-        this.viaName = viaName;
-    }
+//    public void setViaName(String viaName) {
+//        this.viaName = viaName;
+//    }
 
     /**
      * Get the harvest result that this resource belongs to.
@@ -212,13 +212,13 @@ public class HarvestResource {
         this.statusCode = statusCode;
     }
 
-    public String getContentType() {
-        return contentType;
-    }
+//    public String getContentType() {
+//        return contentType;
+//    }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
+//    public void setContentType(String contentType) {
+//        this.contentType = contentType;
+//    }
 
     /**
      * Build a DTO from this object.
