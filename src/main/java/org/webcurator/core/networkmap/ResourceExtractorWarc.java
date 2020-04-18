@@ -78,7 +78,7 @@ public class ResourceExtractorWarc extends ResourceExtractor {
             res.setRequestParseFlag(true);
         } else if (type.equals(WARCConstants.RESPONSE)) {
             res.setResponseParseFlag(true);
-            res.setUrl(header.getUrl());
+            res.setUrlAndDomain(header.getUrl());
             res.setOffset(header.getOffset());
 
             // need to parse the documents HTTP message and headers here: WARCReader

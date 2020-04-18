@@ -3,9 +3,18 @@ package org.webcurator.core.networkmap.service;
 import java.util.List;
 
 public class NetworkMapServiceSearchCommand {
+    private String domainLevel;
     private List<String> domainNames;
     private List<String> contentTypes;
     private List<Integer> statusCodes;
+
+    public String getDomainLevel() {
+        return domainLevel;
+    }
+
+    public void setDomainLevel(String domainLevel) {
+        this.domainLevel = domainLevel;
+    }
 
     public List<String> getDomainNames() {
         return domainNames;

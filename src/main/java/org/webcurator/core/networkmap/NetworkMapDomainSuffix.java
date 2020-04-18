@@ -17,6 +17,7 @@ public class NetworkMapDomainSuffix {
             line = line.trim();
             return line.length() > 0 && !line.startsWith("//");
         }).forEach(this::insert);
+        lines.clear();
     }
 
     private void insert(String line) {
@@ -30,6 +31,9 @@ public class NetworkMapDomainSuffix {
     }
 
     public String getTopDomainName(String domainName) {
+        if (domainName == null) {
+            return "Unknown";
+        }
         String[] items = domainName.split("\\.");
         NetworkMapDomainSuffixNode p = ROOT;
         List<String> result = new ArrayList<>();

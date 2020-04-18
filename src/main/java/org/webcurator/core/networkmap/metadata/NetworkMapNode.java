@@ -1,13 +1,18 @@
 package org.webcurator.core.networkmap.metadata;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.webcurator.core.networkmap.NetworkMapDomainSuffix;
+import org.webcurator.core.util.ApplicationContextFactory;
 import org.webcurator.core.util.URLResolverFunc;
 
 import java.util.*;
 
 public class NetworkMapNode {
+    private static final NetworkMapDomainSuffix topDomainParser = ApplicationContextFactory.getApplicationContext().getBean(NetworkMapDomainSuffix.class);
     protected long id;
     protected String url;
+    protected String domain;
+    protected String topDomain;
     @JsonIgnore
     protected String viaUrl;
     protected boolean isSeed = false; //true: if url equals seed or domain contains seed url.
@@ -150,6 +155,35 @@ public class NetworkMapNode {
         this.url = url;
     }
 
+    @JsonIgnore
+    public void setUrlAndDomain(String url) {
+        this.url = url;
+        String host = URLResolverFunc.url2domain(url);
+        if (host == null) {
+            this.domain = "Unknown";
+            this.topDomain = "Unknown";
+        } else {
+            this.domain = host;
+            this.topDomain = topDomainParser.getTopDomainName(host);
+        }
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getTopDomain() {
+        return topDomain;
+    }
+
+    public void setTopDomain(String topDomain) {
+        this.topDomain = topDomain;
+    }
+
     public boolean isSeed() {
         return isSeed;
     }
@@ -199,33 +233,6 @@ public class NetworkMapNode {
     }
 
     @JsonIgnore
-    public String getGreatDomainName() {
-        String domain = URLResolverFunc.url2domain(this.getUrl());
-        if (domain == null) {
-            return "invalidDomain";
-        }
-
-        //Get the second part as the great domain name
-        String[] items = domain.split("\\.");
-        if ((items.length == 2) && (items[1].equals("com") || items[1].equals("org"))) {
-            return items[0];
-        } else if (items.length > 1) {
-            return items[1];
-        }
-
-        return domain;
-    }
-
-    @JsonIgnore
-    public String getDomainName() {
-        String domain = URLResolverFunc.url2domain(this.getUrl());
-        if (domain == null) {
-            return "invalidDomain";
-        }
-        return domain;
-    }
-
-    @JsonIgnore
     public String getViaUrl() {
         return viaUrl;
     }
@@ -261,12 +268,6 @@ public class NetworkMapNode {
 
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
-        this.totUrls += 1;
-        if (this.isSuccess(statusCode)) {
-            this.totSuccess += 1;
-        } else {
-            this.totFailed += 1;
-        }
     }
 
     public long getParentId() {
@@ -356,6 +357,4 @@ public class NetworkMapNode {
     public void setTitle(String title) {
         this.title = title;
     }
-
-
 }

@@ -209,7 +209,8 @@ public class NetworkMapLocalClient implements NetworkMapService {
     }
 
     private boolean isIncluded(NetworkMapNode node, NetworkMapServiceSearchCommand searchCommand) {
-        return isIncludedByDomainName(URLResolverFunc.url2domain(node.getUrl()), searchCommand.getDomainNames()) &&
+        String domainName = searchCommand.getDomainLevel() != null && searchCommand.getDomainLevel().equals("high") ? node.getTopDomain() : node.getDomain();
+        return isIncludedByDomainName(domainName, searchCommand.getDomainNames()) &&
                 isIncludedByContentType(node.getContentType(), searchCommand.getContentTypes()) &&
                 isIncludedByStatusCode(node.getStatusCode(), searchCommand.getStatusCodes());
     }
@@ -220,7 +221,7 @@ public class NetworkMapLocalClient implements NetworkMapService {
         }
 
         for (String e : domainNameCondition) {
-            if (domainName.contains(e)) {
+            if (domainName.equalsIgnoreCase(e)) {
                 return true;
             }
         }

@@ -55,9 +55,9 @@ public class NetworkMapDomain {
         Map<String, List<NetworkMapNode>> mapGroupByDomainTitle = new HashMap<>();
 
         if (this.level == DOMAIN_NAME_LEVEL_ROOT) {
-            mapGroupByDomainTitle = list.stream().collect(Collectors.groupingBy(NetworkMapNode::getGreatDomainName));
+            mapGroupByDomainTitle = list.stream().collect(Collectors.groupingBy(NetworkMapNode::getTopDomain));
         } else if (this.level == DOMAIN_NAME_LEVEL_HIGH) {
-            mapGroupByDomainTitle = list.stream().collect(Collectors.groupingBy(NetworkMapNode::getDomainName));
+            mapGroupByDomainTitle = list.stream().collect(Collectors.groupingBy(NetworkMapNode::getDomain));
         } else {
             return;
         }
@@ -103,10 +103,13 @@ public class NetworkMapDomain {
     @JsonIgnore
     private void accumulate(Collection<NetworkMapNode> list) {
         list.forEach(e -> {
-            this.totUrls += e.getTotUrls();
-            this.totFailed += e.getTotFailed();
-            this.totSuccess += e.getTotSuccess();
-            this.totSize += e.getTotSize();
+            if (e.isSuccess(e.getStatusCode())) {
+                this.totSuccess += 1;
+            } else {
+                this.totFailed += 1;
+            }
+            this.totUrls += 1;
+            this.totSize += e.getContentLength();
         });
     }
 

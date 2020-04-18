@@ -52,7 +52,7 @@ public class ResourceExtractorArc extends ResourceExtractor {
         }
 
         NetworkMapNode res = new NetworkMapNode(atomicIdGeneratorUrl.incrementAndGet());
-        res.setUrl(header.getUrl());
+        res.setUrlAndDomain(header.getUrl());
         res.setOffset(header.getOffset());
         res.setStatusCode(record.getStatusCode());
 
