@@ -248,7 +248,7 @@ public class NetworkMapNode {
 
     public void setContentLength(long contentLength) {
         this.contentLength = contentLength;
-        this.totSize += contentLength;
+//        this.totSize += contentLength;
     }
 
     public String getContentType() {
