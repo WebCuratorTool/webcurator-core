@@ -7,10 +7,13 @@ import org.archive.io.ArchiveRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.webcurator.core.networkmap.metadata.NetworkMapNode;
+import org.webcurator.domain.model.core.SeedHistory;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 abstract public class ResourceExtractor {
@@ -21,9 +24,13 @@ abstract public class ResourceExtractor {
     protected AtomicLong atomicIdGeneratorUrl = new AtomicLong();
 
     protected Map<String, NetworkMapNode> results;
+    protected Map<String, Boolean> seeds = new HashMap<>();
 
-    protected ResourceExtractor(Map<String, NetworkMapNode> results) {
+    protected ResourceExtractor(Map<String, NetworkMapNode> results, Set<SeedHistory> seeds) {
         this.results = results;
+        seeds.forEach(seed -> {
+            this.seeds.put(seed.getSeed(), seed.isPrimary());
+        });
     }
 
     public void extract(ArchiveReader reader) throws IOException {

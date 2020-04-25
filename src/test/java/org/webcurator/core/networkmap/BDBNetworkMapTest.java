@@ -8,6 +8,7 @@ import org.webcurator.core.networkmap.service.NetworkMapLocalClient;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 
 public class BDBNetworkMapTest {
     private static final String DIR_ROOT = "/usr/local/wct/store/";
@@ -47,7 +48,7 @@ public class BDBNetworkMapTest {
     public void testExtractor(BDBNetworkMap db, long job, int harvestResultNumber) {
         String directory = String.format("%s/%d/1", DIR_ROOT, job);
         try {
-            WCTResourceIndexer indexer = new WCTResourceIndexer(new File(directory), db);
+            WCTResourceIndexer indexer = new WCTResourceIndexer(new File(directory), db, job, harvestResultNumber);
             indexer.indexFiles();
         } catch (IOException e) {
             e.printStackTrace();

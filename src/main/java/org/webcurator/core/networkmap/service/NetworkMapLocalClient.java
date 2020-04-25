@@ -8,6 +8,7 @@ import org.webcurator.core.util.URLResolverFunc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class NetworkMapLocalClient implements NetworkMapService {
     private BDBNetworkMapPool pool;
@@ -210,18 +211,20 @@ public class NetworkMapLocalClient implements NetworkMapService {
 
     private boolean isIncluded(NetworkMapNode node, NetworkMapServiceSearchCommand searchCommand) {
         String domainName = searchCommand.getDomainLevel() != null && searchCommand.getDomainLevel().equals("high") ? node.getTopDomain() : node.getDomain();
-        return isIncludedByDomainName(domainName, searchCommand.getDomainNames()) &&
-                isIncludedByContentType(node.getContentType(), searchCommand.getContentTypes()) &&
+        return isIncludedByDomainName(domainName, searchCommand) &&
+                isIncludedByUrlName(node.getUrl(), searchCommand) &&
+                isIncludedByContentType(node.getContentType(), searchCommand) &&
                 isIncludedByStatusCode(node.getStatusCode(), searchCommand.getStatusCodes());
     }
 
-    private boolean isIncludedByDomainName(String domainName, List<String> domainNameCondition) {
-        if (domainNameCondition == null || domainNameCondition.size() == 0) {
+    private boolean isIncludedByDomainName(String domainName, NetworkMapServiceSearchCommand searchCommand) {
+        if (searchCommand.getDomainNames() == null || searchCommand.getDomainNames().size() == 0) {
             return true;
         }
 
-        for (String e : domainNameCondition) {
-            if (domainName.equalsIgnoreCase(e)) {
+        List<SearchCommandItem> domainNameCondition=searchCommand.getDomainNames().stream().map(SearchCommandItem::new).collect(Collectors.toList());
+        for (SearchCommandItem e : domainNameCondition) {
+            if (e.match(domainName)) {
                 return true;
             }
         }
@@ -229,13 +232,29 @@ public class NetworkMapLocalClient implements NetworkMapService {
         return false;
     }
 
-    private boolean isIncludedByContentType(String contentType, List<String> contentTypeCondition) {
-        if (contentTypeCondition == null || contentTypeCondition.size() == 0) {
+    private boolean isIncludedByUrlName(String urlName, NetworkMapServiceSearchCommand searchCommand) {
+        if (searchCommand.getUrlNames() == null || searchCommand.getUrlNames().size() == 0) {
             return true;
         }
 
-        for (String e : contentTypeCondition) {
-            if (contentType.contains(e)) {
+        List<SearchCommandItem> urlNameCondition=searchCommand.getUrlNames().stream().map(SearchCommandItem::new).collect(Collectors.toList());
+        for (SearchCommandItem e : urlNameCondition) {
+            if (e.match(urlName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isIncludedByContentType(String contentType, NetworkMapServiceSearchCommand searchCommand) {
+        if (searchCommand.getContentTypes() == null || searchCommand.getContentTypes().size() == 0) {
+            return true;
+        }
+
+        List<SearchCommandItem> contentTypeCondition=searchCommand.getContentTypes().stream().map(SearchCommandItem::new).collect(Collectors.toList());
+        for (SearchCommandItem e : contentTypeCondition) {
+            if (e.match(contentType)) {
                 return true;
             }
         }
@@ -255,5 +274,43 @@ public class NetworkMapLocalClient implements NetworkMapService {
         }
 
         return false;
+    }
+}
+
+class SearchCommandItem {
+    private final static int STAR_TYPE_NONE = 0;
+    private final static int STAR_TYPE_LEFT = 1;
+    private final static int STAR_TYPE_RIGHT = 2;
+    private final static int STAR_TYPE_BOTH = 3;
+    private final int starType;
+    private final String condition;
+
+    public SearchCommandItem(String condition) {
+        if (condition.startsWith("*") && condition.endsWith("*")) {
+            starType = STAR_TYPE_BOTH;
+        } else if (condition.startsWith("*")) {
+            starType = STAR_TYPE_LEFT;
+        } else if (condition.endsWith("*")) {
+            starType = STAR_TYPE_RIGHT;
+        } else {
+            starType = STAR_TYPE_NONE;
+        }
+
+        this.condition = condition.replaceAll("\\*", "");
+    }
+
+    public boolean match(String e) {
+        switch (starType) {
+            case STAR_TYPE_NONE:
+                return e.equals(this.condition);
+            case STAR_TYPE_LEFT:
+                return e.endsWith(this.condition);
+            case STAR_TYPE_RIGHT:
+                return e.startsWith(this.condition);
+            case STAR_TYPE_BOTH:
+                return e.contains(this.condition);
+            default:
+                return false;
+        }
     }
 }

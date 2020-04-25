@@ -4,16 +4,27 @@ import org.archive.io.*;
 import org.archive.io.warc.WARCConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.webcurator.core.harvester.coordinator.HarvestCoordinatorPaths;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
 import org.webcurator.core.networkmap.metadata.NetworkMapDomain;
 import org.webcurator.core.networkmap.metadata.NetworkMapDomainManager;
 import org.webcurator.core.networkmap.metadata.NetworkMapNode;
+import org.webcurator.core.rest.AbstractRestClient;
+import org.webcurator.core.store.WCTIndexer;
+import org.webcurator.core.util.ApplicationContextFactory;
 import org.webcurator.domain.model.core.ArcHarvestFileDTO;
+import org.webcurator.domain.model.core.SeedHistory;
+import org.webcurator.domain.model.dto.SeedHistoryDTO;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -27,9 +38,24 @@ public class WCTResourceIndexer {
 
     private BDBNetworkMap db;
 
-    public WCTResourceIndexer(File directory, BDBNetworkMap db) throws IOException {
+    private Set<SeedHistory> seeds;
+
+    public WCTResourceIndexer(File directory, BDBNetworkMap db, long targetInstanceId, int harvestNumber) throws IOException {
         this.directory = directory;
         this.db = db;
+        init(targetInstanceId, harvestNumber);
+    }
+
+    public void init(long targetInstanceId, int harvestNumber) {
+        AbstractRestClient client = ApplicationContextFactory.getApplicationContext().getBean(WCTIndexer.class);
+        RestTemplateBuilder restTemplateBuilder = ApplicationContextFactory.getApplicationContext().getBean(RestTemplateBuilder.class);
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(client.getUrl(HarvestCoordinatorPaths.TARGET_INSTANCE_HISTORY_SEED))
+                .queryParam("targetInstanceOid", targetInstanceId)
+                .queryParam("harvestNumber", harvestNumber);
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        URI uri = uriComponentsBuilder.build().toUri();
+        ResponseEntity<SeedHistoryDTO> seedHistoryDTO = restTemplate.getForEntity(uri, SeedHistoryDTO.class);
+        this.seeds = Objects.requireNonNull(seedHistoryDTO.getBody()).getSeeds();
     }
 
     public List<ArcHarvestFileDTO> indexFiles() throws IOException {
@@ -50,7 +76,7 @@ public class WCTResourceIndexer {
             return arcHarvestFileDTOList;
         }
 
-        ResourceExtractor extractor = new ResourceExtractorWarc(this.urls);
+        ResourceExtractor extractor = new ResourceExtractorWarc(this.urls, this.seeds);
         for (File f : fileList) {
             if (!isWarcFormat(f.getName())) {
                 continue;

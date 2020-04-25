@@ -154,7 +154,7 @@ public class BDBNetworkMap {
     }
 
     public void put(String keyStr, String valueStr) throws DatabaseException {
-        System.out.println(keyStr + ": " + valueStr);
+//        System.out.println(keyStr + ": " + valueStr);
         DatabaseEntry key = new DatabaseEntry(stringToBytes(keyStr));
         DatabaseEntry data = new DatabaseEntry(stringToBytes(valueStr));
         db.put(null, key, data);

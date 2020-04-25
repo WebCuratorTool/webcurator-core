@@ -5,6 +5,7 @@ import java.util.List;
 public class NetworkMapServiceSearchCommand {
     private String domainLevel;
     private List<String> domainNames;
+    private List<String> urlNames;
     private List<String> contentTypes;
     private List<Integer> statusCodes;
 
@@ -22,6 +23,14 @@ public class NetworkMapServiceSearchCommand {
 
     public void setDomainNames(List<String> domainNames) {
         this.domainNames = domainNames;
+    }
+
+    public List<String> getUrlNames() {
+        return urlNames;
+    }
+
+    public void setUrlNames(List<String> urlNames) {
+        this.urlNames = urlNames;
     }
 
     public List<String> getContentTypes() {

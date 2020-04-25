@@ -4,13 +4,11 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.webcurator.core.networkmap.WCTResourceIndexer;
+import org.webcurator.domain.model.core.SeedHistory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BDBNetworkMapPool {
     private final static int MAX_SIZE = 10;
@@ -77,7 +75,7 @@ public class BDBNetworkMapPool {
         if (!dbPathFile.exists()) {  //
             System.out.println("Indexing: job=" + job + ", harvestResultNumber=" + harvestResultNumber);
             try {
-                WCTResourceIndexer indexer = new WCTResourceIndexer(dbPathFile.getParentFile(), createInstance(job, harvestResultNumber));
+                WCTResourceIndexer indexer = new WCTResourceIndexer(dbPathFile.getParentFile(), createInstance(job, harvestResultNumber), job, harvestResultNumber);
                 indexer.indexFiles();
                 indexer.clear();
             } catch (IOException e) {

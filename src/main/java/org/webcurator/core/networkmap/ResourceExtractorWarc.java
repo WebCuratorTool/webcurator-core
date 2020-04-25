@@ -11,15 +11,17 @@ import org.archive.io.RecoverableIOException;
 import org.archive.io.warc.WARCConstants;
 import org.archive.io.warc.WARCRecord;
 import org.webcurator.core.networkmap.metadata.NetworkMapNode;
+import org.webcurator.domain.model.core.SeedHistory;
 
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("all")
 public class ResourceExtractorWarc extends ResourceExtractor {
-    public ResourceExtractorWarc(Map<String, NetworkMapNode> results) {
-        super(results);
+    public ResourceExtractorWarc(Map<String, NetworkMapNode> results, Set<SeedHistory> seeds) {
+        super(results, seeds);
     }
 
     @Override
@@ -114,6 +116,17 @@ public class ResourceExtractorWarc extends ResourceExtractor {
                 res.setFetchTimeMs(Long.parseLong(sFetchTimeMs));
             }
             res.setSeed(httpHeaders.get("seed") != null);
+            if (res.isSeed()) {
+                if (seeds.containsKey(key)) {
+                    if (seeds.get(key)) {
+                        res.setSeedType(0);
+                    } else {
+                        res.setSeedType(1);
+                    }
+                }else{
+                    res.setSeedType(2);
+                }
+            }
             res.setHasOutlinks(httpHeaders.get("outlink") != null);
             res.setViaUrl(httpHeaders.getValue("via"));
         }

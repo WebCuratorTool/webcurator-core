@@ -16,6 +16,7 @@ public class NetworkMapNode {
     @JsonIgnore
     protected String viaUrl;
     protected boolean isSeed = false; //true: if url equals seed or domain contains seed url.
+    protected int seedType = -1;
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // 1. Domain: the total items of all urls contained in this domain.
@@ -190,6 +191,14 @@ public class NetworkMapNode {
 
     public void setSeed(boolean seed) {
         isSeed = seed;
+    }
+
+    public int getSeedType() {
+        return seedType;
+    }
+
+    public void setSeedType(int seedType) {
+        this.seedType = seedType;
     }
 
     public int getTotUrls() {

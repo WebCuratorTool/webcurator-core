@@ -2,12 +2,10 @@ package org.webcurator.core.store;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
@@ -17,6 +15,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.client.RestTemplate;
@@ -26,10 +25,8 @@ import org.webcurator.core.harvester.coordinator.HarvestCoordinatorPaths;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMap;
 import org.webcurator.core.networkmap.bdb.BDBNetworkMapPool;
 import org.webcurator.core.util.ApplicationContextFactory;
-import org.webcurator.domain.model.core.ArcHarvestFileDTO;
-import org.webcurator.domain.model.core.ArcHarvestResourceDTO;
-import org.webcurator.domain.model.core.HarvestResultDTO;
-import org.webcurator.domain.model.core.HarvestResourceDTO;
+import org.webcurator.domain.model.core.*;
+import org.webcurator.domain.model.dto.SeedHistoryDTO;
 
 // TODO Note that the spring boot application needs @EnableRetry for the @Retryable to work.
 public class WCTIndexer extends IndexerBase {
@@ -39,12 +36,12 @@ public class WCTIndexer extends IndexerBase {
     private File directory;
     private boolean doCreate = false;
 
-    public WCTIndexer() {
-        super();
+    public WCTIndexer(RestTemplateBuilder restTemplateBuilder){
+        super(restTemplateBuilder);
     }
 
-    public WCTIndexer(RestTemplateBuilder restTemplateBuilder) {
-        super(restTemplateBuilder);
+    public WCTIndexer(String scheme, String host, int port, RestTemplateBuilder restTemplateBuilder) {
+        super(scheme, host, port, restTemplateBuilder);
     }
 
     protected WCTIndexer(WCTIndexer original) {
@@ -103,7 +100,7 @@ public class WCTIndexer extends IndexerBase {
             ApplicationContext ctx = ApplicationContextFactory.getApplicationContext();
             BDBNetworkMapPool pool = ctx.getBean(BDBNetworkMapPool.class);
             BDBNetworkMap db = pool.createInstance(getResult().getTargetInstanceOid(), getResult().getHarvestNumber());
-            indexer = new WCTResourceIndexer(directory, db);
+            indexer = new WCTResourceIndexer(directory, db, getResult().getTargetInstanceOid(), getResult().getHarvestNumber());
         } catch (IOException e) {
             log.error("Failed to create directory: {}", directory);
             return;
@@ -148,6 +145,7 @@ public class WCTIndexer extends IndexerBase {
             log.error("Parsing json failed: {}", e.getMessage());
         }
     }
+
 
     @Retryable(maxAttempts = Integer.MAX_VALUE, backoff = @Backoff(delay = 30_000L))
     protected void addHarvestResources(Long harvestResultOid, Collection<HarvestResourceDTO> harvestResourceDTOs) {

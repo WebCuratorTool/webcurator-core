@@ -22,6 +22,8 @@ package org.webcurator.core.util;
  *
  */
 public class WebServiceEndPoint {
+	/** the schema of the web service */
+	private String schema="http";
 	/** the host of the web service */
 	private String host = null;
 	/** The port number */
@@ -37,10 +39,20 @@ public class WebServiceEndPoint {
 	 * @param host    The WS host.
 	 * @param port    The WS port.
 	 */
-	public WebServiceEndPoint(String host, int port) {
+	public WebServiceEndPoint(String schema, String host, int port) {
+		this.schema=schema;
 		this.host = host;
 		this.port = port;
 	}
+
+	public String getSchema() {
+		return schema;
+	}
+
+	public void setSchema(String schema) {
+		this.schema = schema;
+	}
+
 	/**
 	 * @return the host
 	 */
