@@ -37,7 +37,7 @@ import org.webcurator.domain.model.core.*;
 public class QualityReviewFacade {
 
 	/** A reference to the digital asset store. */
-	private DigitalAssetStore digialAssetStore = null;
+	private DigitalAssetStore digitalAssetStore = null;
 	/** The Target Instance Dao */
 	private TargetInstanceDAO targetInstanceDao = null;
 	/** the auditor. */
@@ -47,16 +47,16 @@ public class QualityReviewFacade {
 	 * Get the digital asset store. 
 	 * @return The digital asset store.
 	 */
-	public DigitalAssetStore getDigialAssetStore() {
-		return digialAssetStore;
+	public DigitalAssetStore getDigitalAssetStore() {
+		return digitalAssetStore;
 	}
 	
 	/**
 	 * Spring setter for the digital asset store.
 	 * @param store The digital asset store.
 	 */
-	public void setDigialAssetStore(DigitalAssetStore store) {
-		this.digialAssetStore = store;
+	public void setDigitalAssetStore(DigitalAssetStore store) {
+		this.digitalAssetStore = store;
 	}
 	
 	/**
@@ -84,7 +84,7 @@ public class QualityReviewFacade {
 	 * @throws DigitalAssetStoreException if there are any errors.
 	 */
 	public Path getResource(String targetInstanceName, int harvestResultNumber, HarvestResource resource) throws DigitalAssetStoreException {
-		return digialAssetStore.getResource(targetInstanceName, harvestResultNumber, resource.buildDTO());
+		return digitalAssetStore.getResource(targetInstanceName, harvestResultNumber, resource.buildDTO());
 	}
 	
 	/**
@@ -94,7 +94,7 @@ public class QualityReviewFacade {
 	 * @throws DigitalAssetStoreException if there are any errors.
 	 */
 	public Path getResource(HarvestResourceDTO dto) throws DigitalAssetStoreException {
-		return digialAssetStore.getResource(dto.buildJobName(), dto.getHarvestResultNumber(), dto);
+		return digitalAssetStore.getResource(dto.buildJobName(), dto.getHarvestResultNumber(), dto);
 	}	
 	
 	/**
@@ -106,7 +106,7 @@ public class QualityReviewFacade {
 	 * @throws DigitalAssetStoreException if there are any errors.
 	 */	
 	public byte[] getSmallResource(HarvestResourceDTO dto) throws DigitalAssetStoreException {
-		return digialAssetStore.getSmallResource(dto.buildJobName(), dto.getHarvestResultNumber(), dto);
+		return digitalAssetStore.getSmallResource(dto.buildJobName(), dto.getHarvestResultNumber(), dto);
 	}		
 	
 	/**
@@ -153,7 +153,7 @@ public class QualityReviewFacade {
 	 * @throws DigitalAssetStoreException if there are any errors.
 	 */
 	public List<Header> getHttpHeaders(String targetInstanceName, int harvestResultNumber, HarvestResource resource) throws DigitalAssetStoreException {
-		return digialAssetStore.getHeaders(targetInstanceName, harvestResultNumber, resource.buildDTO());
+		return digitalAssetStore.getHeaders(targetInstanceName, harvestResultNumber, resource.buildDTO());
 	}
 	
 	/**
@@ -163,7 +163,7 @@ public class QualityReviewFacade {
 	 * @throws DigitalAssetStoreException if there are any errors.
 	 */
 	public List<Header> getHttpHeaders(HarvestResourceDTO dto) throws DigitalAssetStoreException {
-		return digialAssetStore.getHeaders(dto.buildJobName(), dto.getHarvestResultNumber(), dto);
+		return digitalAssetStore.getHeaders(dto.buildJobName(), dto.getHarvestResultNumber(), dto);
 	}
 	
 	/**
@@ -201,7 +201,7 @@ public class QualityReviewFacade {
 		TargetInstance ti = res.getTargetInstance();
 		
 		// Perform the copy and prune.
-		digialAssetStore.copyAndPrune(ti.getJobName(), res.getHarvestNumber(), ti.getHarvestResults().size()+1, urisToDelete, hrsToImport);
+		digitalAssetStore.copyAndPrune(ti.getJobName(), res.getHarvestNumber(), ti.getHarvestResults().size()+1, urisToDelete, hrsToImport);
 		
 		// Create the base record.
         HarvestResult hr = new ArcHarvestResult(ti, ti.getHarvestResults().size()+1);
@@ -223,7 +223,7 @@ public class QualityReviewFacade {
 		targetInstanceDao.save(ti);
 		
 		// Ask the Digital Asset Store to create the index.
-		digialAssetStore.initiateIndexing(new HarvestResultDTO( hr.getOid(), hr.getTargetInstance().getOid(), hr.getCreationDate(), hr.getHarvestNumber(), hr.getProvenanceNote() ));
+		digitalAssetStore.initiateIndexing(new HarvestResultDTO( hr.getOid(), hr.getTargetInstance().getOid(), hr.getCreationDate(), hr.getHarvestNumber(), hr.getProvenanceNote() ));
 		
 		// Audit the completion of the copy and prune.
 		auditor.audit(ArcHarvestResult.class.getName(), hr.getOid(), Auditor.ACTION_COPY_AND_PRUNE_HARVEST_RESULT, "Created pruned harvest result " + ti.getHarvestResults().size() + " from harvest result " + res.getHarvestNumber() + " for target instance " + ti.getOid());
