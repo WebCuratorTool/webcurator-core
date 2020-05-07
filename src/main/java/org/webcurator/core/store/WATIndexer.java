@@ -70,7 +70,7 @@ public class WATIndexer {
 
         //Parse warc/arc file and extract metadata to wat file==============================================
         OutputStream watTempGzipOutputStream = new BufferedOutputStream(new FileOutputStream(watFile));
-        ExtractorOutput out = new WATExtractorOutput(watTempGzipOutputStream);
+        ExtractorOutput out = new WATExtractorOutput(watTempGzipOutputStream, "temp");
         ResourceProducer producer = ProducerUtils.getProducer(file.getAbsolutePath());
         ResourceFactoryMapper mapper = new ExtractingResourceFactoryMapper();
         ExtractingResourceProducer exProducer = new ExtractingResourceProducer(producer, mapper);

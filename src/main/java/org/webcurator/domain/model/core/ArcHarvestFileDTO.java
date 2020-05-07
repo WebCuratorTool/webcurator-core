@@ -30,13 +30,13 @@ import org.apache.commons.httpclient.util.EncodingUtil;
 
 import org.archive.format.http.HttpHeaderParser;
 import org.archive.format.http.HttpHeaders;
+import org.archive.format.warc.WARCConstants;
 import org.archive.io.ArchiveReader;
 import org.archive.io.ArchiveReaderFactory;
 import org.archive.io.ArchiveRecord;
 import org.archive.io.ArchiveRecordHeader;
 import org.archive.io.arc.ARCRecord;
 import org.archive.io.warc.WARCRecord;
-import org.archive.io.warc.WARCConstants;
 import org.archive.io.RecoverableIOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -323,7 +323,7 @@ public class ArcHarvestFileDTO {
         }
 
         String type = rec.getHeader().getHeaderValue(WARCConstants.HEADER_KEY_TYPE).toString();
-        if (type.equals(WARCConstants.RESPONSE)) {
+        if (type.equals(WARCConstants.WARCRecordType.response.toString())) {
             res.setArcFileName(this.getName());
             res.setName(header.getUrl());
             res.setResourceOffset(header.getOffset());
@@ -356,7 +356,7 @@ public class ArcHarvestFileDTO {
                 res.setContentType(httpHeaders.getValue(WARCConstants.CONTENT_TYPE));
             }
             httpHeaders.clear();
-        } else if (type.equals(WARCConstants.METADATA)) {
+        } else if (type.equals(WARCConstants.WARCRecordType.metadata.toString())) {
             HttpHeaders httpHeaders = new HttpHeaderParser().parseHeaders(record);
             res.setViaName(httpHeaders.getValue("via"));
             res.setSeedFlag(httpHeaders.getValue("seed") != null);
